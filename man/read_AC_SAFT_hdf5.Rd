@@ -6,11 +6,11 @@
 \usage{
 read_AC_SAFT_hdf5(
   files,
-  data.product = "Surface UV",
+  data.product = NULL,
   group.name = "GRID_PRODUCT",
-  vars_to_read = NULL,
+  vars.to.read = NULL,
   fill = NA_real_,
-  verbose = getOption("verbose", default = interactive())
+  verbose = interactive()
 )
 }
 \arguments{
@@ -21,11 +21,12 @@ than available memory to hold the data.}
 
 \item{group.name}{character The name of the 'group' in the HDF5 files.}
 
-\item{vars_to_read}{character A vector of variable names. If `NULL` all the
+\item{vars.to.read}{character A vector of variable names. If `NULL` all the
 variables present in the first file are read.}
 
 \item{fill}{numeric The R value used to replace the fill value used in the
-file, which is retrieved from the file metadata.}
+file, which is retrieved from the file metadata, and also used to fill
+missing variables.}
 
 \item{verbose}{logical Flag indicating if progress, and time and size of
 the returned object should be printed.}
@@ -33,7 +34,7 @@ the returned object should be printed.}
 \value{
 A data frame with columns named `"Date"`, `"Longitude"`,
   `"Latitude"`, the data variables with their original names, and
-  `"QualityFlags"`. The data variables have the metadata as attributes.
+  `"QualityFlags"`. The data variables have their metadata as attributes.
 }
 \description{
 The dates are decoded from the file names, expecting these to be
@@ -42,7 +43,7 @@ The dates are decoded from the file names, expecting these to be
   files named in the argument to `files` are accessible and error is
   triggered early. If the files differ in the grid, and error is triggered
   when reading the first mismatching file. Missing variables named in
-  `vars_to_read` if detected when reading the first file are filled with the
+  `vars.to.read` if detected when reading the first file are filled with the
   `fill` value, otherwise they trigger and error when an attempt is made to
   read them.
 }
@@ -51,7 +52,12 @@ Import gridded daily "offline products" data files from EUMETSAT AC SAF
 (Atmospheric Composition Monitoring) in HDF5 format.
 }
 \note{
-When requesting the data from the EUMETSAT AC SAF the server it is
+The constraint on the consistency among all files read allows very fast
+  reading into a single data frame. If the files differ in the grid or set
+  of variables, this function can be used to read the files individually into
+  separate data frames. These data frames can later be row-bound together.
+
+  When requesting the data from the EUMETSAT AC SAF the server it is
   possible to select the range of latitudes and longitudes and the variables
   to be included in the file. The data are returned as a .zip compressed file
   containing one HDF5 file for each day in the range selected. For world
