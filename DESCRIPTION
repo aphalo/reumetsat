@@ -1,0 +1,32 @@
+Package: reumetsat
+Type: Package
+Title: EUMETSAT Offline Data Products
+Version: 0.1.0
+Date: 2024-10-19
+Authors@R:
+   c(
+    person("Pedro J.", "Aphalo", email = "pedro.aphalo@helsinki.fi", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3385-972X"))
+    )
+Description: Functions for reading files downloaded from AC SAF EUMETSAT 
+    server containing data for offline products. Initially only Surface UV
+    data supported.
+License: GPL (>= 2)
+VignetteBuilder: knitr
+Depends:
+    R (>= 4.0.0)
+Imports:
+    utils,
+    rhdf5 (>= 2.48.0),
+    lubridate (>= 1.9.3)
+Suggests:
+    knitr (>= 1.43),
+    rmarkdown (>= 2.23),
+    spelling,
+    testthat (>= 3.1.10)
+LazyLoad: yes
+ByteCompile: true
+Encoding: UTF-8
+URL: https://docs.r4photobiology.info/reumetsat/
+BugReports: https://github.com/aphalo/reumetsat/issues/
+RoxygenNote: 7.3.2
+Language: en-US
