@@ -82,6 +82,8 @@ one.file.name <-
 summer_viikki.tb <-
   read_AC_SAFT_txt(one.file.name)
 dim(summer_viikki.tb)
+colnames(summer_viikki.tb)
+str(sapply(summer_viikki.tb, class))
 summary(summer_viikki.tb)
 attr(summer_viikki.tb, "file.headers")
 

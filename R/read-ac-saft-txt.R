@@ -61,6 +61,8 @@
 #' summer_viikki.tb <-
 #'   read_AC_SAFT_txt(one.file.name)
 #' dim(summer_viikki.tb)
+#' colnames(summer_viikki.tb)
+#' str(sapply(summer_viikki.tb, class))
 #' summary(summer_viikki.tb)
 #' attr(summer_viikki.tb, "file.headers")
 #'
@@ -142,12 +144,15 @@ read_AC_SAFT_txt <-
                         split = ": ", fixed = TRUE))[c(FALSE, TRUE)]
       col.names <- gsub(" \\[.*\\]", "", col.names) # remove units
       if (!keep.QC) {
-        col.classes <- ifelse(grepl("^Date", col.names),
-                              "character",
-                              ifelse(grepl("^QC_", col.names), "NULL", "numeric"))
+        col.classes <-
+          ifelse(grepl("^Date|^Algorithm", col.names),
+                 "character",
+                 ifelse(grepl("^QC_", col.names), "NULL", "numeric"))
       } else {
-        col.classes <- ifelse(grepl("^Date", col.names),
-                              "character", "numeric")
+        col.classes <-
+          ifelse(grepl("^Date|^Algorithm", col.names),
+                 "character",
+                 ifelse(grepl("^QC_", col.names), "integer", "numeric"))
       }
 
       if (length(vars.to.read)) {
