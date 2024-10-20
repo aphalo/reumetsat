@@ -19,6 +19,7 @@ Imports:
     rhdf5 (>= 2.48.0),
     lubridate (>= 1.9.3)
 Suggests:
+    ggplot2 (>= 3.5.0),
     knitr (>= 1.43),
     rmarkdown (>= 2.23),
     spelling,

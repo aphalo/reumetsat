@@ -21,6 +21,12 @@ knitr::opts_chunk$set(
 [![doi](https://img.shields.io/badge/doi-10.32614/CRAN.package.reumetsat-blue.svg)](https://doi.org/10.32614/CRAN.package.reumetsat)
 <!-- badges: end -->
 
+## Purpose
+
+Package 'reumetsat' currently only supports reading data files from the Surface UV offline data product of AC SAF EUMETSAT downloaded from the server of the Finnish Meteorological Institute (FMI). Two different functions cater for two different types of files: HDF5 files with data on a geographic grid and one file per day, and text (.txt) files with time series data for a single geographic location. Both functions can read one or more files. Irrespective of the number of files they return a single combined data frame object.
+
+For more information of these and other data products, please, see the [EUMETSAT AC SAF website](https://acsaf.org/).
+
 ## Installation
 
 Installation of the most recent stable version from CRAN:
@@ -62,6 +68,8 @@ citation("reumetsat")
 ```
 
 ## License
+
+The data example files redistributed in 'extdata' are © 2024 AC SAF project of EUMETSAT and used by courtesy of the AC SAF project of the EUMETSAT. If reused of republished a note similar to this must be included. 
 
 © 2024 Pedro J. Aphalo (pedro.aphalo@helsinki.fi). Released under the GPL, version 2 or greater. This software carries no warranty of any kind.
 

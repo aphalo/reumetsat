@@ -1,5 +1,8 @@
 ---
 title: "User Guide"
+subtitle: "Package 'reumetsat' `r packageVersion('reumetsat')` "
+author: "Pedro J. Aphalo"
+date: "`r packageDate('reumetsat')`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{User Guide}
@@ -9,6 +12,9 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 4,
+  out.width = "95%",
   collapse = TRUE,
   comment = "#>"
 )
@@ -16,4 +22,167 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(reumetsat)
+library(lubridate)
+library(ggplot2)
 ```
+
+## Introduction
+
+The "Surface UV" data are on a $0.5^\circ \times 0.5^\circ$ longitude E and
+latitude N grid. That is latitudes south of the equator and longitudes W of
+Greenwich are expressed as negative numbers. They consist in several different
+variables, both daily doses and daily maximum irradiances, biologically weighted
+and not weighted.
+
+## Time series
+
+### Obtaining the files
+
+A free account needs to be created, and for each request submitted one needs to login, and fill-in some simple on-line forms. The data are prepared and some time later an e-mail is sent with a link to download a `.zip` compressed archive file.
+
+Before submitting a request, the first step is finding the nearest grid point to the location of interest and deciding on the period to be covered by the data. We need to also consider which variables are useful to us and which are not, at least if we want to limit the size of the files. Each time series requested has no date gaps, as any missing data are marked as such but no rows are missing in the files. The files are text files with a header protected with `#` as comment marker and the data are in aligned columns separated by one space character. The column names are not stored as column headings, but instead in the header of the file, one variable per row. Thus, decoding the file header is key to the interpretation of the data, while reading the data is simple, although setting the correct R classes to the different variables is also important.
+
+### Reading the files
+
+We fetch the path to an example file included in the package, originally downloaded from the FMI server. The grid point closest to Viikki, Helsinki, Finland, and for variables for UV-B and UV-A daily dose and daily maximum irradiances, not biologically weighted, were requested.
+
+```{r}
+one.file.name <-
+   system.file("extdata", "AC_SAF_ts_Viikki.txt",
+               package = "reumetsat", mustWork = TRUE)
+```
+
+The variables included in downloaded files can be chosen when the request is submitted on-line. The default is to read all the variables present in the file.
+
+```{r}
+summer_viikki.tb <- read_AC_SAFT_txt(one.file.name)
+dim(summer_viikki.tb)
+colnames(summer_viikki.tb)
+```
+The returned data frame has 153 rows (= days) and 22 columns (variables). We can see above that several of the variables have names starting with "QC" for quality control.
+
+```{r}
+range(summer_viikki.tb[["Date"]])
+```
+
+The class of the different columns varies, in particular the "QC" variables are stored in the data frame as `integer` values.
+
+```{r}
+str(lapply(summer_viikki.tb, class))
+```
+
+As bad data values are filled with `NA` in the measured/derived variables, a smaller data frame can be obtained by not reading the `QC` (quality control) variables.
+ 
+```{r}
+summer_viikki_QCf.tb <-
+  read_AC_SAFT_txt(one.file.name, keep.QC = FALSE)
+dim(summer_viikki_QCf.tb)
+colnames(summer_viikki_QCf.tb)
+```
+
+In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `read_AC_SAFT_txt()`. However, here we override the default and add coordinates when reading only one file.
+
+```{r}
+summer_viikki_geo.tb <-
+  read_AC_SAFT_txt(one.file.name, keep.QC = FALSE, add.geo = TRUE)
+dim(summer_viikki_geo.tb)
+colnames(summer_viikki_geo.tb)
+```
+
+In some cases we may want to read only specific variables out of the file. This is possible by passing the names of the variables as an argument through parameter `vars.to.read`.
+
+```{r}
+# read two variables
+summer_viikki_2.tb <-
+  read_AC_SAFT_txt(one.file.name,
+                    vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
+dim(summer_viikki_2.tb)
+colnames(summer_viikki_2.tb)
+```
+
+### Using the data
+
+```{r}
+ggplot(summer_viikki_2.tb, aes(Date, DailyDoseUvb)) +
+  geom_col(na.rm = TRUE, colour = "purple", fill = "purple") +
+  labs(y = "UV-B irradiance (kJ / d)")
+```
+
+```{r}
+ggplot(summer_viikki_2.tb, aes(Date, DailyDoseUva / 1000)) +
+  geom_col(na.rm = TRUE, colour = "darkviolet", fill = "darkviolet") +
+  labs(y = "UV-A irradiance (MJ / d)")
+```
+
+```{r}
+ggplot(summer_viikki_2.tb, aes(Date, DailyDoseUvb / DailyDoseUva * 100)) +
+  geom_col(na.rm = TRUE, colour = "grey40", fill = "grey40") +
+  scale_y_continuous(name = "UV-B:UV-A energy ratio (%)")
+```
+
+We may be interested in computing the total UV-B dose accumulated over the duration of an experiment. There are different ways of doing this computation, here I use base R functions and package 'lubridate'.
+
+```{r}
+subset(summer_viikki_2.tb, 
+       Date >= ymd("2024-07-15") & Date < ymd("2024-08-15")) |>
+with(sum(DailyDoseUvb))
+```
+
+## Data on a geographic grid
+
+Worldwide coverage consists in $720 \times 360 = `r 720 * 360`$ grid points. As for time series, the number of data columns varies. However, one difference is that QC information is collected into a single variable. The format of the files is HDF5, which are binary files that allow selective reading. There are additional optimizations used to reduce the size, the main one is that the geographic coordinates of the grid points are not saved explicitly but instead the information needed to compute them is included as metadata. The data are provided as one file per day, with the size of the files depending on the number of grid points included as well as the number of variables. As these are off-line data available with a delay, in most cases we are interested in data for a certain period of time.
+
+### Obtaining the files
+
+A free account needs to be created, and for each request submitted one needs to login, and fill-in some simple on-line forms. The data are prepared and some time later an e-mail is sent with a link to download a `.zip` compressed archive file. The .zip file will contain one file per day.
+
+Before submitting a request, the first step is finding the latitudes and longitudes enclosing the region of interest and deciding on the period to be covered by the data. We need to also consider which variables are useful to us and which are not, at least if we want to limit the size of the files. The HDF5 files have a specific format and content organization, the function in package 'reumetsat' uses functions from package 'rhdf5' to access the files. The column names are not stored as metadata and can be queried without reading the whole file. Thus, decoding is simpler than for the time series files in text format. Reading the data is simple as it is stored as numeric values no requiring interpretation. The dates, in contrast, need to be decoded from the file names, making it crucial that users do not rename the files contained in the `.zip` archive.
+
+### Reading the files
+
+As above for the time series file, we fetch the path to an example file included in the package, originally downloaded from the FMI server. It covers the whole of the Iberian peninsula and the Balearic islands.  Only variables for UV-B and UV-A daily dose and daily maximum irradiances, not biologically weighted, were requested from the server.
+
+```{r}
+one.file.name <-
+   system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
+               package = "reumetsat", mustWork = TRUE)
+```
+
+```{r}
+midsummer_spain.tb <- read_AC_SAFT_hdf5(one.file.name)
+dim(midsummer_spain.tb)
+colnames(midsummer_spain.tb)
+```
+```{r}
+str(lapply(midsummer_spain.tb, class))
+```
+
+We can as before read only specific variables.
+
+```{r}
+midsummer_spain_daily.tb <-
+  read_AC_SAFT_hdf5(one.file.name,
+                    vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
+dim(midsummer_spain_daily.tb)
+colnames(midsummer_spain_daily.tb)
+```
+We can read multiple files, with only limit the available computer RAM to store the data frame.
+
+```{r}
+five.file.names <-
+   system.file("extdata",
+               c("O3MOUV_L3_20240620_v02p02.HDF5",
+                 "O3MOUV_L3_20240621_v02p02.HDF5",
+                 "O3MOUV_L3_20240622_v02p02.HDF5",
+                 "O3MOUV_L3_20240623_v02p02.HDF5",
+                 "O3MOUV_L3_20240624_v02p02.HDF5"),
+               package = "reumetsat", mustWork = TRUE)
+```
+
+
+```{r}
+summer_5days_spain.tb <- read_AC_SAFT_hdf5(five.file.names)
+dim(summer_5days_spain.tb)
+colnames(summer_5days_spain.tb)
+```
+
