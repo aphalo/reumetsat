@@ -4,6 +4,8 @@ old.wd <- setwd("./inst-not")
 
 files <- list.files(pattern = "HDF5$")
 
+# test reading of files
+
 read_AC_SAFT_hdf5(files, verbose = TRUE) -> zz
 read_AC_SAFT_hdf5(files[1], verbose = TRUE) -> zz
 colnames(zz)
@@ -32,4 +34,5 @@ read_AC_SAFT_hdf5(files,
                   verbose = TRUE) -> zz
 colnames(zz)
 summary(zz)
+
 setwd(old.wd)

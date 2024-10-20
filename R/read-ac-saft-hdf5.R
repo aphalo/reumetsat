@@ -1,4 +1,4 @@
-#' Offline UV Products v2
+#' Offline AC SAF Products
 #'
 #' Import gridded daily "offline products" data files from EUMETSAT AC SAF
 #' (Atmospheric Composition Monitoring) in HDF5 format.
@@ -17,32 +17,35 @@
 #'
 #' @description The dates are decoded from the file names, expecting these to be
 #'   those set by the data provider. The grid is expected to be identical in all
-#'   files that are imported in a call to `read_O3MOUV_hdf5()`. If not all the
-#'   files named in the argument to `files` are accessible and error is
-#'   triggered early. If the files differ in the grid, and error is triggered
-#'   when reading the first mismatching file. Missing variables named in
-#'   `vars.to.read` if detected when reading the first file are filled with the
-#'   `fill` value, otherwise they trigger and error when an attempt is made to
-#'   read them.
+#'   files that are imported in a call to `read_O3MOUV_hdf5()`, and grid
+#'   subsetting is currently not supported. If not all the files named in the
+#'   argument to `files` are accessible, an error is triggered early. If the
+#'   files differ in the grid, an error is triggered when reading the first
+#'   mismatching file. Missing variables named in `vars.to.read` if detected
+#'   when reading the first file, are filled with the `fill` value, otherwise
+#'   they trigger an error when an attempt is made to read them.
 #'
 #' @return A data frame with columns named `"Date"`, `"Longitude"`,
 #'   `"Latitude"`, the data variables with their original names, and
-#'   `"QualityFlags"`. The data variables have their metadata as attributes.
+#'   `"QualityFlags"`. The data variables have their metadata stored as R
+#'   attributes.
 #'
-#' @note The constraint on the consistency among all files read allows very fast
-#'   reading into a single data frame. If the files differ in the grid or set
-#'   of variables, this function can be used to read the files individually into
-#'   separate data frames. These data frames can later be row-bound together.
+#' @note The constraint on the consistency among all files to be read allows
+#'   very fast reading into a single data frame. If the files differ in the grid
+#'   or set of variables, this function can be used to read the files
+#'   individually into separate data frames. These data frames can later be
+#'   row-bound together.
 #'
-#'   When requesting the data from the EUMETSAT AC SAF the server it is
-#'   possible to select the range of latitudes and longitudes and the variables
-#'   to be included in the file. The data are returned as a .zip compressed file
-#'   containing one HDF5 file for each day in the range selected. For world
-#'   coverage each of these files can be as large as 10 MB in size. These are
-#'   binary files so the size in RAM of a `data.frame` containing one-year of
-#'   data can be a few 10's of GB. This function's performance is quite fast as
-#'   long as there is enough RAM available and the files are read from a
-#'   reasonably fast SSD.
+#'   When requesting the data from the EUMETSAT AC SAF the server it is possible
+#'   to select the range of latitudes and longitudes and the variables to be
+#'   included in the file. This is more efficient than doing the selection after
+#'   importing the data into R. The data are returned as a .zip compressed file
+#'   containing one HDF5 file for each day in the range of dates selected. For
+#'   world coverage each of these files can be as large as 7 MB in size. These
+#'   are binary files so the size in RAM of a `data.frame` containing one-year
+#'   of data can be a few 10's of GB. This function's performance is quite fast
+#'   as long as there is enough RAM available to hold the data frame and the
+#'   files are read from a reasonably fast SSD.
 #'
 #' @references \url{https://acsaf.org/}
 #'
@@ -74,7 +77,7 @@ read_AC_SAFT_hdf5 <-
       on.exit(
         {
           end_time <- Sys.time()
-          cat("Read ", length(hdf5.files), " HDF5 files into a ",
+          cat("Read ", length(files), " HDF5 files into a ",
               format(utils::object.size(z.tb), units = "MB"),
               " data frame [",
               paste(dim(z.tb), collapse = " rows x "),
@@ -85,25 +88,20 @@ read_AC_SAFT_hdf5 <-
     }
 
     # check that filenames all exist
-    hdf5.files <- files
-    missing.files <- !file.exists(hdf5.files)
+    missing.files <- !file.exists(files)
     if (any(missing.files)) {
       stop("Cannot access ", sum(missing.files), " of the files: ",
-           paste(hdf5.files[missing.files], collapse = ", "), sep = "")
+           paste(files[missing.files], collapse = ", "), sep = "")
     }
-
-    # we assume files are in consistent format
-    hdf5.file <- hdf5.files[[1]]
 
     # we read metadata from the first file
     # metadata.tb <-
-    #   rhdf5::h5readAttributes(hdf5.file, name = "METADATA")
+    #   rhdf5::h5readAttributes(files[i], name = "METADATA")
     # product_metadata.tb <-
-    #   rhdf5::h5readAttributes(hdf5.file, name = "PRODUCT_SPECIFIC_METADATA")
+    #   rhdf5::h5readAttributes(files[i], name = "PRODUCT_SPECIFIC_METADATA")
 
-    # the grid is not stored explicitly in these files
-    # but it is instead described
-    grid_desc <- attributes(rhdf5::h5read(hdf5.file,
+    # the grid is described but not stored explicitly in these files
+    grid_desc <- attributes(rhdf5::h5read(files[1],
                                           name = "GRID_DESCRIPTION",
                                           read.attributes = TRUE))
 
@@ -119,7 +117,7 @@ read_AC_SAFT_hdf5 <-
     Latitudes <- rep(Latitudes.vec, each = length(Longitudes.vec))
 
     # We look up names of variables present in the file under the group
-    file.str <- rhdf5::h5ls(hdf5.file, recursive = 2)
+    file.str <- rhdf5::h5ls(files[1], recursive = 2)
     vars.selector <- grep(group.name, file.str[["group"]])
     # retrieve whole name of matching group
     group.name <- file.str[["group"]][vars.selector[1]]
@@ -145,7 +143,7 @@ read_AC_SAFT_hdf5 <-
     var_data.ls <-
       list(Longitude = Longitudes, Latitude = Latitudes) # list for performance
 
-    vec_size <- length(Latitudes) * length(hdf5.files)
+    vec_size <- length(Latitudes) * length(files)
     for (col in c("Date", col.names)) {
       var_data.ls[[col]] <- rep(NA_real_, vec_size)
     }
@@ -154,21 +152,25 @@ read_AC_SAFT_hdf5 <-
     base.selector <- 1L:length(Longitudes)
 
     # we read one file at a time
-    for (i in seq_along(hdf5.files)) {
+    for (i in seq_along(files)) {
       # ensure grid consistency across files
-      # fields of grid_desc need to be tested one by one
-      # stopifnot(grid_desc == attributes(rhdf5::h5read(hdf5.files[i],
-      #                                                 name = "GRID_DESCRIPTION",
-      #                                                 read.attributes = TRUE)))
+      if (!identical(grid_desc,
+                     attributes(rhdf5::h5read(files[i],
+                                              name = "GRID_DESCRIPTION",
+                                              read.attributes = TRUE)))) {
+        stop("The lat and lon grid of file ", files[i],
+             " differs from that expected.")
+      }
 
-      # we advance the position of the window of indexes
+      # advance the position of the window of indexes
       slice.selector <- base.selector + (i - 1) * max(base.selector)
-      hdf5.file <- hdf5.files[i]
+
+      hdf5.file <- files[i]
       if (verbose) {
-        cat("Reading: ", hdf5.file, "\n")
+        cat("Reading: ", files[i], "\n")
       }
       data_date <-
-        lubridate::ymd(gsub(filename.pattern, "", hdf5.file))
+        lubridate::ymd(gsub(filename.pattern, "", files[i]))
       var_data.ls[["Date"]][slice.selector] <-
         rep(data_date, times = length(Longitudes))
       var_data.ls[["Longitude"]][slice.selector] <- Longitudes
@@ -177,7 +179,7 @@ read_AC_SAFT_hdf5 <-
       for (col in col.names[!to_skip]) {
         # read data matrix for variable as a vector
         var_data.ls[[col]][slice.selector] <-
-          rhdf5::h5read(hdf5.file, name = vars.to.read[[col]],
+          rhdf5::h5read(files[i], name = vars.to.read[[col]],
                         read.attributes = TRUE,
                         drop = TRUE,
                         bit64conversion = "double")
@@ -206,9 +208,9 @@ read_AC_SAFT_hdf5 <-
 
     z.tb <- as.data.frame(var_data.ls)
     comment(z.tb) <-
-      paste("Data imported from ", length(hdf5.files),
-            " HDF5 files with names ",
-            paste(hdf5.files, collapse = ", "), ".", sep = "")
+      paste("Data imported from ", length(files),
+            " HDF5 files: ",
+            paste(files, collapse = ", "), ".", sep = "")
 
     z.tb
   }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/read-ac-saft-hdf5.R
 \name{read_AC_SAFT_hdf5}
 \alias{read_AC_SAFT_hdf5}
-\title{Offline UV Products v2}
+\title{Offline AC SAF Products}
 \usage{
 read_AC_SAFT_hdf5(
   files,
@@ -34,38 +34,41 @@ the returned object should be printed.}
 \value{
 A data frame with columns named `"Date"`, `"Longitude"`,
   `"Latitude"`, the data variables with their original names, and
-  `"QualityFlags"`. The data variables have their metadata as attributes.
+  `"QualityFlags"`. The data variables have their metadata stored as R
+  attributes.
 }
 \description{
 The dates are decoded from the file names, expecting these to be
   those set by the data provider. The grid is expected to be identical in all
-  files that are imported in a call to `read_O3MOUV_hdf5()`. If not all the
-  files named in the argument to `files` are accessible and error is
-  triggered early. If the files differ in the grid, and error is triggered
-  when reading the first mismatching file. Missing variables named in
-  `vars.to.read` if detected when reading the first file are filled with the
-  `fill` value, otherwise they trigger and error when an attempt is made to
-  read them.
+  files that are imported in a call to `read_O3MOUV_hdf5()`, and grid
+  subsetting is currently not supported. If not all the files named in the
+  argument to `files` are accessible, an error is triggered early. If the
+  files differ in the grid, an error is triggered when reading the first
+  mismatching file. Missing variables named in `vars.to.read` if detected
+  when reading the first file, are filled with the `fill` value, otherwise
+  they trigger an error when an attempt is made to read them.
 }
 \details{
 Import gridded daily "offline products" data files from EUMETSAT AC SAF
 (Atmospheric Composition Monitoring) in HDF5 format.
 }
 \note{
-The constraint on the consistency among all files read allows very fast
-  reading into a single data frame. If the files differ in the grid or set
-  of variables, this function can be used to read the files individually into
-  separate data frames. These data frames can later be row-bound together.
+The constraint on the consistency among all files to be read allows
+  very fast reading into a single data frame. If the files differ in the grid
+  or set of variables, this function can be used to read the files
+  individually into separate data frames. These data frames can later be
+  row-bound together.
 
-  When requesting the data from the EUMETSAT AC SAF the server it is
-  possible to select the range of latitudes and longitudes and the variables
-  to be included in the file. The data are returned as a .zip compressed file
-  containing one HDF5 file for each day in the range selected. For world
-  coverage each of these files can be as large as 10 MB in size. These are
-  binary files so the size in RAM of a `data.frame` containing one-year of
-  data can be a few 10's of GB. This function's performance is quite fast as
-  long as there is enough RAM available and the files are read from a
-  reasonably fast SSD.
+  When requesting the data from the EUMETSAT AC SAF the server it is possible
+  to select the range of latitudes and longitudes and the variables to be
+  included in the file. This is more efficient than doing the selection after
+  importing the data into R. The data are returned as a .zip compressed file
+  containing one HDF5 file for each day in the range of dates selected. For
+  world coverage each of these files can be as large as 7 MB in size. These
+  are binary files so the size in RAM of a `data.frame` containing one-year
+  of data can be a few 10's of GB. This function's performance is quite fast
+  as long as there is enough RAM available to hold the data frame and the
+  files are read from a reasonably fast SSD.
 }
 \references{
 \url{https://acsaf.org/}
