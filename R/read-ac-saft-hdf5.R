@@ -1,7 +1,9 @@
-#' Offline AC SAF Products
+#' Offline AC SAF Surface UV
 #'
 #' Import gridded daily "offline products" data files from EUMETSAT AC SAF
-#' (Atmospheric Composition Monitoring) in HDF5 format.
+#' (Atmospheric Composition Monitoring) in HDF5 format. Currently only the
+#' "Surface UV" data product files as downloaded from the FMI server are
+#' supported.
 #'
 #' @param files character A vector of file names, no other limitation in length
 #'   than available memory to hold the data.
@@ -36,16 +38,22 @@
 #'   individually into separate data frames. These data frames can later be
 #'   row-bound together.
 #'
-#'   When requesting the data from the EUMETSAT AC SAF the server it is possible
-#'   to select the range of latitudes and longitudes and the variables to be
-#'   included in the file. This is more efficient than doing the selection after
-#'   importing the data into R. The data are returned as a .zip compressed file
-#'   containing one HDF5 file for each day in the range of dates selected. For
-#'   world coverage each of these files can be as large as 7 MB in size. These
-#'   are binary files so the size in RAM of a `data.frame` containing one-year
-#'   of data can be a few 10's of GB. This function's performance is quite fast
-#'   as long as there is enough RAM available to hold the data frame and the
-#'   files are read from a reasonably fast SSD.
+#'   When requesting the data from the EUMETSAT AC SAF the FMI server at
+#'   \url{https://acsaf.org/} it is possible to select the range of latitudes
+#'   and longitudes and the variables to be included in the file. This is more
+#'   efficient than doing the selection after importing the data into R. The
+#'   data are returned as a .zip compressed file containing one HDF5 file for
+#'   each day in the range of dates selected. For world coverage each of these
+#'   files can be as large as 10 MB in size depending on how many variables
+#'   they contain. These files in HDF5 format are binary files so the size
+#'   in RAM of a `data.frame` containing one-year of data can be a few 10's of
+#'   GB.
+#'
+#'   This function's performance is quite fast as long as there is enough RAM
+#'   available to hold the data frame and the files are read from a reasonably
+#'   fast SSD. It has been tested by importing one-year's worth of data with
+#'   worldwide coverage on a PC with 64GB RAM. The example data included in the
+#'   package are only for Spain and five summer days.
 #'
 #' @references \url{https://acsaf.org/}
 #'
@@ -97,9 +105,13 @@ read_AC_SAFT_hdf5 <-
     }
 
     # set the pattern used with gsub to extract the date encoded in file names
+    # other data.product values to be supported in the future (possibly)
     filename.pattern <-
-      c(O3MOUV = "O3MOUV_L[23]_|_v0[12]p0[0-9].HDF5",
-        "SURFACE UV" = "O3MOUV_L[23]_|_v0[12]p0[0-9].HDF5")[toupper(data.product)]
+      switch(EXPR = toupper(data.product),
+             "SURFACE UV" = ,
+             "O3MOUV" = "O3MOUV_L[23]_|_v0[12]p0[0-9].HDF5",
+             stop("Unknown data.product: '", data.product, "'")
+      )
 
     # progress reporting
     if (verbose) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/read-ac-saft-hdf5.R
 \name{read_AC_SAFT_hdf5}
 \alias{read_AC_SAFT_hdf5}
-\title{Offline AC SAF Products}
+\title{Offline AC SAF Surface UV}
 \usage{
 read_AC_SAFT_hdf5(
   files,
@@ -50,7 +50,9 @@ The dates are decoded from the file names, expecting these to be
 }
 \details{
 Import gridded daily "offline products" data files from EUMETSAT AC SAF
-(Atmospheric Composition Monitoring) in HDF5 format.
+(Atmospheric Composition Monitoring) in HDF5 format. Currently only the
+"Surface UV" data product files as downloaded from the FMI server are
+supported.
 }
 \note{
 The constraint on the consistency among all files to be read allows
@@ -59,16 +61,22 @@ The constraint on the consistency among all files to be read allows
   individually into separate data frames. These data frames can later be
   row-bound together.
 
-  When requesting the data from the EUMETSAT AC SAF the server it is possible
-  to select the range of latitudes and longitudes and the variables to be
-  included in the file. This is more efficient than doing the selection after
-  importing the data into R. The data are returned as a .zip compressed file
-  containing one HDF5 file for each day in the range of dates selected. For
-  world coverage each of these files can be as large as 7 MB in size. These
-  are binary files so the size in RAM of a `data.frame` containing one-year
-  of data can be a few 10's of GB. This function's performance is quite fast
-  as long as there is enough RAM available to hold the data frame and the
-  files are read from a reasonably fast SSD.
+  When requesting the data from the EUMETSAT AC SAF the FMI server at
+  \url{https://acsaf.org/} it is possible to select the range of latitudes
+  and longitudes and the variables to be included in the file. This is more
+  efficient than doing the selection after importing the data into R. The
+  data are returned as a .zip compressed file containing one HDF5 file for
+  each day in the range of dates selected. For world coverage each of these
+  files can be as large as 10 MB in size depending on how many variables
+  they contain. These files in HDF5 format are binary files so the size
+  in RAM of a `data.frame` containing one-year of data can be a few 10's of
+  GB.
+
+  This function's performance is quite fast as long as there is enough RAM
+  available to hold the data frame and the files are read from a reasonably
+  fast SSD. It has been tested by importing one-year's worth of data with
+  worldwide coverage on a PC with 64GB RAM. The example data included in the
+  package are only for Spain and five summer days.
 }
 \examples{
 # find location of one example file
