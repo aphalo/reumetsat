@@ -70,6 +70,37 @@ The constraint on the consistency among all files to be read allows
   as long as there is enough RAM available to hold the data frame and the
   files are read from a reasonably fast SSD.
 }
+\examples{
+# find location of one example file
+one.file.name <-
+   system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
+               package = "reumetsat", mustWork = TRUE)
+
+# read all variables
+midsummer_spain.tb <- read_AC_SAFT_hdf5(one.file.name)
+dim(midsummer_spain.tb)
+summary(midsummer_spain.tb)
+
+# read two variables
+midsummer_spain_daily.tb <-
+  read_AC_SAFT_hdf5(one.file.name,
+                    vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
+dim(midsummer_spain_daily.tb)
+summary(midsummer_spain_daily.tb)
+
+# find location of three example files
+three.file.names <-
+   system.file("extdata",
+               c("O3MOUV_L3_20240621_v02p02.HDF5",
+                 "O3MOUV_L3_20240622_v02p02.HDF5",
+                 "O3MOUV_L3_20240623_v02p02.HDF5"),
+               package = "reumetsat", mustWork = TRUE)
+
+summer_3days_spain.tb <- read_AC_SAFT_hdf5(three.file.names)
+dim(summer_3days_spain.tb)
+summary(summer_3days_spain.tb)
+
+}
 \references{
 \url{https://acsaf.org/}
 }

@@ -49,6 +49,36 @@
 #'
 #' @references \url{https://acsaf.org/}
 #'
+#' @examples
+#' # find location of one example file
+#' one.file.name <-
+#'    system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
+#'                package = "reumetsat", mustWork = TRUE)
+#'
+#' # read all variables
+#' midsummer_spain.tb <- read_AC_SAFT_hdf5(one.file.name)
+#' dim(midsummer_spain.tb)
+#' summary(midsummer_spain.tb)
+#'
+#' # read two variables
+#' midsummer_spain_daily.tb <-
+#'   read_AC_SAFT_hdf5(one.file.name,
+#'                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
+#' dim(midsummer_spain_daily.tb)
+#' summary(midsummer_spain_daily.tb)
+#'
+#' # find location of three example files
+#' three.file.names <-
+#'    system.file("extdata",
+#'                c("O3MOUV_L3_20240621_v02p02.HDF5",
+#'                  "O3MOUV_L3_20240622_v02p02.HDF5",
+#'                  "O3MOUV_L3_20240623_v02p02.HDF5"),
+#'                package = "reumetsat", mustWork = TRUE)
+#'
+#' summer_3days_spain.tb <- read_AC_SAFT_hdf5(three.file.names)
+#' dim(summer_3days_spain.tb)
+#' summary(summer_3days_spain.tb)
+#'
 #' @export
 #' @import rhdf5
 #' @import lubridate
@@ -63,7 +93,7 @@ read_AC_SAFT_hdf5 <-
 
     # We guess the data product from the file name
     if (is.null(data.product)) {
-      data.product <- strsplit(files[1], "_", fixed = TRUE)[[1]][1]
+      data.product <- strsplit(basename(files[1]), "_", fixed = TRUE)[[1]][1]
     }
 
     # set the pattern used with gsub to extract the date encoded in file names
@@ -165,12 +195,11 @@ read_AC_SAFT_hdf5 <-
       # advance the position of the window of indexes
       slice.selector <- base.selector + (i - 1) * max(base.selector)
 
-      hdf5.file <- files[i]
       if (verbose) {
-        cat("Reading: ", files[i], "\n")
+        cat("Reading: ", basename(files[i]), "\n", sep = "")
       }
       data_date <-
-        lubridate::ymd(gsub(filename.pattern, "", files[i]))
+        lubridate::ymd(gsub(filename.pattern, "", basename(files[i])))
       var_data.ls[["Date"]][slice.selector] <-
         rep(data_date, times = length(Longitudes))
       var_data.ls[["Longitude"]][slice.selector] <- Longitudes
