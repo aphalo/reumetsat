@@ -2,6 +2,8 @@
 % Please edit documentation in R/read-ac-saft-hdf5.R
 \name{read_AC_SAFT_hdf5}
 \alias{read_AC_SAFT_hdf5}
+\alias{vars_AC_SAFT_hdf5}
+\alias{grid_AC_SAFT_hdf5}
 \title{Offline AC SAF Surface UV}
 \usage{
 read_AC_SAFT_hdf5(
@@ -12,6 +14,10 @@ read_AC_SAFT_hdf5(
   fill = NA_real_,
   verbose = interactive()
 )
+
+vars_AC_SAFT_hdf5(files, data.product = NULL, group.name = "GRID_PRODUCT")
+
+grid_AC_SAFT_hdf5(files, expand = FALSE)
 }
 \arguments{
 \item{files}{character A vector of file names, no other limitation in length
@@ -30,6 +36,9 @@ missing variables.}
 
 \item{verbose}{logical Flag indicating if progress, and time and size of
 the returned object should be printed.}
+
+\item{expand}{logical Flag indicating whether to return ranges or a
+full grid.}
 }
 \value{
 A data frame with columns named `"Date"`, `"Longitude"`,
@@ -83,6 +92,12 @@ The constraint on the consistency among all files to be read allows
 one.file.name <-
    system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
                package = "reumetsat", mustWork = TRUE)
+
+# available variables
+vars_AC_SAFT_hdf5(one.file.name)
+
+# available grid
+grid_AC_SAFT_hdf5(one.file.name)
 
 # read all variables
 midsummer_spain.tb <- read_AC_SAFT_hdf5(one.file.name)

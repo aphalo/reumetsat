@@ -2,6 +2,8 @@
 % Please edit documentation in R/read-ac-saft-txt.R
 \name{read_AC_SAFT_txt}
 \alias{read_AC_SAFT_txt}
+\alias{vars_AC_SAFT_txt}
+\alias{grid_AC_SAFT_txt}
 \title{Offline AC SAF Surface UV time series}
 \usage{
 read_AC_SAFT_txt(
@@ -12,6 +14,10 @@ read_AC_SAFT_txt(
   keep.QC = TRUE,
   verbose = interactive()
 )
+
+vars_AC_SAFT_txt(files)
+
+grid_AC_SAFT_txt(files)
 }
 \arguments{
 \item{files}{character A vector of file names, no other limitation in length
@@ -77,6 +83,12 @@ When requesting the data from the EUMETSAT AC SAF the FMI server at
 one.file.name <-
    system.file("extdata", "AC_SAF_ts_Viikki.txt",
                package = "reumetsat", mustWork = TRUE)
+
+# Available variables
+vars_AC_SAFT_txt(one.file.name)
+
+# Grid point coordinates
+grid_AC_SAFT_txt(one.file.name)
 
 # read all variables
 summer_viikki.tb <-

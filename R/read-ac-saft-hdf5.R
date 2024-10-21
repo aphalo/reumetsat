@@ -63,6 +63,12 @@
 #'    system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
 #'                package = "reumetsat", mustWork = TRUE)
 #'
+#' # available variables
+#' vars_AC_SAFT_hdf5(one.file.name)
+#'
+#' # available grid
+#' grid_AC_SAFT_hdf5(one.file.name)
+#'
 #' # read all variables
 #' midsummer_spain.tb <- read_AC_SAFT_hdf5(one.file.name)
 #' dim(midsummer_spain.tb)
@@ -255,3 +261,81 @@ read_AC_SAFT_hdf5 <-
 
     z.tb
   }
+
+#' @rdname read_AC_SAFT_hdf5
+#'
+#' @export
+#'
+vars_AC_SAFT_hdf5 <- function(files,
+                              data.product = NULL,
+                              group.name = "GRID_PRODUCT") {
+
+  if (length(files) > 1L) {
+    warning("Results for file ", basename(file[1]),
+            " returned (one file per call)")
+  }
+
+  # We guess the data product from the file name
+  if (is.null(data.product)) {
+    data.product <- strsplit(basename(files[1]), "_", fixed = TRUE)[[1]][1]
+  }
+
+  # set the pattern used with gsub to extract the date encoded in file names
+  # other data.product values to be supported in the future (possibly)
+  filename.pattern <-
+    switch(EXPR = toupper(data.product),
+           "SURFACE UV" = ,
+           "O3MOUV" = "O3MOUV_L[23]_|_v0[12]p0[0-9].HDF5",
+           stop("Unknown data.product: '", data.product, "'")
+    )
+
+  # We look up names of variables present in the file under the group
+  file.str <- rhdf5::h5ls(files[1], recursive = 2)
+  vars.selector <- grep(group.name, file.str[["group"]])
+  # retrieve whole name of matching group
+  group.name <- file.str[["group"]][vars.selector[1]]
+  # available variables
+  file.str[["name"]][vars.selector]
+
+}
+
+#' @rdname read_AC_SAFT_hdf5
+#'
+#' @param expand logical Flag indicating whether to return ranges or a
+#'   full grid.
+#'
+#' @export
+#'
+grid_AC_SAFT_hdf5 <- function(files,
+                              expand = FALSE) {
+
+  if (length(files) > 1L) {
+    warning("Results for file ", basename(file[1]),
+            " returned (one file per call)")
+  }
+
+  # the grid is described but not stored explicitly in these files
+  grid_desc <- attributes(rhdf5::h5read(files[1],
+                                        name = "GRID_DESCRIPTION",
+                                        read.attributes = TRUE))
+
+  if (expand) {
+    # We construct the grid based on the attributes
+    Longitudes.vec <- seq(from = grid_desc$XStartLon,
+                          by = grid_desc$XStepDeg,
+                          length.out = grid_desc$XNumCells) # rows
+    Latitudes.vec <- seq(from = grid_desc$YStartLat,
+                         by = grid_desc$YStepDeg,
+                         length.out = grid_desc$YNumCells) # columns
+
+    Longitudes <- rep(Longitudes.vec, times = length(Latitudes.vec))
+    Latitudes <- rep(Latitudes.vec, each = length(Longitudes.vec))
+    data.frame(Longitude = Longitudes,
+               Latitude = Latitudes)
+  } else {
+    data.frame(Longitude = c(grid_desc$XStartLon,
+                             grid_desc$XStartLon + grid_desc$XStepDeg * grid_desc$XNumCells),
+               Latitude = c(grid_desc$YStartLat,
+                            grid_desc$YStartLat + grid_desc$YStepDeg * grid_desc$YNumCells))
+  }
+}

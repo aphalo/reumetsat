@@ -57,6 +57,12 @@
 #'    system.file("extdata", "AC_SAF_ts_Viikki.txt",
 #'                package = "reumetsat", mustWork = TRUE)
 #'
+#' # Available variables
+#' vars_AC_SAFT_txt(one.file.name)
+#'
+#' # Grid point coordinates
+#' grid_AC_SAFT_txt(one.file.name)
+#'
 #' # read all variables
 #' summer_viikki.tb <-
 #'   read_AC_SAFT_txt(one.file.name)
@@ -180,3 +186,77 @@ read_AC_SAFT_txt <-
     attr(z.tb, "file.headers") <- file.headers.ls
     z.tb
   }
+
+#' @rdname read_AC_SAFT_txt
+#'
+#' @export
+#'
+vars_AC_SAFT_txt <- function(files) {
+
+  if (length(files) > 1L) {
+    warning("Results for file ", basename(file[1]),
+            " returned (one file per call)")
+  }
+
+  # read header
+  file.header <- scan(
+    file = files[1],
+    nlines = 50,
+    skip = 0,
+    what = "character",
+    sep = "\n",
+    quiet = TRUE
+  )
+
+  # check first line for expected value
+  if (file.header[1] != "#AC SAF offline surface UV, time-series") {
+    stop("Unexpected value at top of header.")
+  }
+
+  # find start of data / end of header
+  end.of.header <- which(grepl("#DATA", file.header))
+#  file.header <- file.header[1:end.of.header]
+
+  start.of.col.defs <- which(grepl("#COLUMN DEFINITIONS", file.header)) + 1L
+  col.names <-
+    unlist(strsplit(file.header[start.of.col.defs:(end.of.header - 1L)],
+                    split = ": ", fixed = TRUE))[c(FALSE, TRUE)]
+
+  gsub(" \\[.*\\]", "", col.names) # remove units
+
+}
+
+#' @rdname read_AC_SAFT_txt
+#'
+#' @export
+#'
+grid_AC_SAFT_txt <- function(files) {
+
+  if (length(files) > 1L) {
+    warning("Results for file ", basename(file[1]),
+            " returned (one file per call)")
+  }
+
+  # read header
+  file.header <- scan(
+    file = files[1],
+    nlines = 6,
+    skip = 0,
+    what = "character",
+    sep = "\n",
+    quiet = TRUE
+  )
+
+  # check first line for expected value
+  if (file.header[1] != "#AC SAF offline surface UV, time-series") {
+    stop("Unexpected value at top of header.")
+  }
+
+  # extract coordinates of grid point
+  data.frame(Longitude =
+               as.numeric(strsplit(file.header[which(grepl("#LONGITUDE:", file.header))],
+                                   split = " ", fixed = TRUE)[[1]][2]),
+             Latitude =
+               as.numeric(strsplit(file.header[which(grepl("#LATITUDE:", file.header))],
+                                   split = " ", fixed = TRUE)[[1]][2]))
+}
