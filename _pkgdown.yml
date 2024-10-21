@@ -39,6 +39,8 @@ navbar:
       menu:
       - text: 'User Guide'
         href: articles/user-guide.html
+      - text: 'Getting data: Surface UV'
+        href: articles/surface-uv.html
     tutorials:
       text: Resources
       menu:

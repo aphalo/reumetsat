@@ -1,0 +1,70 @@
+---
+title: "Getting data: Surface UV"
+subtitle: "Package 'reumetsat' `r packageVersion('reumetsat')` "
+author: "Pedro J. Aphalo"
+date: "`r packageDate('reumetsat')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{User Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 4,
+  out.width = "95%",
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(reumetsat)
+```
+
+## Time series
+
+### Obtaining the files
+
+Before submitting a request, the first step is finding the nearest grid point to the location of interest and deciding on the period to be covered by the data. We need to also consider which variables are useful to us and which are not, at least if we want to limit the size of the files. Each time series requested has no date gaps, as any missing data are marked as such but no rows are missing in the files.
+
+Data can be downloaded at the [EUMETSAT AC SAF website](https://acsaf.org/). First navigate to offline data products page.
+
+![Select "Data access \> Offline products".](AC_SAF_0.png)
+
+Next select the Surface UV product.
+
+![Select "L3 SURFACE UV".](AC_SAF_1.png)
+
+In the page that opens you will find three links, "Surface UV", "Step 1 Register" and "Step 2 Log in". "Surface UV" gives access to the documentation. "Step 1 Register" needs to be followed once to create a free account and "Step 2 Log in" should be followed each time submit a request for data files. During log-in a dialogue opens where we can choose the data product from a list of options. The functions in this package can read data corresponding to "Surface UV" and "Surface UV time-series".
+
+The form display after selecting "Surface UV time-series" is.
+
+![Enter the start and end date of the time-series.](AC_SAF_2.png)
+
+![Select the variables to be included in the files and the geographic coordinates of the location.](AC_SAF_3.png)
+
+Finally we have to fill an order form, with simple information of the intended use of the data.
+
+![Fill in the information requested and "submit the order".](AC_SAF_4.png)
+
+The data are prepared and some time later an e-mail is sent with a link to download a `.zip` compressed archive file.
+
+The files are text files with a header protected with `#` as comment marker and the data are in aligned columns separated by one space character. The column names are not stored as column headings, but instead in the header of the file, one variable per row. Thus, decoding the file header is key to the interpretation of the data, while reading the data is simple, although setting the correct R classes to the different variables is also important.
+
+## Data on a geographic grid
+
+Worldwide coverage consists in $720 \times 360 = `r 720 * 360`$ grid points. As for time series, the number of data columns varies. However, one difference is that QC information is collected into a single variable. The format of the files is HDF5, which are binary files that allow selective reading. There are additional optimizations used to reduce the size, the main one is that the geographic coordinates of the grid points are not saved explicitly but instead the information needed to compute them is included as metadata. The data are provided as one file per day, with the size of the files depending on the number of grid points included as well as the number of variables. As these are off-line data available with a delay, in most cases we are interested in data for a certain period of time.
+
+### Obtaining the files
+
+Before submitting a request, the first step is finding the latitudes and longitudes enclosing the region of interest and deciding on the period to be covered by the data. We need to also consider which variables are useful to us and which are not, at least if we want to limit the size of the files. Follow the instructions given above for "Surface UV time-series", but select instead "Surface UV" in the login-form.
+
+The next form makes it possible to select variables, files (= days) and the enclosing geographic coordinates of the area of interest.
+
+![Select variables and files, and enter the longitude and latitude in degrees E and degrees N.](AC_SAF_6.png)
+
+The data are prepared and some time later an e-mail is sent with a link to download a `.zip` compressed archive file. The .zip file will contain one HDF5 file per day.
+

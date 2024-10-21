@@ -6,3 +6,4 @@
 ^README\.Rmd$
 ^data-raw$
 ^inst-not$
+^vignettes/articles$

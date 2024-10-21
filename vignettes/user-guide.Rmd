@@ -28,19 +28,15 @@ library(ggplot2)
 
 ## Introduction
 
-The "Surface UV" data are on a $0.5^\circ \times 0.5^\circ$ longitude E and
-latitude N grid. That is latitudes south of the equator and longitudes W of
-Greenwich are expressed as negative numbers. They consist in several different
-variables, both daily doses and daily maximum irradiances, biologically weighted
-and not weighted.
+The "Surface UV" data are on a $0.5^\circ \times 0.5^\circ$ longitude E and latitude N grid. That is latitudes south of the equator and longitudes W of Greenwich are expressed as negative numbers. They consist in several different variables, both daily doses and daily maximum irradiances, biologically weighted and not weighted.
 
 ## Time series
 
 ### Obtaining the files
 
-A free account needs to be created, and for each request submitted one needs to login, and fill-in some simple on-line forms. The data are prepared and some time later an e-mail is sent with a link to download a `.zip` compressed archive file.
+Please, see the online-only article for step-by-step instructions.
 
-Before submitting a request, the first step is finding the nearest grid point to the location of interest and deciding on the period to be covered by the data. We need to also consider which variables are useful to us and which are not, at least if we want to limit the size of the files. Each time series requested has no date gaps, as any missing data are marked as such but no rows are missing in the files. The files are text files with a header protected with `#` as comment marker and the data are in aligned columns separated by one space character. The column names are not stored as column headings, but instead in the header of the file, one variable per row. Thus, decoding the file header is key to the interpretation of the data, while reading the data is simple, although setting the correct R classes to the different variables is also important.
+The files are text files with a header protected with `#` as comment marker and the data are in aligned columns separated by one space character. The column names are not stored as column headings, but instead in the header of the file, one variable per row. Thus, decoding the file header is key to the interpretation of the data, while reading the data is simple, although setting the correct R classes to the different variables is also important.
 
 ### Reading the files
 
@@ -71,6 +67,7 @@ summer_viikki.tb <- read_AC_SAFT_txt(one.file.name)
 dim(summer_viikki.tb)
 colnames(summer_viikki.tb)
 ```
+
 The returned data frame has 153 rows (= days) and 22 columns (variables). We can see above that several of the variables have names starting with "QC" for quality control.
 
 ```{r}
@@ -84,7 +81,7 @@ str(lapply(summer_viikki.tb, class))
 ```
 
 As bad data values are filled with `NA` in the measured/derived variables, a smaller data frame can be obtained by not reading the `QC` (quality control) variables.
- 
+
 ```{r}
 summer_viikki_QCf.tb <-
   read_AC_SAFT_txt(one.file.name, keep.QC = FALSE)
@@ -146,13 +143,13 @@ Worldwide coverage consists in $720 \times 360 = `r 720 * 360`$ grid points. As 
 
 ### Obtaining the files
 
-A free account needs to be created, and for each request submitted one needs to login, and fill-in some simple on-line forms. The data are prepared and some time later an e-mail is sent with a link to download a `.zip` compressed archive file. The .zip file will contain one file per day.
+Please, see the online-only article for step-by-step instructions.
 
-Before submitting a request, the first step is finding the latitudes and longitudes enclosing the region of interest and deciding on the period to be covered by the data. We need to also consider which variables are useful to us and which are not, at least if we want to limit the size of the files. The HDF5 files have a specific format and content organization, the function in package 'reumetsat' uses functions from package 'rhdf5' to access the files. The column names are not stored as metadata and can be queried without reading the whole file. Thus, decoding is simpler than for the time series files in text format. Reading the data is simple as it is stored as numeric values no requiring interpretation. The dates, in contrast, need to be decoded from the file names, making it crucial that users do not rename the files contained in the `.zip` archive.
+The HDF5 files have a specific format and content organization, the function in package 'reumetsat' uses functions from package 'rhdf5' to access the files. The column names are not stored as metadata and can be queried without reading the whole file. Thus, decoding is simpler than for the time series files in text format. Reading the data is simple as it is stored as numeric values no requiring interpretation. The dates, in contrast, need to be decoded from the file names, making it crucial that users do not rename the files contained in the `.zip` archive.
 
 ### Reading the files
 
-As above for the time series file, we fetch the path to an example file included in the package, originally downloaded from the FMI server. It covers the whole of the Iberian peninsula and the Balearic islands.  Only variables for UV-B and UV-A daily dose and daily maximum irradiances, not biologically weighted, were requested from the server.
+As above for the time series file, we fetch the path to an example file included in the package, originally downloaded from the FMI server. It covers the whole of the Iberian peninsula and the Balearic islands. Only variables for UV-B and UV-A daily dose and daily maximum irradiances, not biologically weighted, were requested from the server.
 
 ```{r}
 one.file.name <-
@@ -179,11 +176,13 @@ midsummer_spain.tb <- read_AC_SAFT_hdf5(one.file.name)
 dim(midsummer_spain.tb)
 colnames(midsummer_spain.tb)
 ```
-Variable names are consistent between the data frames returned by `read_AC_SAFT_hdf5()` and `read_AC_SAFT_txt()`, but the position of the columns, can vary. _Use names rather than numeric positional indices to extract columns!_
+
+Variable names are consistent between the data frames returned by `read_AC_SAFT_hdf5()` and `read_AC_SAFT_txt()`, but the position of the columns, can vary. *Use names rather than numeric positional indices to extract columns!*
 
 ```{r}
 str(lapply(midsummer_spain.tb, class))
 ```
+
 Quality control information is encoded differently in the two types of downloaded files. As seen above, in `.txt` individual QC variables, taking as values single-digit `integer` values are present. In the `.HDF5` files the flags are collapsed into a single variable, that needs decoding.
 
 ```{r}
@@ -199,7 +198,8 @@ midsummer_spain_daily.tb <-
 dim(midsummer_spain_daily.tb)
 colnames(midsummer_spain_daily.tb)
 ```
-We can read multiple files, with a limit to their maximum number imposed by the available computer RAM as data frames as used reside in RAM during computations. The amount of RAM required varies with the geographic area covered and number of variables read. _In practice, this limit is unlikely to be a problem only with data with world-wide coverage._
+
+We can read multiple files, with a limit to their maximum number imposed by the available computer RAM as data frames as used reside in RAM during computations. The amount of RAM required varies with the geographic area covered and number of variables read. *In practice, this limit is unlikely to be a problem only with data with world-wide coverage.*
 
 We fetch the paths to the example files included in the package. In normal use, this step is not needed as the user will know the paths to the files to read, or will use function `list.files()` with a search pattern if he/she knows the folder where the files to be read reside.
 
@@ -214,11 +214,10 @@ five.file.names <-
                package = "reumetsat", mustWork = TRUE)
 ```
 
-The only difference to the case of reading a single file is in the length of the character vector containing file names. _The different files read in the same call to `read_AC_SAFT_hdf5()` should share identical grids and contain the variables to be read._ If this is not the case, `read_AC_SAFT_hdf5()` should be used to read them individually and later combined, which is a slower approach.
+The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `read_AC_SAFT_hdf5()` should share identical grids and contain the variables to be read.* If this is not the case, `read_AC_SAFT_hdf5()` should be used to read them individually and later combined, which is a slower approach.
 
 ```{r}
 summer_5days_spain.tb <- read_AC_SAFT_hdf5(five.file.names)
 dim(summer_5days_spain.tb)
 colnames(summer_5days_spain.tb)
 ```
-
