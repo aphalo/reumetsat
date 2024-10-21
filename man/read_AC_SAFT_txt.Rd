@@ -105,7 +105,7 @@ summer_viikki_QCf.tb <-
 dim(summer_viikki_QCf.tb)
 summary(summer_viikki_QCf.tb)
 
-# read all data variables no geographic coordinates
+# read all data variables including geographic coordinates
 summer_viikki_geo.tb <-
   read_AC_SAFT_txt(one.file.name, keep.QC = FALSE, add.geo = TRUE)
 dim(summer_viikki_geo.tb)

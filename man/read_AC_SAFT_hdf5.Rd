@@ -70,6 +70,10 @@ The constraint on the consistency among all files to be read allows
   individually into separate data frames. These data frames can later be
   row-bound together.
 
+  Variable `QualityFlags` is encoded as 64 bit integers in the HDF5 file and
+  read as a double. R package 'bit64' can be used to print these values as
+  64 bit integers.
+
   When requesting the data from the EUMETSAT AC SAF the FMI server at
   \url{https://acsaf.org/} it is possible to select the range of latitudes
   and longitudes and the variables to be included in the file. This is more

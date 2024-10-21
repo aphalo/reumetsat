@@ -38,6 +38,10 @@
 #'   individually into separate data frames. These data frames can later be
 #'   row-bound together.
 #'
+#'   Variable `QualityFlags` is encoded as 64 bit integers in the HDF5 file and
+#'   read as a double. R package 'bit64' can be used to print these values as
+#'   64 bit integers.
+#'
 #'   When requesting the data from the EUMETSAT AC SAF the FMI server at
 #'   \url{https://acsaf.org/} it is possible to select the range of latitudes
 #'   and longitudes and the variables to be included in the file. This is more
@@ -295,7 +299,7 @@ vars_AC_SAFT_hdf5 <- function(files,
   # retrieve whole name of matching group
   group.name <- file.str[["group"]][vars.selector[1]]
   # available variables
-  file.str[["name"]][vars.selector]
+  c("Date", "Longitude", "Latitude", file.str[["name"]][vars.selector])
 
 }
 

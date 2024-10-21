@@ -52,6 +52,18 @@ one.file.name <-
                package = "reumetsat", mustWork = TRUE)
 ```
 
+Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of location corresponding to the time series data.
+
+```{r}
+vars_AC_SAFT_txt(one.file.name)
+```
+
+The geographic coordinates of the location are returned.
+
+```{r}
+grid_AC_SAFT_txt(one.file.name)
+```
+
 The variables included in downloaded files can be chosen when the request is submitted on-line. The default is to read all the variables present in the file.
 
 ```{r}
@@ -146,6 +158,18 @@ As above for the time series file, we fetch the path to an example file included
 one.file.name <-
    system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
                package = "reumetsat", mustWork = TRUE)
+```
+
+Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of the grid.
+
+```{r}
+vars_AC_SAFT_hdf5(one.file.name)
+```
+
+By default only the boundaries of the grid are returned.
+
+```{r}
+grid_AC_SAFT_hdf5(one.file.name)
 ```
 
 With defaults all variables are read, and because the data can include multiple geographic grid points, `Longitude` and `Latitude` are always returned in the data frame.
