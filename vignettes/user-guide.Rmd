@@ -148,16 +148,25 @@ one.file.name <-
                package = "reumetsat", mustWork = TRUE)
 ```
 
+With defaults all variables are read, and because the data can include multiple geographic grid points, `Longitude` and `Latitude` are always returned in the data frame.
+
 ```{r}
 midsummer_spain.tb <- read_AC_SAFT_hdf5(one.file.name)
 dim(midsummer_spain.tb)
 colnames(midsummer_spain.tb)
 ```
+Variable names are consistent between the data frames returned by `read_AC_SAFT_hdf5()` and `read_AC_SAFT_txt()`, but the position of the columns, can vary. _Use names rather than numeric positional indices to extract columns!_
+
 ```{r}
 str(lapply(midsummer_spain.tb, class))
 ```
+Quality control information is encoded differently in the two types of downloaded files. As seen above, in `.txt` individual QC variables, taking as values single-digit `integer` values are present. In the `.HDF5` files the flags are collapsed into a single variable, that needs decoding.
 
-We can as before read only specific variables.
+```{r}
+
+```
+
+We can as before read only specific variables if needed by passing their names as argument to `vars.to.read`.
 
 ```{r}
 midsummer_spain_daily.tb <-
@@ -166,7 +175,9 @@ midsummer_spain_daily.tb <-
 dim(midsummer_spain_daily.tb)
 colnames(midsummer_spain_daily.tb)
 ```
-We can read multiple files, with only limit the available computer RAM to store the data frame.
+We can read multiple files, with a limit to their maximum number imposed by the available computer RAM as data frames as used reside in RAM during computations. The amount of RAM required varies with the geographic area covered and number of variables read. _In practice, this limit is unlikely to be a problem only with data with world-wide coverage._
+
+We fetch the paths to the example files included in the package. In normal use, this step is not needed as the user will know the paths to the files to read, or will use function `list.files()` with a search pattern if he/she knows the folder where the files to be read reside.
 
 ```{r}
 five.file.names <-
@@ -179,6 +190,7 @@ five.file.names <-
                package = "reumetsat", mustWork = TRUE)
 ```
 
+The only difference to the case of reading a single file is in the length of the character vector containing file names. _The different files read in the same call to `read_AC_SAFT_hdf5()` should share identical grids and contain the variables to be read._ If this is not the case, `read_AC_SAFT_hdf5()` should be used to read them individually and later combined, which is a slower approach.
 
 ```{r}
 summer_5days_spain.tb <- read_AC_SAFT_hdf5(five.file.names)
