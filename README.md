@@ -5,15 +5,13 @@
 
 [![CRAN
 version](https://www.r-pkg.org/badges/version-last-release/reumetsat)](https://cran.r-project.org/package=reumetsat)
-[![cran
-checks](https://badges.cranchecks.info/worst/reumetsat.svg)](https://cran.r-project.org/web/checks/check_results_reumetsat.html)
+<!-- [![cran checks](https://badges.cranchecks.info/worst/reumetsat.svg)](https://cran.r-project.org/web/checks/check_results_reumetsat.html) -->
 [![photobiologyInOut status
 badge](https://aphalo.r-universe.dev/badges/reumetsat)](https://aphalo.r-universe.dev/reumetsat)
-[![R build
-status](https://github.com/aphalo/reumetsat/workflows/R-CMD-check/badge.svg)](https://github.com/aphalo/reumetsat/actions)
+[![R-CMD-check](https://github.com/aphalo/reumetsat/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/aphalo/reumetsat/actions/workflows/R-CMD-check.yaml)
 [![Documentation](https://img.shields.io/badge/documentation-reumetsat-informational.svg)](https://docs.r4photobiology.info/reumetsat/)
-[![doi](https://img.shields.io/badge/doi-10.32614/CRAN.package.reumetsat-blue.svg)](https://doi.org/10.32614/CRAN.package.reumetsat)
 <!-- badges: end -->
+<!-- [![doi](https://img.shields.io/badge/doi-10.32614/CRAN.package.reumetsat-blue.svg)](https://doi.org/10.32614/CRAN.package.reumetsat) -->
 
 ## Purpose
 
