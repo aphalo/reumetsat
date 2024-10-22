@@ -32,7 +32,7 @@
 #'   `"Latitude"`, the data variables with their original names (with no units).
 #'   The data variables have no metadata stored as R attributes. When reading
 #'   multiple files, by default the format is similar to that from function
-#'   `read_AC_SAFT_hdf5()`. Column names are the same by column order can
+#'   `read_AC_SAF_hdf5()`. Column names are the same by column order can
 #'   differ. File headers are saved as a list in R attribute `file.headers`.
 #'
 #' @note When requesting the data from the EUMETSAT AC SAF FMI server at
@@ -58,14 +58,14 @@
 #'                package = "reumetsat", mustWork = TRUE)
 #'
 #' # Available variables
-#' vars_AC_SAFT_txt(one.file.name)
+#' vars_AC_SAF_txt(one.file.name)
 #'
 #' # Grid point coordinates
-#' grid_AC_SAFT_txt(one.file.name)
+#' grid_AC_SAF_txt(one.file.name)
 #'
 #' # read all variables
 #' summer_viikki.tb <-
-#'   read_AC_SAFT_txt(one.file.name)
+#'   read_AC_SAF_txt(one.file.name)
 #' dim(summer_viikki.tb)
 #' colnames(summer_viikki.tb)
 #' str(sapply(summer_viikki.tb, class))
@@ -74,19 +74,19 @@
 #'
 #' # read all data variables
 #' summer_viikki_QCf.tb <-
-#'   read_AC_SAFT_txt(one.file.name, keep.QC = FALSE)
+#'   read_AC_SAF_txt(one.file.name, keep.QC = FALSE)
 #' dim(summer_viikki_QCf.tb)
 #' summary(summer_viikki_QCf.tb)
 #'
 #' # read all data variables including geographic coordinates
 #' summer_viikki_geo.tb <-
-#'   read_AC_SAFT_txt(one.file.name, keep.QC = FALSE, add.geo = TRUE)
+#'   read_AC_SAF_txt(one.file.name, keep.QC = FALSE, add.geo = TRUE)
 #' dim(summer_viikki_geo.tb)
 #' summary(summer_viikki_geo.tb)
 #'
 #' # read two variables
 #' summer_viikki_2.tb <-
-#'   read_AC_SAFT_txt(one.file.name,
+#'   read_AC_SAF_txt(one.file.name,
 #'                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 #' dim(summer_viikki_2.tb)
 #' summary(summer_viikki_2.tb)
@@ -94,7 +94,7 @@
 #' @export
 #' @import utils
 #'
-read_AC_SAFT_txt <-
+read_AC_SAF_txt <-
   function(files,
            vars.to.read = NULL,
            add.geo = length(files) > 1,
@@ -186,11 +186,11 @@ read_AC_SAFT_txt <-
     z.tb
   }
 
-#' @rdname read_AC_SAFT_txt
+#' @rdname read_AC_SAF_txt
 #'
 #' @export
 #'
-vars_AC_SAFT_txt <- function(files, keep.QC = TRUE) {
+vars_AC_SAF_txt <- function(files, keep.QC = TRUE) {
 
   if (length(files) > 1L) {
     warning("Results for file ", basename(file[1]),
@@ -230,11 +230,11 @@ vars_AC_SAFT_txt <- function(files, keep.QC = TRUE) {
 
 }
 
-#' @rdname read_AC_SAFT_txt
+#' @rdname read_AC_SAF_txt
 #'
 #' @export
 #'
-grid_AC_SAFT_txt <- function(files) {
+grid_AC_SAF_txt <- function(files) {
 
   if (length(files) > 1L) {
     warning("Results for file ", basename(file[1]),

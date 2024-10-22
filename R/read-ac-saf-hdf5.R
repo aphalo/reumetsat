@@ -62,7 +62,7 @@
 #' @references
 #' Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
 #'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
-#'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAFT.
+#'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
 #'
 #' @examples
 #' # find location of one example file
@@ -71,19 +71,19 @@
 #'                package = "reumetsat", mustWork = TRUE)
 #'
 #' # available variables
-#' vars_AC_SAFT_hdf5(one.file.name)
+#' vars_AC_SAF_hdf5(one.file.name)
 #'
 #' # available grid
-#' grid_AC_SAFT_hdf5(one.file.name)
+#' grid_AC_SAF_hdf5(one.file.name)
 #'
 #' # read all variables
-#' midsummer_spain.tb <- read_AC_SAFT_hdf5(one.file.name)
+#' midsummer_spain.tb <- read_AC_SAF_hdf5(one.file.name)
 #' dim(midsummer_spain.tb)
 #' summary(midsummer_spain.tb)
 #'
 #' # read two variables
 #' midsummer_spain_daily.tb <-
-#'   read_AC_SAFT_hdf5(one.file.name,
+#'   read_AC_SAF_hdf5(one.file.name,
 #'                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 #' dim(midsummer_spain_daily.tb)
 #' summary(midsummer_spain_daily.tb)
@@ -96,14 +96,14 @@
 #'                  "O3MOUV_L3_20240623_v02p02.HDF5"),
 #'                package = "reumetsat", mustWork = TRUE)
 #'
-#' summer_3days_spain.tb <- read_AC_SAFT_hdf5(three.file.names)
+#' summer_3days_spain.tb <- read_AC_SAF_hdf5(three.file.names)
 #' dim(summer_3days_spain.tb)
 #' summary(summer_3days_spain.tb)
 #'
 #' @export
 #' @import rhdf5
 #'
-read_AC_SAFT_hdf5 <-
+read_AC_SAF_hdf5 <-
   function(files,
            data.product = NULL,
            group.name = "GRID_PRODUCT",
@@ -267,11 +267,11 @@ read_AC_SAFT_hdf5 <-
     z.tb
   }
 
-#' @rdname read_AC_SAFT_hdf5
+#' @rdname read_AC_SAF_hdf5
 #'
 #' @export
 #'
-vars_AC_SAFT_hdf5 <- function(files,
+vars_AC_SAF_hdf5 <- function(files,
                               data.product = NULL,
                               group.name = "GRID_PRODUCT") {
 
@@ -304,14 +304,14 @@ vars_AC_SAFT_hdf5 <- function(files,
 
 }
 
-#' @rdname read_AC_SAFT_hdf5
+#' @rdname read_AC_SAF_hdf5
 #'
 #' @param expand logical Flag indicating whether to return ranges or a
 #'   full grid.
 #'
 #' @export
 #'
-grid_AC_SAFT_hdf5 <- function(files,
+grid_AC_SAF_hdf5 <- function(files,
                               expand = FALSE) {
 
   if (length(files) > 1L) {

@@ -11,11 +11,11 @@ test_that("reads one grid data file", {
   grid.range <- data.frame(Longitude = c(-10.75, -4.75),
                            Latitude = c(35.25, 43.25))
 
-  expect_equal(vars_AC_SAFT_hdf5(one.file.name), all.variables)
+  expect_equal(vars_AC_SAF_hdf5(one.file.name), all.variables)
 
-  expect_equal(grid_AC_SAFT_hdf5(one.file.name), grid.range)
+  expect_equal(grid_AC_SAF_hdf5(one.file.name), grid.range)
 
-  test1.df <- read_AC_SAFT_hdf5(one.file.name, verbose = FALSE)
+  test1.df <- read_AC_SAF_hdf5(one.file.name, verbose = FALSE)
   expect_s3_class(test1.df, "data.frame", exact = TRUE)
   expect_s3_class(test1.df$Date, "Date", exact = TRUE)
   expect_equal(length(unique(test1.df$Date)), 1)
@@ -27,7 +27,7 @@ test_that("reads one grid data file", {
 
   vars.to.read <- c("DailyDoseUva", "DailyDoseUvb")
 
-  test2.df <- read_AC_SAFT_hdf5(one.file.name,
+  test2.df <- read_AC_SAF_hdf5(one.file.name,
                                 vars.to.read = vars.to.read, verbose = FALSE)
   expect_s3_class(test2.df, "data.frame", exact = TRUE)
   expect_s3_class(test2.df$Date, "Date", exact = TRUE)
@@ -54,7 +54,7 @@ test_that("reads two grid data files", {
   grid.range <- data.frame(Longitude = c(-10.75, -4.75),
                            Latitude = c(35.25, 43.25))
 
-  test1.df <- read_AC_SAFT_hdf5(two.file.names, verbose = FALSE)
+  test1.df <- read_AC_SAF_hdf5(two.file.names, verbose = FALSE)
   expect_s3_class(test1.df, "data.frame", exact = TRUE)
   expect_s3_class(test1.df$Date, "Date", exact = TRUE)
   expect_equal(length(unique(test1.df$Date)), 2)
@@ -64,7 +64,7 @@ test_that("reads two grid data files", {
 
   vars.to.read <- c("DailyDoseUva", "DailyDoseUvb")
 
-  test2.df <- read_AC_SAFT_hdf5(two.file.names,
+  test2.df <- read_AC_SAF_hdf5(two.file.names,
                                 vars.to.read = vars.to.read, verbose = FALSE)
   expect_s3_class(test2.df, "data.frame", exact = TRUE)
   expect_s3_class(test2.df$Date, "Date", exact = TRUE)
@@ -83,27 +83,27 @@ test_that("errors are triggered", {
                 package = "reumetsat", mustWork = TRUE)
 
   # errors early with not accessible files
-  expect_error(read_AC_SAFT_hdf5(c("missing-file1", one.file.name, "missing-file2"),
+  expect_error(read_AC_SAF_hdf5(c("missing-file1", one.file.name, "missing-file2"),
                                  data.product = "Surface UV",
                                  verbose = FALSE))
-  expect_error(read_AC_SAFT_hdf5("missing-file", verbose = FALSE))
-  expect_error(read_AC_SAFT_hdf5("O3MOUV_missing-file", verbose = FALSE))
-  expect_error(read_AC_SAFT_hdf5(c(one.file.name, "missing-file"), verbose = FALSE))
+  expect_error(read_AC_SAF_hdf5("missing-file", verbose = FALSE))
+  expect_error(read_AC_SAF_hdf5("O3MOUV_missing-file", verbose = FALSE))
+  expect_error(read_AC_SAF_hdf5(c(one.file.name, "missing-file"), verbose = FALSE))
 
   # fails early with wrang data product name
-  expect_error(read_AC_SAFT_hdf5(one.file.name,
+  expect_error(read_AC_SAF_hdf5(one.file.name,
                                  data.product = "bad-product-name",
                                  verbose = FALSE))
   # case insensitive
-  expect_no_error(z <- read_AC_SAFT_hdf5(one.file.name,
+  expect_no_error(z <- read_AC_SAF_hdf5(one.file.name,
                                          data.product = "surface uv",
                                          verbose = FALSE))
 
-  expect_no_error(z <- read_AC_SAFT_hdf5(one.file.name,
+  expect_no_error(z <- read_AC_SAF_hdf5(one.file.name,
                                          data.product = "O3MOUV",
                                          verbose = FALSE))
 
-  expect_no_error(z <- read_AC_SAFT_hdf5(one.file.name,
+  expect_no_error(z <- read_AC_SAF_hdf5(one.file.name,
                                          data.product = "O3moUV",
                                          verbose = FALSE))
 

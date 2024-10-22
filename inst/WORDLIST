@@ -3,10 +3,9 @@ FMI
 HDF
 MOUV
 ORCID
-QualiryFlags
 QualityFlags
 SAF
-SAFT
+PUM
 SSD
 Viikki
 circ
@@ -19,3 +18,6 @@ irradiances
 lubridate
 photobiologyInOut
 rhdf
+CMD
+Kujanpää
+Aphalo
