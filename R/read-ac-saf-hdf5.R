@@ -19,7 +19,7 @@
 #'
 #' @description The dates are decoded from the file names, expecting these to be
 #'   those set by the data provider. The grid is expected to be identical in all
-#'   files that are imported in a call to `read_O3MOUV_hdf5()`, and grid
+#'   files that are imported in a call to `read_AC_SAF_hdf5()`, and grid
 #'   subsetting is currently not supported. If not all the files named in the
 #'   argument to `files` are accessible, an error is triggered early. If the
 #'   files differ in the grid, an error is triggered when reading the first

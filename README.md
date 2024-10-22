@@ -13,6 +13,15 @@ badge](https://aphalo.r-universe.dev/badges/reumetsat)](https://aphalo.r-univers
 <!-- badges: end -->
 <!-- [![doi](https://img.shields.io/badge/doi-10.32614/CRAN.package.reumetsat-blue.svg)](https://doi.org/10.32614/CRAN.package.reumetsat) -->
 
+## Package name
+
+The name ‘reumetsat’ is provisional, and will be in use until it becomes
+clear the full scope of this new package. Currently the only EUMETSAT
+product supported is “Surface UV”. The only source of photosynthetically
+active radiation (PAR) seems to be NASA, while global radiation can be
+found as one of the products from EUMETSAT. There are interesting data
+from ground-based stations in E-OBS going back some 70 years.
+
 ## Purpose
 
 Package ‘reumetsat’ currently only supports reading data files from the

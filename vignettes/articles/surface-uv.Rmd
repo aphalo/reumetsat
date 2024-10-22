@@ -5,7 +5,7 @@ author: "Pedro J. Aphalo"
 date: "`r packageDate('reumetsat')`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{User Guide}
+  %\VignetteIndexEntry{Getting data: Surface UV}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
