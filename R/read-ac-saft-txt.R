@@ -92,7 +92,6 @@
 #' summary(summer_viikki_2.tb)
 #'
 #' @export
-#' @import lubridate
 #' @import utils
 #'
 read_AC_SAFT_txt <-
@@ -182,7 +181,7 @@ read_AC_SAFT_txt <-
       z.tb <- rbind(z.tb, temp.tb)
     }
 
-    z.tb[["Date"]] <- lubridate::ymd(z.tb[["Date"]])
+    z.tb[["Date"]] <- as.Date(z.tb[["Date"]], format = "%Y%m%d")
     attr(z.tb, "file.headers") <- file.headers.ls
     z.tb
   }

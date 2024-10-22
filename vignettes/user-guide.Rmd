@@ -22,7 +22,6 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(reumetsat)
-library(lubridate)
 library(ggplot2)
 ```
 
@@ -129,11 +128,11 @@ ggplot(summer_viikki_2.tb, aes(Date, DailyDoseUvb / DailyDoseUva * 100)) +
   scale_y_continuous(name = "UV-B:UV-A energy ratio (%)")
 ```
 
-We may be interested in computing the total UV-B dose accumulated over the duration of an experiment. There are different ways of doing this computation, here I use base R functions and package 'lubridate'.
+We may be interested in computing the total UV-B dose accumulated over the duration of an experiment. There are different ways of doing this computation, here I use base R functions.
 
 ```{r}
 subset(summer_viikki_2.tb, 
-       Date >= ymd("2024-07-15") & Date < ymd("2024-08-15")) |>
+       Date >= as.Date("2024-07-15") & Date < as.Date("2024-08-15")) |>
 with(sum(DailyDoseUvb))
 ```
 

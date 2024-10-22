@@ -99,7 +99,6 @@
 #'
 #' @export
 #' @import rhdf5
-#' @import lubridate
 #'
 read_AC_SAFT_hdf5 <-
   function(files,
@@ -221,7 +220,8 @@ read_AC_SAFT_hdf5 <-
         cat("Reading: ", basename(files[i]), "\n", sep = "")
       }
       data_date <-
-        lubridate::ymd(gsub(filename.pattern, "", basename(files[i])))
+        as.Date(gsub(filename.pattern, "", basename(files[i])),
+                format = "%Y%m%d")
       var_data.ls[["Date"]][slice.selector] <-
         rep(data_date, times = length(Longitudes))
       var_data.ls[["Longitude"]][slice.selector] <- Longitudes

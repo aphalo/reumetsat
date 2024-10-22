@@ -16,8 +16,7 @@ Depends:
     R (>= 4.0.0)
 Imports:
     utils,
-    rhdf5 (>= 2.48.0),
-    lubridate (>= 1.9.3)
+    rhdf5 (>= 2.48.0)
 Suggests:
     ggplot2 (>= 3.5.0),
     knitr (>= 1.43),
