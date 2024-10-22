@@ -1,0 +1,111 @@
+test_that("reads one grid data file", {
+
+  one.file.name <-
+    system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
+                package = "reumetsat", mustWork = TRUE)
+
+  all.variables <-
+    c("Date", "Longitude", "Latitude", "DailyDoseUva", "DailyDoseUvb",
+      "DailyMaxDoseRateUva", "DailyMaxDoseRateUvb", "QualityFlags")
+
+  grid.range <- data.frame(Longitude = c(-10.75, -4.75),
+                           Latitude = c(35.25, 43.25))
+
+  expect_equal(vars_AC_SAFT_hdf5(one.file.name), all.variables)
+
+  expect_equal(grid_AC_SAFT_hdf5(one.file.name), grid.range)
+
+  test1.df <- read_AC_SAFT_hdf5(one.file.name, verbose = FALSE)
+  expect_s3_class(test1.df, "data.frame", exact = TRUE)
+  expect_s3_class(test1.df$Date, "Date", exact = TRUE)
+  expect_equal(length(unique(test1.df$Date)), 1)
+  expect_equal(range(test1.df$Longitude), grid.range$Longitude)
+  expect_equal(range(test1.df$Latitude), grid.range$Latitude)
+  expect_equal(colnames(test1.df), all.variables)
+  expect_equal(nrow(test1.df), 221)
+  expect_equal(sum(is.na(test1.df)), 0)
+
+  vars.to.read <- c("DailyDoseUva", "DailyDoseUvb")
+
+  test2.df <- read_AC_SAFT_hdf5(one.file.name,
+                                vars.to.read = vars.to.read, verbose = FALSE)
+  expect_s3_class(test2.df, "data.frame", exact = TRUE)
+  expect_s3_class(test2.df$Date, "Date", exact = TRUE)
+  expect_equal(length(unique(test2.df$Date)), 1)
+  expect_equal(colnames(test2.df),
+               c("Date", "Longitude", "Latitude", vars.to.read))
+  expect_equal(nrow(test2.df), 221)
+  expect_equal(sum(is.na(test2.df)), 0)
+
+})
+
+test_that("reads two grid data files", {
+
+  two.file.names <-
+    system.file("extdata",
+                c("O3MOUV_L3_20240621_v02p02.HDF5",
+                  "O3MOUV_L3_20240622_v02p02.HDF5"),
+                package = "reumetsat", mustWork = TRUE)
+
+  all.variables <-
+    c("Date", "Longitude", "Latitude", "DailyDoseUva", "DailyDoseUvb",
+      "DailyMaxDoseRateUva", "DailyMaxDoseRateUvb", "QualityFlags")
+
+  grid.range <- data.frame(Longitude = c(-10.75, -4.75),
+                           Latitude = c(35.25, 43.25))
+
+  test1.df <- read_AC_SAFT_hdf5(two.file.names, verbose = FALSE)
+  expect_s3_class(test1.df, "data.frame", exact = TRUE)
+  expect_s3_class(test1.df$Date, "Date", exact = TRUE)
+  expect_equal(length(unique(test1.df$Date)), 2)
+  expect_equal(colnames(test1.df), all.variables)
+  expect_equal(nrow(test1.df), 442)
+  expect_equal(sum(is.na(test1.df)), 0)
+
+  vars.to.read <- c("DailyDoseUva", "DailyDoseUvb")
+
+  test2.df <- read_AC_SAFT_hdf5(two.file.names,
+                                vars.to.read = vars.to.read, verbose = FALSE)
+  expect_s3_class(test2.df, "data.frame", exact = TRUE)
+  expect_s3_class(test2.df$Date, "Date", exact = TRUE)
+  expect_equal(length(unique(test2.df$Date)), 2)
+  expect_equal(colnames(test2.df),
+               c("Date", "Longitude", "Latitude", vars.to.read))
+  expect_equal(nrow(test2.df), 442)
+  expect_equal(sum(is.na(test2.df)), 0)
+
+})
+
+test_that("errors are triggered", {
+
+  one.file.name <-
+    system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
+                package = "reumetsat", mustWork = TRUE)
+
+  # errors early with not accessible files
+  expect_error(read_AC_SAFT_hdf5(c("missing-file1", one.file.name, "missing-file2"),
+                                 data.product = "Surface UV",
+                                 verbose = FALSE))
+  expect_error(read_AC_SAFT_hdf5("missing-file", verbose = FALSE))
+  expect_error(read_AC_SAFT_hdf5("O3MOUV_missing-file", verbose = FALSE))
+  expect_error(read_AC_SAFT_hdf5(c(one.file.name, "missing-file"), verbose = FALSE))
+
+  # fails early with wrang data product name
+  expect_error(read_AC_SAFT_hdf5(one.file.name,
+                                 data.product = "bad-product-name",
+                                 verbose = FALSE))
+  # case insensitive
+  expect_no_error(z <- read_AC_SAFT_hdf5(one.file.name,
+                                         data.product = "surface uv",
+                                         verbose = FALSE))
+
+  expect_no_error(z <- read_AC_SAFT_hdf5(one.file.name,
+                                         data.product = "O3MOUV",
+                                         verbose = FALSE))
+
+  expect_no_error(z <- read_AC_SAFT_hdf5(one.file.name,
+                                         data.product = "O3moUV",
+                                         verbose = FALSE))
+
+
+})

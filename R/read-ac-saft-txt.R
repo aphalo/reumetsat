@@ -9,9 +9,6 @@
 #'   than available memory to hold the data.
 #' @param vars.to.read character A vector of variable names. If `NULL` all the
 #'   variables present in the first file are read.
-#' @param fill numeric The R value used to replace the fill value used in the
-#'   file, which is retrieved from the file metadata, and also used to fill
-#'   missing variables.
 #' @param add.geo logical Add columns `Longitude` and `Latitude` to returned
 #'   data frame.
 #' @param keep.QC logical Add to the returned data frame the quality control
@@ -38,7 +35,7 @@
 #'   `read_AC_SAFT_hdf5()`. Column names are the same by column order can
 #'   differ. File headers are saved as a list in R attribute `file.headers`.
 #'
-#' @note When requesting the data from the EUMETSAT AC SAF the FMI server at
+#' @note When requesting the data from the EUMETSAT AC SAF FMI server at
 #'   \url{https://acsaf.org/} it is possible to select the variables to be
 #'   included in the file, the period and the geographic coordinates of a single
 #'   location. The data are returned as a .zip compressed file containing one
@@ -49,7 +46,10 @@
 #'   location files are rather small. The example time series data included in
 #'   the package are for one summer in Helsinki, Finland.
 #'
-#' @references \url{https://acsaf.org/}
+#' @references
+#' Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
+#'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
+#'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAFT.
 #'
 #' @examples
 #' # find location of one example file
@@ -97,7 +97,6 @@
 read_AC_SAFT_txt <-
   function(files,
            vars.to.read = NULL,
-           fill = NA_real_,
            add.geo = length(files) > 1,
            keep.QC = TRUE,
            verbose = interactive()) {
@@ -171,11 +170,12 @@ read_AC_SAFT_txt <-
                           skip = end.of.header,
                           col.names = col.names,
                           colClasses = col.classes,
-                          na.strings = "-9.999e+03")
+                          na.strings = "-9.999e+03",
+                          check.names = FALSE)
 
       if (add.geo) {
-        temp.tb[["Latitude"]] <- rep_len(Latitude, nrow(temp.tb))
         temp.tb[["Longitude"]] <- rep_len(Longitude, nrow(temp.tb))
+        temp.tb[["Latitude"]] <- rep_len(Latitude, nrow(temp.tb))
       }
 
       z.tb <- rbind(z.tb, temp.tb)
@@ -190,7 +190,7 @@ read_AC_SAFT_txt <-
 #'
 #' @export
 #'
-vars_AC_SAFT_txt <- function(files) {
+vars_AC_SAFT_txt <- function(files, keep.QC = TRUE) {
 
   if (length(files) > 1L) {
     warning("Results for file ", basename(file[1]),
@@ -220,6 +220,11 @@ vars_AC_SAFT_txt <- function(files) {
   col.names <-
     unlist(strsplit(file.header[start.of.col.defs:(end.of.header - 1L)],
                     split = ": ", fixed = TRUE))[c(FALSE, TRUE)]
+
+  if (!keep.QC) {
+    col.names <-
+      grep("QC_", col.names, value = TRUE, fixed = TRUE, invert = TRUE)
+  }
 
   gsub(" \\[.*\\]", "", col.names) # remove units
 

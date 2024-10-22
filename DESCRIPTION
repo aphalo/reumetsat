@@ -29,3 +29,4 @@ URL: https://docs.r4photobiology.info/reumetsat/
 BugReports: https://github.com/aphalo/reumetsat/issues/
 RoxygenNote: 7.3.2
 Language: en-US
+Config/testthat/edition: 3

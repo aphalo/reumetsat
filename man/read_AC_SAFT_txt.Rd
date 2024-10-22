@@ -9,13 +9,12 @@
 read_AC_SAFT_txt(
   files,
   vars.to.read = NULL,
-  fill = NA_real_,
   add.geo = length(files) > 1,
   keep.QC = TRUE,
   verbose = interactive()
 )
 
-vars_AC_SAFT_txt(files)
+vars_AC_SAFT_txt(files, keep.QC = TRUE)
 
 grid_AC_SAFT_txt(files)
 }
@@ -25,10 +24,6 @@ than available memory to hold the data.}
 
 \item{vars.to.read}{character A vector of variable names. If `NULL` all the
 variables present in the first file are read.}
-
-\item{fill}{numeric The R value used to replace the fill value used in the
-file, which is retrieved from the file metadata, and also used to fill
-missing variables.}
 
 \item{add.geo}{logical Add columns `Longitude` and `Latitude` to returned
 data frame.}
@@ -67,7 +62,7 @@ Import time series "offline products" data files from EUMETSAT AC SAF
 supported.
 }
 \note{
-When requesting the data from the EUMETSAT AC SAF the FMI server at
+When requesting the data from the EUMETSAT AC SAF FMI server at
   \url{https://acsaf.org/} it is possible to select the variables to be
   included in the file, the period and the geographic coordinates of a single
   location. The data are returned as a .zip compressed file containing one
@@ -120,5 +115,7 @@ summary(summer_viikki_2.tb)
 
 }
 \references{
-\url{https://acsaf.org/}
+Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
+  (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
+  SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAFT.
 }

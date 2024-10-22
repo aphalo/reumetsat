@@ -74,7 +74,7 @@ The constraint on the consistency among all files to be read allows
   read as a double. R package 'bit64' can be used to print these values as
   64 bit integers.
 
-  When requesting the data from the EUMETSAT AC SAF the FMI server at
+  When requesting the data from the EUMETSAT AC SAF FMI server at
   \url{https://acsaf.org/} it is possible to select the range of latitudes
   and longitudes and the variables to be included in the file. This is more
   efficient than doing the selection after importing the data into R. The
@@ -129,5 +129,7 @@ summary(summer_3days_spain.tb)
 
 }
 \references{
-\url{https://acsaf.org/}
+Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
+  (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
+  SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAFT.
 }

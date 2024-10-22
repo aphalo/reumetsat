@@ -42,7 +42,7 @@
 #'   read as a double. R package 'bit64' can be used to print these values as
 #'   64 bit integers.
 #'
-#'   When requesting the data from the EUMETSAT AC SAF the FMI server at
+#'   When requesting the data from the EUMETSAT AC SAF FMI server at
 #'   \url{https://acsaf.org/} it is possible to select the range of latitudes
 #'   and longitudes and the variables to be included in the file. This is more
 #'   efficient than doing the selection after importing the data into R. The
@@ -59,7 +59,10 @@
 #'   worldwide coverage on a PC with 64GB RAM. The example data included in the
 #'   package are only for Spain and five summer days.
 #'
-#' @references \url{https://acsaf.org/}
+#' @references
+#' Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
+#'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
+#'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAFT.
 #'
 #' @examples
 #' # find location of one example file
@@ -191,11 +194,9 @@ read_AC_SAFT_hdf5 <-
     # we pre allocate the memory for speed, using grid size from first file
     # this ensures that runtime increases roughly linearly with number of files
     # as long as all data fit in RAM
-    var_data.ls <-
-      list(Longitude = Longitudes, Latitude = Latitudes) # list for performance
-
+    var_data.ls <- list() # list for performance
     vec_size <- length(Latitudes) * length(files)
-    for (col in c("Date", col.names)) {
+    for (col in c("Date", "Longitude", "Latitude", col.names)) {
       var_data.ls[[col]] <- rep(NA_real_, vec_size)
     }
 
@@ -222,10 +223,10 @@ read_AC_SAFT_hdf5 <-
       data_date <-
         as.Date(gsub(filename.pattern, "", basename(files[i])),
                 format = "%Y%m%d")
-      var_data.ls[["Date"]][slice.selector] <-
-        rep(data_date, times = length(Longitudes))
       var_data.ls[["Longitude"]][slice.selector] <- Longitudes
       var_data.ls[["Latitude"]][slice.selector] <- Latitudes
+      var_data.ls[["Date"]][slice.selector] <-
+        rep(data_date, times = length(Longitudes))
 
       for (col in col.names[!to_skip]) {
         # read data matrix for variable as a vector
@@ -323,23 +324,21 @@ grid_AC_SAFT_hdf5 <- function(files,
                                         name = "GRID_DESCRIPTION",
                                         read.attributes = TRUE))
 
-  if (expand) {
-    # We construct the grid based on the attributes
-    Longitudes.vec <- seq(from = grid_desc$XStartLon,
-                          by = grid_desc$XStepDeg,
-                          length.out = grid_desc$XNumCells) # rows
-    Latitudes.vec <- seq(from = grid_desc$YStartLat,
-                         by = grid_desc$YStepDeg,
-                         length.out = grid_desc$YNumCells) # columns
+  # We construct the grid based on the attributes
+  Longitudes.vec <- seq(from = grid_desc$XStartLon,
+                        by = grid_desc$XStepDeg,
+                        length.out = grid_desc$XNumCells) # rows
+  Latitudes.vec <- seq(from = grid_desc$YStartLat,
+                       by = grid_desc$YStepDeg,
+                       length.out = grid_desc$YNumCells) # columns
 
+  if (expand) {
     Longitudes <- rep(Longitudes.vec, times = length(Latitudes.vec))
     Latitudes <- rep(Latitudes.vec, each = length(Longitudes.vec))
     data.frame(Longitude = Longitudes,
                Latitude = Latitudes)
   } else {
-    data.frame(Longitude = c(grid_desc$XStartLon,
-                             grid_desc$XStartLon + grid_desc$XStepDeg * grid_desc$XNumCells),
-               Latitude = c(grid_desc$YStartLat,
-                            grid_desc$YStartLat + grid_desc$YStepDeg * grid_desc$YNumCells))
+    data.frame(Longitude = range(Longitudes.vec),
+               Latitude = range(Latitudes.vec))
   }
 }
