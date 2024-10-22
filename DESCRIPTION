@@ -18,7 +18,6 @@ Imports:
     utils,
     rhdf5 (>= 2.48.0)
 Suggests:
-    ggplot2 (>= 3.5.0),
     knitr (>= 1.43),
     rmarkdown (>= 2.23),
     spelling,

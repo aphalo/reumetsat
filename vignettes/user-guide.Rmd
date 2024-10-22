@@ -22,7 +22,6 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(reumetsat)
-library(ggplot2)
 ```
 
 ## Introduction
@@ -110,23 +109,7 @@ colnames(summer_viikki_2.tb)
 
 ### Using the data
 
-```{r}
-ggplot(summer_viikki_2.tb, aes(Date, DailyDoseUvb)) +
-  geom_col(na.rm = TRUE, colour = "purple", fill = "purple") +
-  labs(y = "UV-B irradiance (kJ / d)")
-```
-
-```{r}
-ggplot(summer_viikki_2.tb, aes(Date, DailyDoseUva / 1000)) +
-  geom_col(na.rm = TRUE, colour = "darkviolet", fill = "darkviolet") +
-  labs(y = "UV-A irradiance (MJ / d)")
-```
-
-```{r}
-ggplot(summer_viikki_2.tb, aes(Date, DailyDoseUvb / DailyDoseUva * 100)) +
-  geom_col(na.rm = TRUE, colour = "grey40", fill = "grey40") +
-  scale_y_continuous(name = "UV-B:UV-A energy ratio (%)")
-```
+Being the returned object an R data frame plotting and other computations do not differ from the usual ones. One example follows showing subsetting based on dates. In the time series there are occasionally days missing data (`NA`), and may need to be addressed.
 
 We may be interested in computing the total UV-B dose accumulated over the duration of an experiment. There are different ways of doing this computation, here I use base R functions.
 
