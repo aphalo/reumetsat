@@ -22,7 +22,7 @@ product supported is “Surface UV”.
 I have raised issues at
 [GitHub](https://github.com/aphalo/reumetsat/issues) for possible future
 support of other data sets. Please, comment, give thumbs-up or
-thums-down, or suggest alternative data sources by visiting this GitHub
+thumbs-down, or suggest alternative data sources by visiting this GitHub
 page. (The only source of photosynthetically active radiation (PAR)
 seems to be NASA, while global radiation can be found as one of the
 products from EUMETSAT. There are interesting data from ground-based

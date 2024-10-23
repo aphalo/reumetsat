@@ -198,75 +198,100 @@ read_AC_SAF_UV_txt <-
 #'
 vars_AC_SAF_UV_txt <- function(files, keep.QC = TRUE) {
 
-  if (length(files) > 1L) {
-    warning("Results for file ", basename(file[1]),
-            " returned (one file per call)")
-  }
+  data.vars <- character()
+  for (file in files) {
 
-  # read header
-  file.header <- scan(
-    file = files[1],
-    nlines = 50,
-    skip = 0,
-    what = "character",
-    sep = "\n",
-    quiet = TRUE
-  )
+    # read header
+    file.header <- scan(
+      file = file,
+      nlines = 50,
+      skip = 0,
+      what = "character",
+      sep = "\n",
+      quiet = TRUE
+    )
 
-  # check first line for expected value
-  if (file.header[1] != "#AC SAF offline surface UV, time-series") {
-    stop("Unexpected value at top of header.")
-  }
+    # check first line for expected value
+    if (file.header[1] != "#AC SAF offline surface UV, time-series") {
+      stop("Unexpected value at top of header in file '", basename(files), "'.")
+    }
 
-  # find start of data / end of header
-  end.of.header <- which(grepl("#DATA", file.header))
-#  file.header <- file.header[1:end.of.header]
+    # find start of data / end of header
+    end.of.header <- which(grepl("#DATA", file.header))
 
-  start.of.col.defs <- which(grepl("#COLUMN DEFINITIONS", file.header)) + 1L
-  col.names <-
-    unlist(strsplit(file.header[start.of.col.defs:(end.of.header - 1L)],
-                    split = ": ", fixed = TRUE))[c(FALSE, TRUE)]
-
-  if (!keep.QC) {
+    # parse header
+    start.of.col.defs <- which(grepl("#COLUMN DEFINITIONS", file.header)) + 1L
     col.names <-
-      grep("QC_", col.names, value = TRUE, fixed = TRUE, invert = TRUE)
+      unlist(strsplit(file.header[start.of.col.defs:(end.of.header - 1L)],
+                      split = ": ", fixed = TRUE))[c(FALSE, TRUE)]
+
+    if (!keep.QC) {
+      col.names <-
+        grep("QC_", col.names, value = TRUE, fixed = TRUE, invert = TRUE)
+    }
+
+    temp <- gsub(" \\[.*\\]", "", col.names) # remove units
+
+    # check for consistency across files
+    if (!length(data.vars)) {
+      data.vars <- temp
+    } else {
+      if (!setequal(temp, data.vars)) {
+        warning("Found mismatched 'variables', returning only shared ones")
+        data.vars <- intersect(data.vars, temp)
+      }
+    }
   }
 
-  gsub(" \\[.*\\]", "", col.names) # remove units
+  data.vars
 
 }
 
 #' @rdname read_AC_SAF_UV_txt
 #'
+#' @param use.names logical. Should row names be added to the returned data
+#'  frame?
+#'
 #' @export
 #'
-grid_AC_SAF_UV_txt <- function(files) {
+grid_AC_SAF_UV_txt <- function(files,
+                               use.names = length(files) > 1) {
 
-  if (length(files) > 1L) {
-    warning("Results for file ", basename(file[1]),
-            " returned (one file per call)")
+  z.df <- data.frame()
+  for (file in files) {
+
+    # read header
+    file.header <- scan(
+      file = file,
+      nlines = 50,
+      skip = 0,
+      what = "character",
+      sep = "\n",
+      quiet = TRUE
+    )
+
+    # check first line for expected value
+    if (file.header[1] != "#AC SAF offline surface UV, time-series") {
+      stop("Unexpected value at top of header in file '", basename(files), "'.")
+    }
+
+    # extract coordinates of grid point
+    temp.df <-
+      data.frame(Longitude =
+                   as.numeric(
+                     strsplit(file.header[which(grepl("#LONGITUDE:", file.header))],
+                              split = " ", fixed = TRUE)[[1]][2]),
+                 Latitude =
+                   as.numeric(
+                     strsplit(file.header[which(grepl("#LATITUDE:", file.header))],
+                              split = " ", fixed = TRUE)[[1]][2]))
+    z.df <- rbind(z.df, temp.df)
   }
 
-  # read header
-  file.header <- scan(
-    file = files[1],
-    nlines = 6,
-    skip = 0,
-    what = "character",
-    sep = "\n",
-    quiet = TRUE
-  )
-
-  # check first line for expected value
-  if (file.header[1] != "#AC SAF offline surface UV, time-series") {
-    stop("Unexpected value at top of header.")
+  if (use.names) {
+    rownames(z.df) <- basename(files)
   }
 
-  # extract coordinates of grid point
-  data.frame(Longitude =
-               as.numeric(strsplit(file.header[which(grepl("#LONGITUDE:", file.header))],
-                                   split = " ", fixed = TRUE)[[1]][2]),
-             Latitude =
-               as.numeric(strsplit(file.header[which(grepl("#LATITUDE:", file.header))],
-                                   split = " ", fixed = TRUE)[[1]][2]))
+  z.df
+
 }

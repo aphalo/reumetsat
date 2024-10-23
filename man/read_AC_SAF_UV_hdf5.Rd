@@ -20,7 +20,7 @@ vars_AC_SAF_UV_hdf5(files, data.product = NULL, group.name = "GRID_PRODUCT")
 
 grid_AC_SAF_UV_hdf5(files, expand = FALSE)
 
-date_AC_SAF_UV_hdf5(files, use.names = TRUE)
+date_AC_SAF_UV_hdf5(files, use.names = length(files > 1))
 }
 \arguments{
 \item{files}{character A vector of file names, no other limitation in length

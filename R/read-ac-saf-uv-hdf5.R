@@ -379,7 +379,8 @@ grid_AC_SAF_UV_hdf5 <- function(files,
 #'
 #' @export
 #'
-date_AC_SAF_UV_hdf5 <- function(files, use.names = TRUE) {
+date_AC_SAF_UV_hdf5 <- function(files,
+                                use.names = length(files > 1)) {
   files <- basename(files)
   z <- as.Date(sub(".*_([0-9]{8})_.*", "\\1", files), format = "%Y%m%d")
   if (use.names) {

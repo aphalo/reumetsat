@@ -16,7 +16,7 @@ read_AC_SAF_UV_txt(
 
 vars_AC_SAF_UV_txt(files, keep.QC = TRUE)
 
-grid_AC_SAF_UV_txt(files)
+grid_AC_SAF_UV_txt(files, use.names = length(files) > 1)
 }
 \arguments{
 \item{files}{character A vector of file names, no other limitation in length
@@ -33,6 +33,9 @@ variables, always present in the files.}
 
 \item{verbose}{logical Flag indicating if progress, and time and size of
 the returned object should be printed.}
+
+\item{use.names}{logical. Should row names be added to the returned data
+frame?}
 }
 \value{
 `read_AC_SAF_UV_txt()` returns a data frame with columns named
