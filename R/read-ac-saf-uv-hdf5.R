@@ -1,14 +1,14 @@
-#' Offline AC SAF Surface UV
+#' Offline AC SAF gridded Surface UV
 #'
-#' Import gridded daily "offline products" data files from EUMETSAT AC SAF
-#' (Atmospheric Composition Monitoring) in HDF5 format. Only the "Surface UV"
-#' data product files as downloaded from the FMI server are supported as other
-#' AC SAF data products are not expressed on a fixed geographic grid.
+#' @description Import \strong{gridded} "Surface UV" data released by
+#'   EUMETSAT AC SAF (Atmospheric Composition Monitoring) project from
+#'   \strong{HDF5} files downloaded from the FMI server.
 #'
 #' @param files character A vector of file names, no other limitation in length
 #'   than available memory to hold the data.
 #' @param data.product character Currently only "Surface UV" supported.
-#' @param group.name character The name of the 'group' in the HDF5 files.
+#' @param group.name character The name of the 'group' in the HDF5 files, or
+#'   a regular expression for matching a single group name with [`grep()`].
 #' @param vars.to.read character A vector of variable names. If `NULL` all the
 #'   variables present in the first file are read.
 #' @param fill numeric The R value used to replace the fill value used in the
@@ -17,7 +17,7 @@
 #' @param verbose logical Flag indicating if progress, and time and size of
 #'   the returned object should be printed.
 #'
-#' @description Function `read_AC_SAF_UV_hdf5()` can be used to read the data
+#' @details Function `read_AC_SAF_UV_hdf5()` can be used to read the data
 #'   stored in a file, either in full or selected variables. Query functions
 #'   `vars_AC_SAF_UV_hdf5()`, `grid_AC_SAF_UV_hdf5()` and
 #'   `date_AC_SAF_UV_hdf5()` extract the names of the variables, the range of
@@ -75,7 +75,8 @@
 #'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
 #'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
 #'
-#' @seealso [`read_AC_SAF_UV_txt()`]
+#' @seealso [`read_AC_SAF_UV_txt()`] supporting the same Surface UV data stored
+#' in text files as single-location time series.
 #'
 #' @examples
 #' # find location of one example file
@@ -292,23 +293,34 @@ vars_AC_SAF_UV_hdf5 <- function(files,
                               data.product = NULL,
                               group.name = "GRID_PRODUCT") {
 
-  if (length(files) > 1L) {
-    warning("Results for file ", basename(file[1]),
-            " returned (one file per call)")
-  }
-
   # We guess the data product from the file name
   if (is.null(data.product)) {
     data.product <- strsplit(basename(files[1]), "_", fixed = TRUE)[[1]][1]
   }
 
-  # We look up names of variables present in the file under the group
-  file.str <- rhdf5::h5ls(files[1], recursive = 2)
-  vars.selector <- grep(group.name, file.str[["group"]])
-  # retrieve whole name of matching group
-  group.name <- file.str[["group"]][vars.selector[1]]
+  data.vars <- character()
+  for (file in files) {
+    # list file structure
+    file.str <- rhdf5::h5ls(file, recursive = 2)
+
+    # variables belonging to group
+    vars.selector <- grep(group.name, file.str[["group"]])
+    # retrieve whole name of matching group
+    group.name <- file.str[["group"]][vars.selector[1]]
+
+    if (!length(data.vars)) {
+      data.vars <- file.str[["name"]][vars.selector]
+    } else {
+      temp <- file.str[["name"]][vars.selector]
+      if (!setequal(temp, data.vars)) {
+        warning("Mismatched 'variables', returning only shared ones")
+        data.vars <- union(data.vars, temp)
+      }
+    }
+  }
+
   # available variables
-  c("Date", "Longitude", "Latitude", file.str[["name"]][vars.selector])
+  c("Date", "Longitude", "Latitude", data.vars)
 
 }
 

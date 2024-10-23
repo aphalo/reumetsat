@@ -1,9 +1,8 @@
 #' Offline AC SAF Surface UV time series
 #'
-#' Import time series "offline products" data files from EUMETSAT AC SAF
-#' (Atmospheric Composition Monitoring) in text format. Currently only the
-#' "Surface UV" data product files as downloaded from the FMI server are
-#' supported.
+#' @description Import \strong{time series} "Surface UV" data released by
+#'   EUMETSAT AC SAF (Atmospheric Composition Monitoring) project from
+#'   \strong{text} files downloaded from the FMI server.
 #'
 #' @param files character A vector of file names, no other limitation in length
 #'   than available memory to hold the data.
@@ -16,7 +15,7 @@
 #' @param verbose logical Flag indicating if progress, and time and size of
 #'   the returned object should be printed.
 #'
-#' @description All information is in the files, including dates, and no
+#' @details All information is in the files, including dates, and no
 #'   information is decoded from file names, that users will most likely want to
 #'   rename. Each file corresponds to a single geographic location. If not all
 #'   the files named in the argument to `files` are accessible, an error is
@@ -54,7 +53,8 @@
 #'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
 #'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAFT.
 #'
-#' @seealso [`read_AC_SAF_UV_hdf5()`]
+#' @seealso [`read_AC_SAF_UV_hdf5()`] supporting the same Surface UV data stored
+#'   in a gridded format.
 #'
 #' @examples
 #' # find location of one example file

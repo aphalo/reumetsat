@@ -17,10 +17,16 @@ badge](https://aphalo.r-universe.dev/badges/reumetsat)](https://aphalo.r-univers
 
 The name ‘reumetsat’ is provisional, and will be in use until it becomes
 clear the full scope of this new package. Currently the only EUMETSAT
-product supported is “Surface UV”. The only source of photosynthetically
-active radiation (PAR) seems to be NASA, while global radiation can be
-found as one of the products from EUMETSAT. There are interesting data
-from ground-based stations in E-OBS going back some 70 years.
+product supported is “Surface UV”.
+
+I have raised issues at
+[GitHub](https://github.com/aphalo/reumetsat/issues) for possible future
+support of other data sets. Please, comment, give thumbs-up or
+thums-down, or suggest alternative data sources by visiting this GitHub
+page. (The only source of photosynthetically active radiation (PAR)
+seems to be NASA, while global radiation can be found as one of the
+products from EUMETSAT. There are interesting data from ground-based
+stations in E-OBS going back some 70 years.)
 
 ## Purpose
 
@@ -83,7 +89,8 @@ citation("reumetsat")
 #> To cite package 'reumetsat' in publications use:
 #> 
 #>   Aphalo P (2024). _reumetsat: EUMETSAT Offline Data Products_. R
-#>   package version 0.1.0, <https://docs.r4photobiology.info/reumetsat/>.
+#>   package version 0.1.0.9000,
+#>   <https://docs.r4photobiology.info/reumetsat/>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
@@ -91,7 +98,7 @@ citation("reumetsat")
 #>     title = {reumetsat: EUMETSAT Offline Data Products},
 #>     author = {Pedro J. Aphalo},
 #>     year = {2024},
-#>     note = {R package version 0.1.0},
+#>     note = {R package version 0.1.0.9000},
 #>     url = {https://docs.r4photobiology.info/reumetsat/},
 #>   }
 ```

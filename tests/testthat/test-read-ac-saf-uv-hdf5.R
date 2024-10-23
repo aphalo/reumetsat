@@ -58,6 +58,17 @@ test_that("reads two grid data files", {
   grid.range <- data.frame(Longitude = c(-10.75, -4.75),
                            Latitude = c(35.25, 43.25))
 
+  expect_equal(vars_AC_SAF_UV_hdf5(two.file.names), all.variables)
+
+  expect_equal(grid_AC_SAF_UV_hdf5(two.file.names), grid.range)
+
+  expect_equal(names(date_AC_SAF_UV_hdf5(two.file.names)),
+               basename(two.file.names))
+  expect_equal(unname(date_AC_SAF_UV_hdf5(two.file.names)),
+               as.Date(c("2024-06-21", "2024-06-22")))
+  expect_equal(date_AC_SAF_UV_hdf5(two.file.names, use.names = FALSE),
+               as.Date(c("2024-06-21", "2024-06-22")))
+
   test1.df <- read_AC_SAF_UV_hdf5(two.file.names, verbose = FALSE)
   expect_s3_class(test1.df, "data.frame", exact = TRUE)
   expect_s3_class(test1.df$Date, "Date", exact = TRUE)

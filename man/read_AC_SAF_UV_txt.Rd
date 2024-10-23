@@ -46,6 +46,11 @@ the returned object should be printed.}
   numeric variables, `Longitude` and `Latitude`, and a single row.
 }
 \description{
+Import \strong{time series} "Surface UV" data released by
+  EUMETSAT AC SAF (Atmospheric Composition Monitoring) project from
+  \strong{text} files downloaded from the FMI server.
+}
+\details{
 All information is in the files, including dates, and no
   information is decoded from file names, that users will most likely want to
   rename. Each file corresponds to a single geographic location. If not all
@@ -57,12 +62,6 @@ All information is in the files, including dates, and no
 
   Data from multiple files are concatenated. By default, the geographic
   coordinates are added in such a case.
-}
-\details{
-Import time series "offline products" data files from EUMETSAT AC SAF
-(Atmospheric Composition Monitoring) in text format. Currently only the
-"Surface UV" data product files as downloaded from the FMI server are
-supported.
 }
 \note{
 When requesting the data from the EUMETSAT AC SAF FMI server at
@@ -124,5 +123,6 @@ Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAFT.
 }
 \seealso{
-[`read_AC_SAF_UV_hdf5()`]
+[`read_AC_SAF_UV_hdf5()`] supporting the same Surface UV data stored
+  in a gridded format.
 }

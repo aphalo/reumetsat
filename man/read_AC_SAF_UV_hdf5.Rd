@@ -5,7 +5,7 @@
 \alias{vars_AC_SAF_UV_hdf5}
 \alias{grid_AC_SAF_UV_hdf5}
 \alias{date_AC_SAF_UV_hdf5}
-\title{Offline AC SAF Surface UV}
+\title{Offline AC SAF gridded Surface UV}
 \usage{
 read_AC_SAF_UV_hdf5(
   files,
@@ -28,7 +28,8 @@ than available memory to hold the data.}
 
 \item{data.product}{character Currently only "Surface UV" supported.}
 
-\item{group.name}{character The name of the 'group' in the HDF5 files.}
+\item{group.name}{character The name of the 'group' in the HDF5 files, or
+a regular expression for matching a single group name with [`grep()`].}
 
 \item{vars.to.read}{character A vector of variable names. If `NULL` all the
 variables present in the first file are read.}
@@ -57,6 +58,11 @@ Function `read_AC_SAF_UV_hdf5()` returns a data frame with columns
   file names as names.
 }
 \description{
+Import \strong{gridded} "Surface UV" data released by
+  EUMETSAT AC SAF (Atmospheric Composition Monitoring) project from
+  \strong{HDF5} files downloaded from the FMI server.
+}
+\details{
 Function `read_AC_SAF_UV_hdf5()` can be used to read the data
   stored in a file, either in full or selected variables. Query functions
   `vars_AC_SAF_UV_hdf5()`, `grid_AC_SAF_UV_hdf5()` and
@@ -72,12 +78,6 @@ Function `read_AC_SAF_UV_hdf5()` can be used to read the data
   `vars.to.read` if detected when reading the first file, are filled with the
   `fill` value, otherwise they trigger an error when an attempt is made to
   read them.
-}
-\details{
-Import gridded daily "offline products" data files from EUMETSAT AC SAF
-(Atmospheric Composition Monitoring) in HDF5 format. Only the "Surface UV"
-data product files as downloaded from the FMI server are supported as other
-AC SAF data products are not expressed on a fixed geographic grid.
 }
 \note{
 The constraint on the consistency among all files to be read allows
@@ -156,5 +156,6 @@ Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
 }
 \seealso{
-[`read_AC_SAF_UV_txt()`]
+[`read_AC_SAF_UV_txt()`] supporting the same Surface UV data stored
+in text files as single-location time series.
 }
