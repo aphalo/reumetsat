@@ -91,7 +91,7 @@ test_that("errors are triggered", {
   expect_error(read_AC_SAF_hdf5(c(one.file.name, "missing-file"), verbose = FALSE))
 
   # fails early with wrang data product name
-  expect_error(read_AC_SAF_hdf5(one.file.name,
+  expect_warning(read_AC_SAF_hdf5(one.file.name,
                                  data.product = "bad-product-name",
                                  verbose = FALSE))
   # case insensitive

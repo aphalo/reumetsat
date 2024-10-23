@@ -1,5 +1,10 @@
 # reumetsat 0.1.0
 
+* Make date extraction from file names independent of data products in 
+`read_AC_SAFT_hdf5()`.
+
+# reumetsat 0.1.0
+
 * Read HDF5 data files from AC SAFT FMI server into data frames
 in function `read_AC_SAFT_hdf5()`. These files contain data on a geographic grid.
 * Read text data files from AC SAFT FMI server into data frames

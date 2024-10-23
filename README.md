@@ -48,9 +48,9 @@ Installation of the current unstable version from R-Universe CRAN-like
 repository:
 
 ``` r
-# install.packages('reumetsat', 
-#                  repos = c('https://aphalo.r-universe.dev', 
-#                            'https://cloud.r-project.org'))
+install.packages('reumetsat', 
+                 repos = c('https://aphalo.r-universe.dev', 
+                           'https://cloud.r-project.org'))
 ```
 
 Installation of the current unstable version from GitHub:

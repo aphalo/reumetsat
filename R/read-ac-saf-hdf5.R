@@ -111,19 +111,24 @@ read_AC_SAF_hdf5 <-
            fill = NA_real_,
            verbose = interactive()) {
 
+    # check that filenames all exist
+    missing.files <- !file.exists(files)
+    if (any(missing.files)) {
+      stop("Cannot access ", sum(missing.files), " of the files: ",
+           paste(files[missing.files], collapse = ", "), sep = "")
+    }
+
     # We guess the data product from the file name
     if (is.null(data.product)) {
       data.product <- strsplit(basename(files[1]), "_", fixed = TRUE)[[1]][1]
     }
 
-    # set the pattern used with gsub to extract the date encoded in file names
-    # other data.product values to be supported in the future (possibly)
-    filename.pattern <-
-      switch(EXPR = toupper(data.product),
-             "SURFACE UV" = ,
-             "O3MOUV" = "O3MOUV_L[23]_|_v0[12]p0[0-9].HDF5",
-             stop("Unknown data.product: '", data.product, "'")
-      )
+    # Warn about untested data products
+    known.data.products <- c("SURFACE UV", "O3MOUV")
+    if (!toupper(data.product) %in% known.data.products) {
+      warning("'read_AC_SAF_hdf5()' has not been tested with '",
+              data.product, "' files. Returned values need validation!")
+    }
 
     # progress reporting
     if (verbose) {
@@ -139,13 +144,6 @@ read_AC_SAF_hdf5 <-
               format(round(end_time - start_time, 1)), "\n", sep = "")
         },
         add = TRUE, after = FALSE)
-    }
-
-    # check that filenames all exist
-    missing.files <- !file.exists(files)
-    if (any(missing.files)) {
-      stop("Cannot access ", sum(missing.files), " of the files: ",
-           paste(files[missing.files], collapse = ", "), sep = "")
     }
 
     # we read metadata from the first file
@@ -221,7 +219,7 @@ read_AC_SAF_hdf5 <-
         cat("Reading: ", basename(files[i]), "\n", sep = "")
       }
       data_date <-
-        as.Date(gsub(filename.pattern, "", basename(files[i])),
+        as.Date(sub(".*_([0-9]{8})_.*", "\\1", basename(files[i])),
                 format = "%Y%m%d")
       var_data.ls[["Longitude"]][slice.selector] <- Longitudes
       var_data.ls[["Latitude"]][slice.selector] <- Latitudes
