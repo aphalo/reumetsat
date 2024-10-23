@@ -49,19 +49,19 @@ one.file.name <-
 Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of location corresponding to the time series data.
 
 ```{r}
-vars_AC_SAF_txt(one.file.name)
+vars_AC_SAF_UV_txt(one.file.name)
 ```
 
 The geographic coordinates of the location are returned.
 
 ```{r}
-grid_AC_SAF_txt(one.file.name)
+grid_AC_SAF_UV_txt(one.file.name)
 ```
 
 The variables included in downloaded files can be chosen when the request is submitted on-line. The default is to read all the variables present in the file.
 
 ```{r}
-summer_viikki.tb <- read_AC_SAF_txt(one.file.name)
+summer_viikki.tb <- read_AC_SAF_UV_txt(one.file.name)
 dim(summer_viikki.tb)
 colnames(summer_viikki.tb)
 ```
@@ -82,16 +82,16 @@ As bad data values are filled with `NA` in the measured/derived variables, a sma
 
 ```{r}
 summer_viikki_QCf.tb <-
-  read_AC_SAF_txt(one.file.name, keep.QC = FALSE)
+  read_AC_SAF_UV_txt(one.file.name, keep.QC = FALSE)
 dim(summer_viikki_QCf.tb)
 colnames(summer_viikki_QCf.tb)
 ```
 
-In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `read_AC_SAF_txt()`. However, here we override the default and add coordinates when reading only one file.
+In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `read_AC_SAF_UV_txt()`. However, here we override the default and add coordinates when reading only one file.
 
 ```{r}
 summer_viikki_geo.tb <-
-  read_AC_SAF_txt(one.file.name, keep.QC = FALSE, add.geo = TRUE)
+  read_AC_SAF_UV_txt(one.file.name, keep.QC = FALSE, add.geo = TRUE)
 dim(summer_viikki_geo.tb)
 colnames(summer_viikki_geo.tb)
 ```
@@ -101,7 +101,7 @@ In some cases we may want to read only specific variables out of the file. This 
 ```{r}
 # read two variables
 summer_viikki_2.tb <-
-  read_AC_SAF_txt(one.file.name,
+  read_AC_SAF_UV_txt(one.file.name,
                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 dim(summer_viikki_2.tb)
 colnames(summer_viikki_2.tb)
@@ -142,24 +142,24 @@ one.file.name <-
 Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of the grid.
 
 ```{r}
-vars_AC_SAF_hdf5(one.file.name)
+vars_AC_SAF_UV_hdf5(one.file.name)
 ```
 
 By default only the boundaries of the grid are returned.
 
 ```{r}
-grid_AC_SAF_hdf5(one.file.name)
+grid_AC_SAF_UV_hdf5(one.file.name)
 ```
 
 With defaults all variables are read, and because the data can include multiple geographic grid points, `Longitude` and `Latitude` are always returned in the data frame.
 
 ```{r}
-midsummer_spain.tb <- read_AC_SAF_hdf5(one.file.name)
+midsummer_spain.tb <- read_AC_SAF_UV_hdf5(one.file.name)
 dim(midsummer_spain.tb)
 colnames(midsummer_spain.tb)
 ```
 
-Variable names are consistent between the data frames returned by `read_AC_SAF_hdf5()` and `read_AC_SAF_txt()`, but the position of the columns, can vary. *Use names rather than numeric positional indices to extract columns!*
+Variable names are consistent between the data frames returned by `read_AC_SAF_UV_hdf5()` and `read_AC_SAF_UV_txt()`, but the position of the columns, can vary. *Use names rather than numeric positional indices to extract columns!*
 
 ```{r}
 str(lapply(midsummer_spain.tb, class))
@@ -175,7 +175,7 @@ We can as before read only specific variables if needed by passing their names a
 
 ```{r}
 midsummer_spain_daily.tb <-
-  read_AC_SAF_hdf5(one.file.name,
+  read_AC_SAF_UV_hdf5(one.file.name,
                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 dim(midsummer_spain_daily.tb)
 colnames(midsummer_spain_daily.tb)
@@ -196,10 +196,10 @@ five.file.names <-
                package = "reumetsat", mustWork = TRUE)
 ```
 
-The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `read_AC_SAF_hdf5()` should share identical grids and contain the variables to be read.* If this is not the case, `read_AC_SAF_hdf5()` should be used to read them individually and later combined, which is a slower approach.
+The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `read_AC_SAF_UV_hdf5()` should share identical grids and contain the variables to be read.* If this is not the case, `read_AC_SAF_UV_hdf5()` should be used to read them individually and later combined, which is a slower approach.
 
 ```{r}
-summer_5days_spain.tb <- read_AC_SAF_hdf5(five.file.names)
+summer_5days_spain.tb <- read_AC_SAF_UV_hdf5(five.file.names)
 dim(summer_5days_spain.tb)
 colnames(summer_5days_spain.tb)
 ```

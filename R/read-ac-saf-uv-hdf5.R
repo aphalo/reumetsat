@@ -1,9 +1,9 @@
 #' Offline AC SAF Surface UV
 #'
 #' Import gridded daily "offline products" data files from EUMETSAT AC SAF
-#' (Atmospheric Composition Monitoring) in HDF5 format. Currently only the
-#' "Surface UV" data product files as downloaded from the FMI server are
-#' supported.
+#' (Atmospheric Composition Monitoring) in HDF5 format. Only the "Surface UV"
+#' data product files as downloaded from the FMI server are supported as other
+#' AC SAF data products are not expressed on a fixed geographic grid.
 #'
 #' @param files character A vector of file names, no other limitation in length
 #'   than available memory to hold the data.
@@ -17,20 +17,31 @@
 #' @param verbose logical Flag indicating if progress, and time and size of
 #'   the returned object should be printed.
 #'
-#' @description The dates are decoded from the file names, expecting these to be
-#'   those set by the data provider. The grid is expected to be identical in all
-#'   files that are imported in a call to `read_AC_SAF_hdf5()`, and grid
-#'   subsetting is currently not supported. If not all the files named in the
-#'   argument to `files` are accessible, an error is triggered early. If the
-#'   files differ in the grid, an error is triggered when reading the first
-#'   mismatching file. Missing variables named in `vars.to.read` if detected
-#'   when reading the first file, are filled with the `fill` value, otherwise
-#'   they trigger an error when an attempt is made to read them.
+#' @description Function `read_AC_SAF_UV_hdf5()` can be used to read the data
+#'   stored in a file, either in full or selected variables. Query functions
+#'   `vars_AC_SAF_UV_hdf5()`, `grid_AC_SAF_UV_hdf5()` and
+#'   `date_AC_SAF_UV_hdf5()` extract the names of the variables, the range of
+#'   the grid and the dates of measurements much more efficiently than by using
+#'   `read_AC_SAF_UV_hdf5()`. The dates are decoded from the file names,
+#'   expecting these to be those set by the data provider. The grid is expected
+#'   to be identical in all files that are imported in a call to
+#'   `read_AC_SAF_UV_hdf5()`, and grid subsetting is currently not supported. If
+#'   not all the files named in the argument to `files` are accessible, an error
+#'   is triggered early. If the files differ in the grid, an error is triggered
+#'   when reading the first mismatching file. Missing variables named in
+#'   `vars.to.read` if detected when reading the first file, are filled with the
+#'   `fill` value, otherwise they trigger an error when an attempt is made to
+#'   read them.
 #'
-#' @return A data frame with columns named `"Date"`, `"Longitude"`,
-#'   `"Latitude"`, the data variables with their original names, and
-#'   `"QualityFlags"`. The data variables have their metadata stored as R
-#'   attributes.
+#' @return Function `read_AC_SAF_UV_hdf5()` returns a data frame with columns
+#'   named `"Date"`, `"Longitude"`, `"Latitude"`, the data variables with their
+#'   original names, and `"QualityFlags"`. The data variables have their
+#'   metadata stored as R attributes. `vars_AC_SAF_UV_hdf5()` returns a
+#'   `character` vector of variable names, `grid_AC_SAF_UV_hdf5()` returns a
+#'   data frame with two numeric variables, `Longitude` and `Latitude`, with two
+#'   rows or an expanded grid depending on the argument passed to `expand`,
+#'   while `date_AC_SAF_UV_hdf5()` returns a named vector of class `Date`, with
+#'   file names as names.
 #'
 #' @note The constraint on the consistency among all files to be read allows
 #'   very fast reading into a single data frame. If the files differ in the grid
@@ -46,23 +57,25 @@
 #'   \url{https://acsaf.org/} it is possible to select the range of latitudes
 #'   and longitudes and the variables to be included in the file. This is more
 #'   efficient than doing the selection after importing the data into R. The
-#'   data are returned as a .zip compressed file containing one HDF5 file for
+#'   data are returned as a .zip compressed file containing one .HDF5 file for
 #'   each day in the range of dates selected. For world coverage each of these
-#'   files can be as large as 10 MB in size depending on how many variables
-#'   they contain. These files in HDF5 format are binary files so the size
-#'   in RAM of a `data.frame` containing one-year of data can be a few 10's of
-#'   GB.
+#'   files can be as large as 10 MB in size depending on how many variables they
+#'   contain. These files in HDF5 format are binary files so the size in RAM of
+#'   a `data.frame` object containing one-year of data can be a few 10's of GB.
 #'
-#'   This function's performance is quite fast as long as there is enough RAM
+#'   This function's performance is fast as long as there is enough RAM
 #'   available to hold the data frame and the files are read from a reasonably
-#'   fast SSD. It has been tested by importing one-year's worth of data with
-#'   worldwide coverage on a PC with 64GB RAM. The example data included in the
-#'   package are only for Spain and five summer days.
+#'   fast SSD. The example data included in the package are only for Spain and
+#'   five summer days. They are used in examples and automated tests. Function
+#'   `read_AC_SAF_UV_hdf5()` has been also tested by importing one-year's worth
+#'   of data with worldwide coverage on a PC with 64GB RAM.
 #'
 #' @references
 #' Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
 #'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
 #'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
+#'
+#' @seealso [`read_AC_SAF_UV_txt()`]
 #'
 #' @examples
 #' # find location of one example file
@@ -71,19 +84,23 @@
 #'                package = "reumetsat", mustWork = TRUE)
 #'
 #' # available variables
-#' vars_AC_SAF_hdf5(one.file.name)
+#' vars_AC_SAF_UV_hdf5(one.file.name)
 #'
 #' # available grid
-#' grid_AC_SAF_hdf5(one.file.name)
+#' grid_AC_SAF_UV_hdf5(one.file.name)
+#'
+#' # decode date from file name
+#' date_AC_SAF_UV_hdf5(one.file.name)
+#' date_AC_SAF_UV_hdf5(one.file.name, use.names = FALSE)
 #'
 #' # read all variables
-#' midsummer_spain.tb <- read_AC_SAF_hdf5(one.file.name)
+#' midsummer_spain.tb <- read_AC_SAF_UV_hdf5(one.file.name)
 #' dim(midsummer_spain.tb)
 #' summary(midsummer_spain.tb)
 #'
 #' # read two variables
 #' midsummer_spain_daily.tb <-
-#'   read_AC_SAF_hdf5(one.file.name,
+#'   read_AC_SAF_UV_hdf5(one.file.name,
 #'                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 #' dim(midsummer_spain_daily.tb)
 #' summary(midsummer_spain_daily.tb)
@@ -96,14 +113,16 @@
 #'                  "O3MOUV_L3_20240623_v02p02.HDF5"),
 #'                package = "reumetsat", mustWork = TRUE)
 #'
-#' summer_3days_spain.tb <- read_AC_SAF_hdf5(three.file.names)
+#' date_AC_SAF_UV_hdf5(three.file.names)
+#'
+#' summer_3days_spain.tb <- read_AC_SAF_UV_hdf5(three.file.names)
 #' dim(summer_3days_spain.tb)
 #' summary(summer_3days_spain.tb)
 #'
 #' @export
 #' @import rhdf5
 #'
-read_AC_SAF_hdf5 <-
+read_AC_SAF_UV_hdf5 <-
   function(files,
            data.product = NULL,
            group.name = "GRID_PRODUCT",
@@ -126,7 +145,7 @@ read_AC_SAF_hdf5 <-
     # Warn about untested data products
     known.data.products <- c("SURFACE UV", "O3MOUV")
     if (!toupper(data.product) %in% known.data.products) {
-      warning("'read_AC_SAF_hdf5()' has not been tested with '",
+      warning("'read_AC_SAF_UV_hdf5()' has not been tested with '",
               data.product, "' files. Returned values need validation!")
     }
 
@@ -265,11 +284,11 @@ read_AC_SAF_hdf5 <-
     z.tb
   }
 
-#' @rdname read_AC_SAF_hdf5
+#' @rdname read_AC_SAF_UV_hdf5
 #'
 #' @export
 #'
-vars_AC_SAF_hdf5 <- function(files,
+vars_AC_SAF_UV_hdf5 <- function(files,
                               data.product = NULL,
                               group.name = "GRID_PRODUCT") {
 
@@ -283,15 +302,6 @@ vars_AC_SAF_hdf5 <- function(files,
     data.product <- strsplit(basename(files[1]), "_", fixed = TRUE)[[1]][1]
   }
 
-  # set the pattern used with gsub to extract the date encoded in file names
-  # other data.product values to be supported in the future (possibly)
-  filename.pattern <-
-    switch(EXPR = toupper(data.product),
-           "SURFACE UV" = ,
-           "O3MOUV" = "O3MOUV_L[23]_|_v0[12]p0[0-9].HDF5",
-           stop("Unknown data.product: '", data.product, "'")
-    )
-
   # We look up names of variables present in the file under the group
   file.str <- rhdf5::h5ls(files[1], recursive = 2)
   vars.selector <- grep(group.name, file.str[["group"]])
@@ -302,33 +312,43 @@ vars_AC_SAF_hdf5 <- function(files,
 
 }
 
-#' @rdname read_AC_SAF_hdf5
+#' @rdname read_AC_SAF_UV_hdf5
 #'
 #' @param expand logical Flag indicating whether to return ranges or a
 #'   full grid.
 #'
 #' @export
 #'
-grid_AC_SAF_hdf5 <- function(files,
-                              expand = FALSE) {
-
-  if (length(files) > 1L) {
-    warning("Results for file ", basename(file[1]),
-            " returned (one file per call)")
-  }
+grid_AC_SAF_UV_hdf5 <- function(files,
+                                expand = FALSE) {
 
   # the grid is described but not stored explicitly in these files
-  grid_desc <- attributes(rhdf5::h5read(files[1],
-                                        name = "GRID_DESCRIPTION",
-                                        read.attributes = TRUE))
+  first_grid_desc <- attributes(rhdf5::h5read(files[1],
+                                              name = "GRID_DESCRIPTION",
+                                              read.attributes = TRUE))
 
   # We construct the grid based on the attributes
-  Longitudes.vec <- seq(from = grid_desc$XStartLon,
-                        by = grid_desc$XStepDeg,
-                        length.out = grid_desc$XNumCells) # rows
-  Latitudes.vec <- seq(from = grid_desc$YStartLat,
-                       by = grid_desc$YStepDeg,
-                       length.out = grid_desc$YNumCells) # columns
+  Longitudes.vec <- seq(from = first_grid_desc$XStartLon,
+                        by = first_grid_desc$XStepDeg,
+                        length.out = first_grid_desc$XNumCells) # rows
+  Latitudes.vec <- seq(from = first_grid_desc$YStartLat,
+                       by = first_grid_desc$YStepDeg,
+                       length.out = first_grid_desc$YNumCells) # columns
+
+  # check consistency
+  for (file in files[-1]) {
+    grid_desc <- attributes(rhdf5::h5read(file,
+                                          name = "GRID_DESCRIPTION",
+                                          read.attributes = TRUE))
+    if (!identical(first_grid_desc, grid_desc)) {
+      warning("The grid is not consistent among files!")
+      # ABORT on failure
+      return(data.frame(
+        Longitudes = NA_real_,
+        Latitudes = NA_real_
+      ))
+    }
+  }
 
   if (expand) {
     Longitudes <- rep(Longitudes.vec, times = length(Latitudes.vec))
@@ -339,4 +359,19 @@ grid_AC_SAF_hdf5 <- function(files,
     data.frame(Longitude = range(Longitudes.vec),
                Latitude = range(Latitudes.vec))
   }
+}
+
+#' @rdname read_AC_SAF_UV_hdf5
+#'
+#' @param use.names logical. Should names be added to the returned vector?
+#'
+#' @export
+#'
+date_AC_SAF_UV_hdf5 <- function(files, use.names = TRUE) {
+  files <- basename(files)
+  z <- as.Date(sub(".*_([0-9]{8})_.*", "\\1", files), format = "%Y%m%d")
+  if (use.names) {
+    names(z) <- files
+  }
+  z
 }

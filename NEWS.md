@@ -1,7 +1,9 @@
 # reumetsat 0.1.0
 
-* Make date extraction from file names independent of data products in 
-`read_AC_SAFT_hdf5()`.
+* Rename `read_AC_SAFT_hdf5()` into `read_AC_SAFT_UV_hdf5()` as non-UV data
+products use a different format for storing the data.
+* Make date extraction from file names less dependent on the non-date-encoding 
+portion of the names `read_AC_SAFT_UV_hdf5()`.
 
 # reumetsat 0.1.0
 
