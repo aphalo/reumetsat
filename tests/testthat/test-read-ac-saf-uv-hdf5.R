@@ -4,14 +4,17 @@ test_that("reads one grid data file", {
     system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
                 package = "reumetsat", mustWork = TRUE)
 
+  all.variables.no.QC <- c("Date", "Longitude", "Latitude", "DailyDoseUva", "DailyDoseUvb",
+                              "DailyMaxDoseRateUva", "DailyMaxDoseRateUvb")
   all.variables <-
-    c("Date", "Longitude", "Latitude", "DailyDoseUva", "DailyDoseUvb",
-      "DailyMaxDoseRateUva", "DailyMaxDoseRateUvb", "QualityFlags")
+    c(all.variables.no.QC, "QualityFlags")
 
   grid.range <- data.frame(Longitude = c(-10.75, -4.75),
                            Latitude = c(35.25, 43.25))
 
   expect_equal(vars_AC_SAF_UV_hdf5(one.file.name), all.variables)
+  expect_equal(vars_AC_SAF_UV_hdf5(one.file.name, keep.QC = FALSE),
+               all.variables.no.QC)
 
   expect_equal(grid_AC_SAF_UV_hdf5(one.file.name), grid.range)
 
@@ -28,6 +31,17 @@ test_that("reads one grid data file", {
   expect_equal(colnames(test1.df), all.variables)
   expect_equal(nrow(test1.df), 221)
   expect_equal(sum(is.na(test1.df)), 0)
+
+  test1a.df <-
+    read_AC_SAF_UV_hdf5(one.file.name, keep.QC = FALSE, verbose = FALSE)
+  expect_s3_class(test1a.df, "data.frame", exact = TRUE)
+  expect_s3_class(test1a.df$Date, "Date", exact = TRUE)
+  expect_equal(length(unique(test1a.df$Date)), 1)
+  expect_equal(range(test1a.df$Longitude), grid.range$Longitude)
+  expect_equal(range(test1a.df$Latitude), grid.range$Latitude)
+  expect_equal(colnames(test1a.df), all.variables.no.QC)
+  expect_equal(nrow(test1a.df), 221)
+  expect_equal(sum(is.na(test1a.df)), 0)
 
   vars.to.read <- c("DailyDoseUva", "DailyDoseUvb")
 

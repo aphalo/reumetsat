@@ -14,6 +14,8 @@
 #' @param fill numeric The R value used to replace the fill value used in the
 #'   file, which is retrieved from the file metadata, and also used to fill
 #'   missing variables.
+#' @param keep.QC logical Add to the returned data frame or vector the quality
+#'   control variable, always present in the files.
 #' @param verbose logical Flag indicating if progress, and time and size of
 #'   the returned object should be printed.
 #'
@@ -129,6 +131,7 @@ read_AC_SAF_UV_hdf5 <-
            group.name = "GRID_PRODUCT",
            vars.to.read = NULL,
            fill = NA_real_,
+           keep.QC = TRUE,
            verbose = interactive()) {
 
     # check that filenames all exist
@@ -203,6 +206,9 @@ read_AC_SAF_UV_hdf5 <-
     } else {
       to_skip <- !(vars.to.read %in% vars.in.group)
     }
+    if (!keep.QC) {
+      to_skip[vars.to.read == "QualityFlags"] <- TRUE
+    }
 
     # Map variable names to short column names by removing the group name
     col.names <- vars.to.read
@@ -214,7 +220,7 @@ read_AC_SAF_UV_hdf5 <-
     # as long as all data fit in RAM
     var_data.ls <- list() # list for performance
     vec_size <- length(Latitudes) * length(files)
-    for (col in c("Date", "Longitude", "Latitude", col.names)) {
+    for (col in c("Date", "Longitude", "Latitude", col.names[!to_skip])) {
       var_data.ls[[col]] <- rep(NA_real_, vec_size)
     }
 
@@ -290,8 +296,9 @@ read_AC_SAF_UV_hdf5 <-
 #' @export
 #'
 vars_AC_SAF_UV_hdf5 <- function(files,
-                              data.product = NULL,
-                              group.name = "GRID_PRODUCT") {
+                                data.product = NULL,
+                                group.name = "GRID_PRODUCT",
+                                keep.QC = TRUE) {
 
   # We guess the data product from the file name
   if (is.null(data.product)) {
@@ -317,6 +324,10 @@ vars_AC_SAF_UV_hdf5 <- function(files,
         data.vars <- union(data.vars, temp)
       }
     }
+  }
+
+  if (!keep.QC) {
+    data.vars <- setdiff(data.vars, "QualityFlags")
   }
 
   # available variables

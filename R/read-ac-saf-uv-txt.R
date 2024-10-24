@@ -10,8 +10,8 @@
 #'   variables present in the first file are read.
 #' @param add.geo logical Add columns `Longitude` and `Latitude` to returned
 #'   data frame.
-#' @param keep.QC logical Add to the returned data frame the quality control
-#'   variables, always present in the files.
+#' @param keep.QC logical Add to the returned data frame or vector the quality
+#'   control variables, always present in the files.
 #' @param verbose logical Flag indicating if progress, and time and size of
 #'   the returned object should be printed.
 #'

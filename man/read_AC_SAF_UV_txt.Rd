@@ -28,8 +28,8 @@ variables present in the first file are read.}
 \item{add.geo}{logical Add columns `Longitude` and `Latitude` to returned
 data frame.}
 
-\item{keep.QC}{logical Add to the returned data frame the quality control
-variables, always present in the files.}
+\item{keep.QC}{logical Add to the returned data frame or vector the quality
+control variables, always present in the files.}
 
 \item{verbose}{logical Flag indicating if progress, and time and size of
 the returned object should be printed.}

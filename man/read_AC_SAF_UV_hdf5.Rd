@@ -13,10 +13,16 @@ read_AC_SAF_UV_hdf5(
   group.name = "GRID_PRODUCT",
   vars.to.read = NULL,
   fill = NA_real_,
+  keep.QC = TRUE,
   verbose = interactive()
 )
 
-vars_AC_SAF_UV_hdf5(files, data.product = NULL, group.name = "GRID_PRODUCT")
+vars_AC_SAF_UV_hdf5(
+  files,
+  data.product = NULL,
+  group.name = "GRID_PRODUCT",
+  keep.QC = TRUE
+)
 
 grid_AC_SAF_UV_hdf5(files, expand = FALSE)
 
@@ -37,6 +43,9 @@ variables present in the first file are read.}
 \item{fill}{numeric The R value used to replace the fill value used in the
 file, which is retrieved from the file metadata, and also used to fill
 missing variables.}
+
+\item{keep.QC}{logical Add to the returned data frame or vector the quality
+control variable, always present in the files.}
 
 \item{verbose}{logical Flag indicating if progress, and time and size of
 the returned object should be printed.}
