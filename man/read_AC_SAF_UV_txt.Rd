@@ -14,7 +14,7 @@ read_AC_SAF_UV_txt(
   verbose = interactive()
 )
 
-vars_AC_SAF_UV_txt(files, keep.QC = TRUE)
+vars_AC_SAF_UV_txt(files, keep.QC = TRUE, set.oper = "intersect")
 
 grid_AC_SAF_UV_txt(files, use.names = length(files) > 1)
 }
@@ -22,10 +22,10 @@ grid_AC_SAF_UV_txt(files, use.names = length(files) > 1)
 \item{files}{character A vector of file names, no other limitation in length
 than available memory to hold the data.}
 
-\item{vars.to.read}{character A vector of variable names. If `NULL` all the
+\item{vars.to.read}{character A vector of variable names. If \code{NULL} all the
 variables present in the first file are read.}
 
-\item{add.geo}{logical Add columns `Longitude` and `Latitude` to returned
+\item{add.geo}{logical Add columns \code{Longitude} and \code{Latitude} to returned
 data frame.}
 
 \item{keep.QC}{logical Add to the returned data frame or vector the quality
@@ -34,49 +34,51 @@ control variables, always present in the files.}
 \item{verbose}{logical Flag indicating if progress, and time and size of
 the returned object should be printed.}
 
+\item{set.oper}{character One of \code{"intersect"}, \code{"union"}, or \code{"setdiff"}.}
+
 \item{use.names}{logical. Should row names be added to the returned data
 frame?}
 }
 \value{
-`read_AC_SAF_UV_txt()` returns a data frame with columns named
-  `"Date"`, `"Longitude"`, `"Latitude"`, and the data variables with their
-  original names (with no units). The data variables have no metadata stored
-  as R attributes. When reading multiple files, by default the format is
-  similar to that from function `read_AC_SAF_UV_hdf5()`. Column names are the
-  same but column order can differ. File headers are saved as a list in R
-  attribute `file.headers`. `vars_AC_SAF_UV_txt()` returns a `character`
-  vector of variable names, and `grid_AC_SAF_UV_txt()` a dataframe with two
-  numeric variables, `Longitude` and `Latitude`, and a single row.
+\code{read_AC_SAF_UV_txt()} returns a data frame with columns named
+\code{"Date"}, \code{"Longitude"}, \code{"Latitude"}, and the data variables with their
+original names (with no units). The data variables have no metadata stored
+as R attributes. When reading multiple files, by default the format is
+similar to that from function \code{read_AC_SAF_UV_hdf5()}. Column names are the
+same but column order can differ. File headers are saved as a list in R
+attribute \code{file.headers}. \code{vars_AC_SAF_UV_txt()} returns a \code{character}
+vector of variable names, and \code{grid_AC_SAF_UV_txt()} a dataframe with two
+numeric variables, \code{Longitude} and \code{Latitude}, and a single row.
 }
 \description{
 Import \strong{time series} "Surface UV" data released by
-  EUMETSAT AC SAF (Atmospheric Composition Monitoring) project from
-  \strong{text} files downloaded from the FMI server.
+EUMETSAT AC SAF (Atmospheric Composition Monitoring) project from
+\strong{text} files downloaded from the FMI server.
 }
 \details{
 All information is in the files, including dates, and no
-  information is decoded from file names, that users will most likely want to
-  rename. Each file corresponds to a single geographic location. If not all
-  the files named in the argument to `files` are accessible, an error is
-  triggered early. If the files differ in the coordinates, an error is
-  triggered when reading the first mismatching file if coordinates are not
-  being added to the data frame. Missing variables named in `vars.to.read`
-  are currently ignored.
+information is decoded from file names, that users will most likely want to
+rename. Each file corresponds to a single geographic location. If not all
+the files named in the argument to \code{files} are accessible, an error is
+triggered early. If the files differ in the coordinates, an error is
+triggered when reading the first mismatching file if coordinates are not
+being added to the data frame. Missing variables named in \code{vars.to.read}
+are currently ignored.
 
-  Data from multiple files are concatenated. By default, the geographic
-  coordinates are added in such a case.
+Data from multiple files are concatenated. By default, the geographic
+coordinates are added in such a case.
 }
 \note{
 When requesting the data from the EUMETSAT AC SAF FMI server at
-  \url{https://acsaf.org/} it is possible to select the variables to be
-  included in the file, the period and the geographic coordinates of a single
-  location. The data are returned as a .zip compressed file containing one
-  text file with one row for each day in the range of dates selected. These
-  files are fairly small.
+\url{https://acsaf.org/} it is possible to select the variables to be
+included in the file, the period and the geographic coordinates of a single
+location. The data are returned as a .zip compressed file containing one
+text file with one row for each day in the range of dates selected. These
+files are fairly small.
 
-  This function's performance is not optimized for speed as these single
-  location files are rather small. The example time series data included in
-  the package are for one summer in Helsinki, Finland.
+This function's performance is not optimized for speed as these single
+location files are rather small. The example time series data included in
+the package are for one summer in Helsinki, Finland.
 }
 \examples{
 # find location of one example file
@@ -121,11 +123,11 @@ summary(summer_viikki_2.tb)
 
 }
 \references{
-Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
-  (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
-  SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAFT.
+Kujanpää, J. (2019) \emph{PRODUCT USER MANUAL Offline UV Products v2
+(IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)}. Ref.
+SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
 }
 \seealso{
-[`read_AC_SAF_UV_hdf5()`] supporting the same Surface UV data stored
-  in a gridded format.
+\code{\link[=read_AC_SAF_UV_hdf5]{read_AC_SAF_UV_hdf5()}} supporting the same Surface UV data stored
+in a gridded format.
 }

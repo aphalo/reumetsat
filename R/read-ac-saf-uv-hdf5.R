@@ -293,19 +293,29 @@ read_AC_SAF_UV_hdf5 <-
 
 #' @rdname read_AC_SAF_UV_hdf5
 #'
+#' @param set.oper character One of `"intersect"`, `"union"`, or `"setdiff"`.
+#'
 #' @export
 #'
 vars_AC_SAF_UV_hdf5 <- function(files,
                                 data.product = NULL,
                                 group.name = "GRID_PRODUCT",
-                                keep.QC = TRUE) {
+                                keep.QC = TRUE,
+                                set.oper = "intersect") {
 
   # We guess the data product from the file name
   if (is.null(data.product)) {
     data.product <- strsplit(basename(files[1]), "_", fixed = TRUE)[[1]][1]
   }
 
+  set.fun <- switch(set.oper,
+                    union = base::union,
+                    setdiff = base::setdiff,
+                    intersect = base::intersect,
+                    {stop("'set.oper' argument '", set.oper, "' not recognized")})
+
   data.vars <- character()
+  same.vars <- TRUE
   for (file in files) {
     # list file structure
     file.str <- rhdf5::h5ls(file, recursive = 2)
@@ -320,10 +330,14 @@ vars_AC_SAF_UV_hdf5 <- function(files,
     } else {
       temp <- file.str[["name"]][vars.selector]
       if (!setequal(temp, data.vars)) {
-        warning("Mismatched 'variables', returning only shared ones")
-        data.vars <- union(data.vars, temp)
+        same.vars <- FALSE
+        data.vars <- set.fun(data.vars, temp)
       }
     }
+  }
+
+  if (!same.vars) {
+    warning("Files contain different variables, applying '", set.oper, "'.")
   }
 
   if (!keep.QC) {

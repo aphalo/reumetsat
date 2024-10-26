@@ -51,7 +51,7 @@
 #' @references
 #' Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
 #'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
-#'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAFT.
+#'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
 #'
 #' @seealso [`read_AC_SAF_UV_hdf5()`] supporting the same Surface UV data stored
 #'   in a gridded format.
@@ -194,11 +194,22 @@ read_AC_SAF_UV_txt <-
 
 #' @rdname read_AC_SAF_UV_txt
 #'
+#' @param set.oper character One of `"intersect"`, `"union"`, or `"setdiff"`.
+#'
 #' @export
 #'
-vars_AC_SAF_UV_txt <- function(files, keep.QC = TRUE) {
+vars_AC_SAF_UV_txt <- function(files,
+                               keep.QC = TRUE,
+                               set.oper = "intersect") {
+
+  set.fun <- switch(set.oper,
+                    union = base::union,
+                    setdiff = base::setdiff,
+                    intersect = base::intersect,
+                    {stop("'set.oper' argument '", set.oper, "' not recognized")})
 
   data.vars <- character()
+  same.vars <- TRUE
   for (file in files) {
 
     # read header
@@ -237,10 +248,14 @@ vars_AC_SAF_UV_txt <- function(files, keep.QC = TRUE) {
       data.vars <- temp
     } else {
       if (!setequal(temp, data.vars)) {
-        warning("Found mismatched 'variables', returning only shared ones")
-        data.vars <- intersect(data.vars, temp)
+        same.vars <- FALSE
+        data.vars <- set.fun(data.vars, temp)
       }
     }
+  }
+
+  if (!same.vars) {
+    warning("Files contain different variables, applying '", set.oper, "'.")
   }
 
   data.vars
