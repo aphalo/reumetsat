@@ -26,19 +26,56 @@ library(reumetsat)
 
 ## Introduction
 
-The "Surface UV" data are on a $0.5^\circ \times 0.5^\circ$ longitude E and latitude N grid. That is latitudes south of the equator and longitudes W of Greenwich are expressed as negative numbers. They consist in several different variables, both daily doses and daily maximum irradiances, biologically weighted and not weighted.
+The AC SAF project of EUMETSAT on atmospheric composition provides several different data products, including "Surface UV", for ultraviolet radiation doses and irradiances. The "Surface UV" data are on a $0.5^\circ \times 0.5^\circ$ longitude E and latitude N grid. That is to say that latitudes south of the equator and longitudes west of Greenwich are expressed as negative numbers. The data consist in several different variables, both daily doses and daily maximum irradiances, biologically weighted and not weighted, estimate errors for them as well as quality flags.
+
+Data can be downloaded in two different formats, suitable for different uses. The most efficient way of downloading data for a single location is to download then as a _time series_ in a text file. When we intend to download data for a region or the whole Earth gridded data are the right approach. These are available as binary files in HDF5 format, that are smaller and allow selective reading of variables and grid regions, allowing fast "ingestion" of the data. This package provides functions that make it easy to selectively important data in either format into R data frames. Please, see the [online-only article for step-by-step instructions on how to obtain the data files from the server](https://docs.r4photobiology.info/reumetsat/articles/surface-uv.html). This must be done at a web page as there is no API available and in addition the files can be downloaded only after a delay, as preparation involved processing in the server.
 
 ## Time series
 
-### Obtaining the files
+### File format
 
-Please, see the online-only article for step-by-step instructions.
+The files are text files with a header protected with `#` as comment marker and the data are in aligned columns separated by one space character. The column names are not stored as column headings, but instead in the header of the file, one variable per row. Thus, decoding the file header is key to the interpretation of the data, while reading the data is simple, although setting the correct R classes to the different variables is also important. The top of the file we will use in the examples is shown below.
 
-The files are text files with a header protected with `#` as comment marker and the data are in aligned columns separated by one space character. The column names are not stored as column headings, but instead in the header of the file, one variable per row. Thus, decoding the file header is key to the interpretation of the data, while reading the data is simple, although setting the correct R classes to the different variables is also important.
+```
+#AC SAF offline surface UV, time-series
+#OUV EXTRACTOR VERSION: 1.20
+#LONGITUDE: 25.000 (0-based index 410)
+#LATITUDE: 60.000 (0-based index 300)
+#COLUMN DEFINITIONS
+#0: Date [YYYYMMDD]
+#1: DailyDoseUva [kJ/m2]
+#2: DailyDoseUvb [kJ/m2]
+#3: DailyMaxDoseRateUva [mW/m2]
+#4: DailyMaxDoseRateUvb [mW/m2]
+#5: QC_MISSING
+#6: QC_LOW_QUALITY
+#7: QC_MEDIUM_QUALITY
+#8: QC_INHOMOG_SURFACE
+#9: QC_POLAR_NIGHT
+#10: QC_LOW_SUN
+#11: QC_OUTOFRANGE_INPUT
+#12: QC_NO_CLOUD_DATA
+#13: QC_POOR_DIURNAL_CLOUDS
+#14: QC_THICK_CLOUDS
+#15: QC_ALB_CLIM_IN_DYN_REG
+#16: QC_LUT_OVERFLOW
+#17: QC_OZONE_SOURCE
+#18: QC_NUM_AM_COT
+#19: QC_NUM_PM_COT
+#20: QC_NOON_TO_COT
+#21: Algorithm version
+#DATA
+20240501  1.224e+03  1.558e+01  3.932e+04  6.628e+02 0 0 0 0 0 0 0 0 0 0 0 0  1  2  0  0 2.2
+20240502  1.235e+03  1.648e+01  3.951e+04  6.974e+02 0 0 0 0 0 0 0 0 0 0 0 0  1  2  0  0 2.2
+20240503  9.368e+02  1.345e+01  3.224e+04  5.871e+02 0 0 0 0 0 0 0 0 0 0 0 0  1  2  0  0 2.2
+... etc.
+```
 
-### Reading the files
+### Reading one file
 
-We fetch the path to an example file included in the package, originally downloaded from the FMI server. The grid point closest to Viikki, Helsinki, Finland, and for variables for UV-B and UV-A daily dose and daily maximum irradiances, not biologically weighted, were requested.
+All functions in the package are vectorised for parameter `files` and can read one or more files in a single call to any of them. However, in our first example we read a single.
+
+We fetch the path to an example file included in the package, originally downloaded from the FMI server. The grid point closest to Viikki, Helsinki, Finland. _In normal use this step is unnecessary as the user will already know the folder where the files to be read are located._
 
 ```{r}
 one.file.name <-
@@ -46,19 +83,25 @@ one.file.name <-
                package = "reumetsat", mustWork = TRUE)
 ```
 
-Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of location corresponding to the time series data.
+Query functions make it possible to find out the names of the variables contained in a file and the coordinates of location corresponding to the time series data. They are very useful as these depend on what is requested at the time the file was downloaded.
 
 ```{r}
 vars_AC_SAF_UV_txt(one.file.name)
 ```
 
-The geographic coordinates of the location are returned.
+To skip the quality control (`QC`) flags from the listed variables we can add `keep.QC = FALSE` to the call above.
+
+```{r}
+vars_AC_SAF_UV_txt(one.file.name, keep.QC = FALSE)
+```
+
+The geographic coordinates of the location are returned based on the file header.
 
 ```{r}
 grid_AC_SAF_UV_txt(one.file.name)
 ```
 
-The variables included in downloaded files can be chosen when the request is submitted on-line. The default is to read all the variables present in the file.
+The variables included in downloaded files can be chosen when the request is submitted on-line. The default in function `read_AC_SAF_UV_txt()` is to read all the variables present in the file.
 
 ```{r}
 summer_viikki.tb <- read_AC_SAF_UV_txt(one.file.name)
@@ -66,13 +109,13 @@ dim(summer_viikki.tb)
 colnames(summer_viikki.tb)
 ```
 
-The returned data frame has 153 rows (= days) and 22 columns (variables). We can see above that several of the variables have names starting with "QC" for quality control.
+The returned data frame has 153 rows (= days) and 22 columns (variables). We can see above that several of the variables have names starting with "QC" for quality control. It is good to check them, as even though bad data are set as `NA`, some of these flags also report weaknesses of the estimates that even if not fatal can be important.
 
 ```{r}
 range(summer_viikki.tb[["Date"]])
 ```
 
-The class of the different columns varies, in particular the "QC" variables are stored in the data frame as `integer` values.
+The class of the different columns varies, while dose and irradiance data are stored as `numeric` values, the "QC" variables are stored in the data frame as `integer` values. The dates are stored in a variable of class `Date` and the `Algorithm version` as `character`.
 
 ```{r}
 str(lapply(summer_viikki.tb, class))
@@ -87,24 +130,48 @@ dim(summer_viikki_QCf.tb)
 colnames(summer_viikki_QCf.tb)
 ```
 
-In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `read_AC_SAF_UV_txt()`. However, here we override the default and add coordinates when reading only one file.
-
-```{r}
-summer_viikki_geo.tb <-
-  read_AC_SAF_UV_txt(one.file.name, keep.QC = FALSE, add.geo = TRUE)
-dim(summer_viikki_geo.tb)
-colnames(summer_viikki_geo.tb)
-```
-
-In some cases we may want to read only specific variables out of the file. This is possible by passing the names of the variables as an argument through parameter `vars.to.read`.
+In some cases we may want to read only specific variables out of the file. This is possible by passing the names of the variables as an argument through parameter `vars.to.read`. In the example below we read only two data variables plus `Date` that is always included.
 
 ```{r}
 # read two variables
 summer_viikki_2.tb <-
   read_AC_SAF_UV_txt(one.file.name,
-                    vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
+                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 dim(summer_viikki_2.tb)
 colnames(summer_viikki_2.tb)
+```
+To read variables based on name matching we can first retrieve the names of all variables, programatically select some of them and pass them to parameter `vars.to.read`.
+
+```{r}
+# read UV-A and UV-B variables and QC flags
+uvb.vars <- grep("uvb$|uva$|^QC_", 
+                 vars_AC_SAF_UV_txt(one.file.name), value = TRUE, ignore.case = TRUE)
+summer_viikki_3.tb <-
+  read_AC_SAF_UV_txt(one.file.name,
+                     vars.to.read = uvb.vars)
+dim(summer_viikki_3.tb)
+colnames(summer_viikki_3.tb)
+```
+
+### Reading multiple files
+
+One consideration is that when reading multiple time-series files, we must ensure that the variables we intend to read are present in all the files. The presence of additional variables in only some files is not a problem as the files are read selectively, and the name and position of columns found from the header of each file. We can find out which variables are present in all the files we intend to read as shown below. We ignore the quality control variables as they are always included in the files.
+
+```{r}
+two.file.names <- rep(one.file.name, 2)
+```
+
+```{r}
+vars_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE)
+```
+
+In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `read_AC_SAF_UV_txt()`. However, here we override the default and add coordinates when reading only one file.
+
+```{r}
+summer_viikki_geo.tb <-
+  read_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE, add.geo = TRUE)
+dim(summer_viikki_geo.tb)
+colnames(summer_viikki_geo.tb)
 ```
 
 ### Using the data
