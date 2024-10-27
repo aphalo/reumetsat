@@ -59,7 +59,7 @@
 #' @examples
 #' # find location of one example file
 #' one.file.name <-
-#'    system.file("extdata", "AC_SAF_ts_Viikki.txt",
+#'    system.file("extdata", "AC_SAF-Viikki-FI-6masl.txt",
 #'                package = "reumetsat", mustWork = TRUE)
 #'
 #' # Available variables

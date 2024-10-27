@@ -1,7 +1,7 @@
 test_that("reads one time series file", {
 
   one.file.name <-
-    system.file("extdata", "AC_SAF_ts_Viikki.txt",
+    system.file("extdata", "AC_SAF-Viikki-FI-6masl.txt",
                 package = "reumetsat", mustWork = TRUE)
 
   all.variables <-
@@ -63,7 +63,7 @@ test_that("reads one time series file", {
 test_that("errors are triggered", {
 
   one.file.name <-
-    system.file("extdata", "AC_SAF_ts_Viikki.txt",
+    system.file("extdata", "AC_SAF-Viikki-FI-6masl.txt",
                 package = "reumetsat", mustWork = TRUE)
 
   # bad set.oper arguments

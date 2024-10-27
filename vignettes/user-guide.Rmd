@@ -79,7 +79,7 @@ We fetch the path to an example file included in the package, originally downloa
 
 ```{r}
 one.file.name <-
-   system.file("extdata", "AC_SAF_ts_Viikki.txt",
+   system.file("extdata", "AC_SAF-Viikki-FI-6masl.txt",
                package = "reumetsat", mustWork = TRUE)
 ```
 
@@ -155,28 +155,51 @@ colnames(summer_viikki_3.tb)
 
 ### Reading multiple files
 
-In the case of time-series data one may want to read several files for the same location, for example for different time periods at the same location or a few different locations for the same time period. This can be achieved by passing to parameter `files` a vector of file names.
+In the case of time-series data one may want to read several files for the same location, for example for different time periods at the same location or for a few different locations for the same time period. This can be achieved by passing to parameter `files` a vector of file names.
 
-One consideration is that when reading multiple time-series files, we must ensure that the variables we intend to read are present in all the files. The presence of additional variables in only some files is not a problem as the files are read selectively, and the name and position of columns found from the header of each file. We can find out which variables are present in all the files we intend to read as shown below, relying on the default behavior of function `vars_AC_SAF_UV_txt()`.
+One consideration is that when reading multiple time-series files, we must ensure that the variables we intend to read are present in all the files. The presence of additional variables in only some files is not a problem as the files are read selectively, and the name and position of columns found from the header of each file. We can find out which variables are present in all the files we intend to read as shown below, relying on the default behavior of function `vars_AC_SAF_UV_txt()`. We first locate the folder where the files are stored and then search for files with names matching a pattern.
 
 ```{r}
-two.file.names <- rep(one.file.name, 2)
+path.to.files <-
+    system.file("extdata",
+                package = "reumetsat", mustWork = TRUE)
+two.file.names <-
+    list.files(path.to.files, pattern = "*masl\\.txt$", full.names = TRUE)
 ```
 
-We can ignore the quality control variables as they are always included in the files.
+We can find out if the two files contain data for the same location.
+
+```{r}
+grid_AC_SAF_UV_txt(two.file.names)
+```
+
+We can ignore the quality control variables to keep the output simpler and easier to understand. A warning is issued because the files contain different sets of variables. By default the returned vector contains the names of the variables that are present in all files. 
  
 ```{r}
-vars_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE)
+shared.variables <- vars_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE)
 ```
 
 In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `read_AC_SAF_UV_txt()`. 
 ```{r}
-summer_viikki_geo.tb <-
-  read_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE)
-dim(summer_viikki_geo.tb)
-colnames(summer_viikki_geo.tb)
+two_locations.tb <-
+  read_AC_SAF_UV_txt(two.file.names, vars.to.read = shared.variables, keep.QC = FALSE)
+dim(two_locations.tb)
+colnames(two_locations.tb)
 ```
 The returned value is a single data frame with the concatenated contents of the files.
+
+In the case of two files we can find what variables are in only one file by passing `set.oper = "setdiff"` as argument.
+
+```{r}
+vars_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE, set.oper = "setdiff")
+```
+Alternatively we can check the variables present in each file.
+
+```{r}
+  vars.ls <- lapply(two.file.names, FUN = vars_AC_SAF_UV_txt, keep.QC = FALSE)
+  names(vars.ls) <- basename(two.file.names)
+  vars.ls
+```
 
 ### Using the data
 
@@ -188,6 +211,12 @@ We may be interested in computing the total UV-B dose accumulated over the durat
 subset(summer_viikki_2.tb, 
        Date >= as.Date("2024-07-15") & Date < as.Date("2024-08-15")) |>
 with(sum(DailyDoseUvb))
+```
+
+The file headers are copied to attribute "file.header", in the form of a list with one character vector per file read.
+
+```{r}
+attr(two_locations.tb, "file.header")
 ```
 
 ## Data on a geographic grid
@@ -326,6 +355,77 @@ colnames(doses_5days_spain.tb)
 
 ### Reading gridded files differing in the variables
 
-As memory is pre-allocated the set of variables to be read is decided when or before the first file is read. If no argument is passed to `vars.to.read`, the default becomes the set of variables found in the first file read. On the contrary, if an argument is passed, it determines the set of variables to read. If any variable in this set is not found in a file, currently, an error is triggered.
+As memory is pre-allocated the set of variables to be read is decided when or before the first file is read. If no argument is passed to `vars.to.read`, the default becomes the set of variables found in the first file read. In contrast, if an argument is passed, it determines the set of variables to read. If any variable in this set is not found in a file, currently, an error is triggered.
 
 We can use `r `vars__AC_SAF_UV_hdf5()` to obtain a vector with the names of all the variables that are present consistently across all the files. This is the case with the default argument `set.oper = "intersect"`. Passing `"union"` lists all the variables found in at least one of the files.
+
+```{r}
+path.to.files <-
+   system.file("extdata",
+               package = "reumetsat", mustWork = TRUE)
+```
+
+```{r}
+gridded.files <-
+  list.files(path.to.files, pattern = "*\\.HDF5$", full.names = TRUE)
+```
+
+
+```{r}
+grid_AC_SAF_UV_hdf5(gridded.files)
+```
+
+```{r}
+shared.variables <- vars_AC_SAF_UV_hdf5(gridded.files, keep.QC = FALSE)
+shared.variables
+```
+We can check the variables present in each file.
+
+```{r}
+  vars.ls <- lapply(gridded.files, FUN = vars_AC_SAF_UV_hdf5, keep.QC = FALSE)
+  names(vars.ls) <- basename(gridded.files)
+  vars.ls
+```
+
+By default progress is reported when the function is called interactively. Thus, within the vignette they are not shown by default. We can force its display.
+
+```{r}
+six.days.tb <- 
+  read_AC_SAF_UV_hdf5(gridded.files, 
+                      vars.to.read = shared.variables, 
+                      keep.QC = FALSE,
+                      verbose = TRUE)
+```
+
+As you surely expect by now, the returned object is a data frame.
+
+```{r}
+dim(six.days.tb)
+colnames(six.days.tb)
+```
+
+```{r}
+head(six.days.tb)
+```
+
+### Using the data
+
+As shown above, being the returned object an R data frame plotting and other computations do not differ from the usual ones.
+
+Currently only a trace  of the origin of the data is preserved in the data frame object's `comment` attribute.
+
+```{r}
+comment(six.days.tb)
+```
+The individual variables also have metadata, including units of expression, as attributes. These are copied from the attributes in the first file read, which is safe, as the downloaded data are always consistent in this respect.
+
+```{r}
+attributes(six.days.tb$DailyDoseUvb)
+```
+
+## References
+
+Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
+   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
+   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
+
