@@ -154,12 +154,12 @@ read_AC_SAF_UV_hdf5 <-
       on.exit(
         {
           end_time <- Sys.time()
-          cat("Read ", length(files), " HDF5 files into a ",
-              format(utils::object.size(z.tb), units = "MB"),
+          cat("Read ", length(files), " grid-based HDF5 file(s) into a ",
+              format(utils::object.size(z.tb), units = "auto", standard = "SI"),
               " data frame [",
               paste(dim(z.tb), collapse = " rows x "),
               " cols] in ",
-              format(round(end_time - start_time, 1)), "\n", sep = "")
+              format(signif(end_time - start_time, 2)), "\n", sep = "")
         },
         add = TRUE, after = FALSE)
     }

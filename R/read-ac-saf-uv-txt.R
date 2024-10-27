@@ -109,10 +109,31 @@ read_AC_SAF_UV_txt <-
 
     check_files_accessible(files)
 
+    # progress reporting
+    if (verbose) {
+      start_time <- Sys.time()
+      on.exit(
+        {
+          end_time <- Sys.time()
+          cat("Read ", length(files), " time-series .txt file(s) into a ",
+              format(utils::object.size(z.tb), units = "auto", standard = "SI"),
+              " data frame [",
+              paste(dim(z.tb), collapse = " rows x "),
+              " cols] in ",
+              format(signif(end_time - start_time, 2)), "\n", sep = "")
+        },
+        add = TRUE, after = FALSE)
+    }
+
     z.tb <- data.frame()
     file.headers.ls <- list()
 
     for (file in files) {
+
+      if (verbose) {
+        cat("Reading: ", basename(file), "\n", sep = "")
+      }
+
       # read header
       file.header <- scan(
         file = file,

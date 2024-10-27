@@ -329,6 +329,3 @@ colnames(doses_5days_spain.tb)
 As memory is pre-allocated the set of variables to be read is decided when or before the first file is read. If no argument is passed to `vars.to.read`, the default becomes the set of variables found in the first file read. On the contrary, if an argument is passed, it determines the set of variables to read. If any variable in this set is not found in a file, currently, an error is triggered.
 
 We can use `r `vars__AC_SAF_UV_hdf5()` to obtain a vector with the names of all the variables that are present consistently across all the files. This is the case with the default argument `set.oper = "intersect"`. Passing `"union"` lists all the variables found in at least one of the files.
-
-
-
