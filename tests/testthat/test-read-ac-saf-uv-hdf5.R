@@ -113,28 +113,32 @@ test_that("errors are triggered", {
 
   # errors early with not accessible files
   expect_error(read_AC_SAF_UV_hdf5(c("missing-file1", one.file.name, "missing-file2"),
-                                 data.product = "Surface UV",
-                                 verbose = FALSE))
+                                   data.product = "Surface UV",
+                                   verbose = FALSE))
+  expect_error(vars_AC_SAF_UV_hdf5(c("missing-file1", one.file.name, "missing-file2")))
+  expect_error(grid_AC_SAF_UV_hdf5(c("missing-file1", one.file.name, "missing-file2")))
+  expect_error(date_AC_SAF_UV_hdf5(c("missing-file1", one.file.name, "missing-file2")))
+
   expect_error(read_AC_SAF_UV_hdf5("missing-file", verbose = FALSE))
   expect_error(read_AC_SAF_UV_hdf5("O3MOUV_missing-file", verbose = FALSE))
   expect_error(read_AC_SAF_UV_hdf5(c(one.file.name, "missing-file"), verbose = FALSE))
 
-  # fails early with wrang data product name
+  # fails early with wrong data product name
   expect_warning(read_AC_SAF_UV_hdf5(one.file.name,
-                                 data.product = "bad-product-name",
-                                 verbose = FALSE))
+                                     data.product = "bad-product-name",
+                                     verbose = FALSE))
   # case insensitive
   expect_no_error(z <- read_AC_SAF_UV_hdf5(one.file.name,
-                                         data.product = "surface uv",
-                                         verbose = FALSE))
+                                           data.product = "surface uv",
+                                           verbose = FALSE))
 
   expect_no_error(z <- read_AC_SAF_UV_hdf5(one.file.name,
-                                         data.product = "O3MOUV",
-                                         verbose = FALSE))
+                                           data.product = "O3MOUV",
+                                           verbose = FALSE))
 
   expect_no_error(z <- read_AC_SAF_UV_hdf5(one.file.name,
-                                         data.product = "O3moUV",
-                                         verbose = FALSE))
+                                           data.product = "O3moUV",
+                                           verbose = FALSE))
 
 
 })

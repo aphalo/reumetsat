@@ -140,7 +140,7 @@ summer_viikki_2.tb <-
 dim(summer_viikki_2.tb)
 colnames(summer_viikki_2.tb)
 ```
-To read variables based on name matching we can first retrieve the names of all variables, programatically select some of them and pass them to parameter `vars.to.read`.
+To read variables based on name matching we can first retrieve the names of all variables, and select some of them with `grep()` before passing them to parameter `vars.to.read` as argument.
 
 ```{r}
 # read UV-A and UV-B variables and QC flags

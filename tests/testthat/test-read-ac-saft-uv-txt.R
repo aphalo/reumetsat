@@ -66,6 +66,9 @@ test_that("errors are triggered", {
     system.file("extdata", "AC_SAF_ts_Viikki.txt",
                 package = "reumetsat", mustWork = TRUE)
 
+  # bad set.oper arguments
+  expect_error(vars_AC_SAF_UV_txt(one.file.name, set.oper = "bad"))
+
   # errors early with not accessible files
   expect_error(read_AC_SAF_UV_txt(c("missing-file1", one.file.name, "missing-file2"),
                                  verbose = FALSE))

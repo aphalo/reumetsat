@@ -134,12 +134,7 @@ read_AC_SAF_UV_hdf5 <-
            keep.QC = TRUE,
            verbose = interactive()) {
 
-    # check that filenames all exist
-    missing.files <- !file.exists(files)
-    if (any(missing.files)) {
-      stop("Cannot access ", sum(missing.files), " of the files: ",
-           paste(files[missing.files], collapse = ", "), sep = "")
-    }
+    check_files_accessible(files)
 
     # We guess the data product from the file name
     if (is.null(data.product)) {
@@ -168,12 +163,6 @@ read_AC_SAF_UV_hdf5 <-
         },
         add = TRUE, after = FALSE)
     }
-
-    # we read metadata from the first file
-    # metadata.tb <-
-    #   rhdf5::h5readAttributes(files[i], name = "METADATA")
-    # product_metadata.tb <-
-    #   rhdf5::h5readAttributes(files[i], name = "PRODUCT_SPECIFIC_METADATA")
 
     # the grid is described but not stored explicitly in these files
     grid_desc <- attributes(rhdf5::h5read(files[1],
@@ -255,10 +244,10 @@ read_AC_SAF_UV_hdf5 <-
       for (col in col.names[!to_skip]) {
         # read data matrix for variable as a vector
         var_data.ls[[col]][slice.selector] <-
-          rhdf5::h5read(files[i], name = vars.to.read[[col]],
-                        read.attributes = TRUE,
-                        drop = TRUE,
-                        bit64conversion = "double")
+            rhdf5::h5read(files[i], name = vars.to.read[[col]],
+                          read.attributes = TRUE,
+                          drop = TRUE,
+                          bit64conversion = "bit64")
       }
 
     }
@@ -270,19 +259,24 @@ read_AC_SAF_UV_hdf5 <-
       var_attrs <-
         rhdf5::h5readAttributes(files[[1]],
                                 name = vars.to.read[[col]],
-                                bit64conversion = "double")
+                                bit64conversion = "bit64")
 
       # replace fill marker with NA
       na.selector <- which(var_data.ls[[col]] == var_attrs$FillValue)
       var_data.ls[[col]][na.selector] <- fill
 
-      # we assume again consistency among files and copy attributes from first file
+      # we assume consistency among files and copy attributes from first file
       attributes(var_data.ls[[col]]) <-
         c(attributes(var_data.ls[[col]]),
           var_attrs[c("Title", "ScaleFactor", "Unit")])
     }
 
     z.tb <- as.data.frame(var_data.ls)
+    if (exists("QualityFlags", z.tb)) {
+      # the conversion during HDF5 file reading gets lost
+      z.tb[["QualityFlags"]] <- I(bit64::as.integer64(z.tb[["QualityFlags"]]))
+    }
+
     comment(z.tb) <-
       paste("Data imported from ", length(files),
             " HDF5 files: ",
@@ -302,6 +296,8 @@ vars_AC_SAF_UV_hdf5 <- function(files,
                                 group.name = "GRID_PRODUCT",
                                 keep.QC = TRUE,
                                 set.oper = "intersect") {
+
+  check_files_accessible(files)
 
   # We guess the data product from the file name
   if (is.null(data.product)) {
@@ -359,18 +355,12 @@ vars_AC_SAF_UV_hdf5 <- function(files,
 grid_AC_SAF_UV_hdf5 <- function(files,
                                 expand = FALSE) {
 
+  check_files_accessible(files)
+
   # the grid is described but not stored explicitly in these files
   first_grid_desc <- attributes(rhdf5::h5read(files[1],
                                               name = "GRID_DESCRIPTION",
                                               read.attributes = TRUE))
-
-  # We construct the grid based on the attributes
-  Longitudes.vec <- seq(from = first_grid_desc$XStartLon,
-                        by = first_grid_desc$XStepDeg,
-                        length.out = first_grid_desc$XNumCells) # rows
-  Latitudes.vec <- seq(from = first_grid_desc$YStartLat,
-                       by = first_grid_desc$YStepDeg,
-                       length.out = first_grid_desc$YNumCells) # columns
 
   # check consistency
   for (file in files[-1]) {
@@ -386,6 +376,14 @@ grid_AC_SAF_UV_hdf5 <- function(files,
       ))
     }
   }
+
+  # We construct the grid based on the attributes
+  Longitudes.vec <- seq(from = first_grid_desc$XStartLon,
+                        by = first_grid_desc$XStepDeg,
+                        length.out = first_grid_desc$XNumCells) # rows
+  Latitudes.vec <- seq(from = first_grid_desc$YStartLat,
+                       by = first_grid_desc$YStepDeg,
+                       length.out = first_grid_desc$YNumCells) # columns
 
   if (expand) {
     Longitudes <- rep(Longitudes.vec, times = length(Latitudes.vec))
@@ -406,6 +404,9 @@ grid_AC_SAF_UV_hdf5 <- function(files,
 #'
 date_AC_SAF_UV_hdf5 <- function(files,
                                 use.names = length(files > 1)) {
+
+  check_files_accessible(files)
+
   files <- basename(files)
   z <- as.Date(sub(".*_([0-9]{8})_.*", "\\1", files), format = "%Y%m%d")
   if (use.names) {

@@ -107,12 +107,7 @@ read_AC_SAF_UV_txt <-
            keep.QC = TRUE,
            verbose = interactive()) {
 
-    # check that filenames all exist
-    missing.files <- !file.exists(files)
-    if (any(missing.files)) {
-      stop("Cannot access ", sum(missing.files), " of the files: ",
-           paste(files[missing.files], collapse = ", "), sep = "")
-    }
+    check_files_accessible(files)
 
     z.tb <- data.frame()
     file.headers.ls <- list()
@@ -202,6 +197,8 @@ vars_AC_SAF_UV_txt <- function(files,
                                keep.QC = TRUE,
                                set.oper = "intersect") {
 
+  check_files_accessible(files)
+
   set.fun <- switch(set.oper,
                     union = base::union,
                     setdiff = base::setdiff,
@@ -271,6 +268,8 @@ vars_AC_SAF_UV_txt <- function(files,
 #'
 grid_AC_SAF_UV_txt <- function(files,
                                use.names = length(files) > 1) {
+
+  check_files_accessible(files)
 
   z.df <- data.frame()
   for (file in files) {
