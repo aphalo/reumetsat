@@ -155,28 +155,32 @@ colnames(summer_viikki_3.tb)
 
 ### Reading multiple files
 
-One consideration is that when reading multiple time-series files, we must ensure that the variables we intend to read are present in all the files. The presence of additional variables in only some files is not a problem as the files are read selectively, and the name and position of columns found from the header of each file. We can find out which variables are present in all the files we intend to read as shown below. We ignore the quality control variables as they are always included in the files.
+In the case of time-series data one may want to read several files for the same location, for example for different time periods at the same location or a few different locations for the same time period. This can be achieved by passing to parameter `files` a vector of file names.
+
+One consideration is that when reading multiple time-series files, we must ensure that the variables we intend to read are present in all the files. The presence of additional variables in only some files is not a problem as the files are read selectively, and the name and position of columns found from the header of each file. We can find out which variables are present in all the files we intend to read as shown below, relying on the default behavior of function `vars_AC_SAF_UV_txt()`.
 
 ```{r}
 two.file.names <- rep(one.file.name, 2)
 ```
 
+We can ignore the quality control variables as they are always included in the files.
+ 
 ```{r}
 vars_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE)
 ```
 
-In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `read_AC_SAF_UV_txt()`. However, here we override the default and add coordinates when reading only one file.
-
+In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `read_AC_SAF_UV_txt()`. 
 ```{r}
 summer_viikki_geo.tb <-
-  read_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE, add.geo = TRUE)
+  read_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE)
 dim(summer_viikki_geo.tb)
 colnames(summer_viikki_geo.tb)
 ```
+The returned value is a single data frame with the concatenated contents of the files.
 
 ### Using the data
 
-Being the returned object an R data frame plotting and other computations do not differ from the usual ones. One example follows showing subsetting based on dates. In the time series there are occasionally days missing data (`NA`), and may need to be addressed.
+Being the returned object an R data frame plotting and other computations do not differ from the usual ones. One example follows showing subsetting based on dates. In the time series there are occasionally days missing data (`NA`), and this may need to be addressed.
 
 We may be interested in computing the total UV-B dose accumulated over the duration of an experiment. There are different ways of doing this computation, here I use base R functions.
 
@@ -190,15 +194,15 @@ with(sum(DailyDoseUvb))
 
 Worldwide coverage consists in $720 \times 360 = `r 720 * 360`$ grid points. As for time series, the number of data columns varies. However, one difference is that QC information is collected into a single variable. The format of the files is HDF5, which are binary files that allow selective reading. There are additional optimizations used to reduce the size, the main one is that the geographic coordinates of the grid points are not saved explicitly but instead the information needed to compute them is included as metadata. The data are provided as one file per day, with the size of the files depending on the number of grid points included as well as the number of variables. As these are off-line data available with a delay, in most cases we are interested in data for a certain period of time.
 
-### Obtaining the files
+### Format of gridded data
 
-Please, see the online-only article for step-by-step instructions.
+The HDF5 files have a specific format and content organization that makes it possible to efficiently read subsets of the data they contain. The functions in package 'reumetsat' call functions from package 'rhdf5' to access these files. The column names are stored as metadata and can be queried without reading the whole file. Thus, decoding is simpler than for the time series files in text format. Reading the data is also simple as it is stored as numeric values no requiring interpretation. The dates, in contrast, need to be decoded from the file names, making it crucial that if users rename the files they preserve the date string and the `_` at its boundary. The HDF5 files are contained in a `.zip` archive. The `.zip` archives can be freely renamed if desired.
 
-The HDF5 files have a specific format and content organization, the function in package 'reumetsat' uses functions from package 'rhdf5' to access the files. The column names are not stored as metadata and can be queried without reading the whole file. Thus, decoding is simpler than for the time series files in text format. Reading the data is simple as it is stored as numeric values no requiring interpretation. The dates, in contrast, need to be decoded from the file names, making it crucial that users do not rename the files contained in the `.zip` archive.
+### Reading one gridded-data file
 
-### Reading the files
+As HDF5 gridded data files contain data for a single day, frequently we need to read several of them concatenating the data they contain. Anyway, in the first example we read a single file for simplicity.
 
-As above for the time series file, we fetch the path to an example file included in the package, originally downloaded from the FMI server. It covers the whole of the Iberian peninsula and the Balearic islands. Only variables for UV-B and UV-A daily dose and daily maximum irradiances, not biologically weighted, were requested from the server.
+As above for the time series file, we fetch the path to an example file included in the package, originally downloaded from the FMI server. It covers the whole of the Iberian peninsula and the Balearic islands. Only variables for UV-B and UV-A daily dose and daily maximum irradiances, not biologically weighted, were requested from the server. _In normal use this step is unnecessary as the user will already know the folder where the file to be read is located._
 
 ```{r}
 one.file.name <-
@@ -232,10 +236,10 @@ Variable names are consistent between the data frames returned by `read_AC_SAF_U
 str(lapply(midsummer_spain.tb, class))
 ```
 
-Quality control information is encoded differently in the two types of downloaded files. As seen above, in `.txt` individual QC variables, taking as values single-digit `integer` values are present. In the `.HDF5` files the flags are collapsed into a single variable, that needs decoding.
+Quality control information is encoded differently in the two types of downloaded files. As seen above, in `.txt` individual QC variables, taking as values single-digit `integer` values are present. In the `.HDF5` files the flags are collapsed into a single 64 bit variable, that needs decoding. As R does not support 64 bit integers, the package returns the `QualityFlags` variable as an columns of class `integre64`, a class defined in package 'bit64'.
 
 ```{r}
-
+head(midsummer_spain.tb$QualityFlags)
 ```
 
 We can as before read only specific variables if needed by passing their names as argument to `vars.to.read`.
@@ -248,9 +252,11 @@ dim(midsummer_spain_daily.tb)
 colnames(midsummer_spain_daily.tb)
 ```
 
-We can read multiple files, with a limit to their maximum number imposed by the available computer RAM as data frames as used reside in RAM during computations. The amount of RAM required varies with the geographic area covered and number of variables read. *In practice, this limit is unlikely to be a problem only with data with world-wide coverage.*
+### Reading multiple gridded-data files
 
-We fetch the paths to the example files included in the package. In normal use, this step is not needed as the user will know the paths to the files to read, or will use function `list.files()` with a search pattern if he/she knows the folder where the files to be read reside.
+We can read multiple files, with a limit to their maximum number imposed by the available computer RAM as data frames as used reside in RAM during computations. The amount of RAM required varies with the geographic area covered and number of variables read. *In practice, this limit is unlikely to be a problem only with data with world-wide or continental coverage.* (The size of the data frame affects performance when the total number of cells or length of the underlying vector(s) is so large that cannot be represented as an R (32 bit) `integer`, $n > `r  .Machine$integer.max`$).
+
+We fetch the paths to the example files included in the package. In normal use, this step is not needed as the user will know the paths to the files to read, or will use function `list.files()` with a search pattern if he/she knows the folder where the files to be read reside. _In normal use this step is unnecessary as the user will already know the folder where the file to be read is located._
 
 ```{r}
 five.file.names <-
@@ -263,10 +269,66 @@ five.file.names <-
                package = "reumetsat", mustWork = TRUE)
 ```
 
-The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `read_AC_SAF_UV_hdf5()` should share identical grids and contain the variables to be read.* If this is not the case, `read_AC_SAF_UV_hdf5()` should be used to read them individually and later combined, which is a slower approach.
+The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `read_AC_SAF_UV_hdf5()` should share identical grids and contain all the variables to be read (by default all those in the first file read).* If this is not the case, currently `read_AC_SAF_UV_hdf5()` should be used to read them individually and later combined, which is a slower approach.
 
 ```{r}
 summer_5days_spain.tb <- read_AC_SAF_UV_hdf5(five.file.names)
 dim(summer_5days_spain.tb)
 colnames(summer_5days_spain.tb)
 ```
+Why can silence progress reporting.
+
+```{r}
+summer_5days_spain.tb <- 
+  read_AC_SAF_UV_hdf5(five.file.names, verbose = FALSE)
+```
+
+As shown above for text files, query functions can be used to extract information about the files, in this case without reading them in whole.
+
+```{r}
+vars_AC_SAF_UV_hdf5(five.file.names)
+```
+
+```{r}
+vars_AC_SAF_UV_hdf5(five.file.names, keep.QC = FALSE)
+```
+
+```{r}
+grid_AC_SAF_UV_hdf5(five.file.names)
+```
+
+```{r}
+grid_AC_SAF_UV_hdf5(five.file.names, expand = TRUE) |>
+  head(10)
+```
+
+```{r}
+date_AC_SAF_UV_hdf5(five.file.names)
+```
+
+```{r}
+date_AC_SAF_UV_hdf5(five.file.names, use.names = FALSE)
+```
+
+
+If the files differ in the variables they contain, or we want to only extract some, as shown above, we can select them with `grep()` or some other function once we have a list of their names. (Of course, we can also simply pass the names of the variables as an inline character vector in the call, as shown above for time-series data files.)
+
+```{r}
+all.vars <- vars_AC_SAF_UV_hdf5(five.file.names)
+daily.dose.vars <- grep("^DailyDose", all.vars, value = TRUE)
+
+doses_5days_spain.tb <- 
+  read_AC_SAF_UV_hdf5(five.file.names, vars.to.read = daily.dose.vars)
+dim(doses_5days_spain.tb)
+colnames(doses_5days_spain.tb)
+
+```
+
+### Reading gridded files differing in the variables
+
+As memory is pre-allocated the set of variables to be read is decided when or before the first file is read. If no argument is passed to `vars.to.read`, the default becomes the set of variables found in the first file read. On the contrary, if an argument is passed, it determines the set of variables to read. If any variable in this set is not found in a file, currently, an error is triggered.
+
+We can use `r `vars__AC_SAF_UV_hdf5()` to obtain a vector with the names of all the variables that are present consistently across all the files. This is the case with the default argument `set.oper = "intersect"`. Passing `"union"` lists all the variables found in at least one of the files.
+
+
+
