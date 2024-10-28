@@ -134,7 +134,7 @@ read_AC_SAF_UV_hdf5 <-
            keep.QC = TRUE,
            verbose = interactive()) {
 
-    check_files_accessible(files)
+    files <- check_files_accessible(files)
 
     # We guess the data product from the file name
     if (is.null(data.product)) {
@@ -287,7 +287,7 @@ read_AC_SAF_UV_hdf5 <-
 
 #' @rdname read_AC_SAF_UV_hdf5
 #'
-#' @param set.oper character One of `"intersect"`, `"union"`, or `"setdiff"`.
+#' @param set.oper character One of `"intersect"`, or `"union"`.
 #'
 #' @export
 #'
@@ -297,7 +297,7 @@ vars_AC_SAF_UV_hdf5 <- function(files,
                                 keep.QC = TRUE,
                                 set.oper = "intersect") {
 
-  check_files_accessible(files)
+  files <- check_files_accessible(files)
 
   # We guess the data product from the file name
   if (is.null(data.product)) {
@@ -306,7 +306,6 @@ vars_AC_SAF_UV_hdf5 <- function(files,
 
   set.fun <- switch(set.oper,
                     union = base::union,
-                    setdiff = base::setdiff,
                     intersect = base::intersect,
                     {stop("'set.oper' argument '", set.oper, "' not recognized")})
 
@@ -325,7 +324,7 @@ vars_AC_SAF_UV_hdf5 <- function(files,
       data.vars <- file.str[["name"]][vars.selector]
     } else {
       temp <- file.str[["name"]][vars.selector]
-      if (!setequal(temp, data.vars)) {
+      if (!setequal(data.vars, temp)) {
         same.vars <- FALSE
         data.vars <- set.fun(data.vars, temp)
       }
@@ -333,7 +332,7 @@ vars_AC_SAF_UV_hdf5 <- function(files,
   }
 
   if (!same.vars) {
-    warning("Files contain different variables, applying '", set.oper, "'.")
+    message("Files contain different variables, applying '", set.oper, "'.")
   }
 
   if (!keep.QC) {
@@ -355,7 +354,7 @@ vars_AC_SAF_UV_hdf5 <- function(files,
 grid_AC_SAF_UV_hdf5 <- function(files,
                                 expand = FALSE) {
 
-  check_files_accessible(files)
+  files <- check_files_accessible(files)
 
   # the grid is described but not stored explicitly in these files
   first_grid_desc <- attributes(rhdf5::h5read(files[1],
@@ -405,7 +404,7 @@ grid_AC_SAF_UV_hdf5 <- function(files,
 date_AC_SAF_UV_hdf5 <- function(files,
                                 use.names = length(files > 1)) {
 
-  check_files_accessible(files)
+  files <- check_files_accessible(files)
 
   files <- basename(files)
   z <- as.Date(sub(".*_([0-9]{8})_.*", "\\1", files), format = "%Y%m%d")

@@ -51,7 +51,7 @@ control variable, always present in the files.}
 \item{verbose}{logical Flag indicating if progress, and time and size of
 the returned object should be printed.}
 
-\item{set.oper}{character One of \code{"intersect"}, \code{"union"}, or \code{"setdiff"}.}
+\item{set.oper}{character One of \code{"intersect"}, or \code{"union"}.}
 
 \item{expand}{logical Flag indicating whether to return ranges or a
 full grid.}

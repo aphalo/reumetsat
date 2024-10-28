@@ -188,12 +188,8 @@ colnames(two_locations.tb)
 ```
 The returned value is a single data frame with the concatenated contents of the files.
 
-In the case of two files we can find what variables are in only one file by passing `set.oper = "setdiff"` as argument.
 
-```{r}
-vars_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE, set.oper = "setdiff")
-```
-Alternatively we can check the variables present in each file.
+We can check the variables present in each file.
 
 ```{r}
   vars.ls <- lapply(two.file.names, FUN = vars_AC_SAF_UV_txt, keep.QC = FALSE)

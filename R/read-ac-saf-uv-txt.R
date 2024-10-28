@@ -107,7 +107,7 @@ read_AC_SAF_UV_txt <-
            keep.QC = TRUE,
            verbose = interactive()) {
 
-    check_files_accessible(files)
+    files <- check_files_accessible(files)
 
     # progress reporting
     if (verbose) {
@@ -146,7 +146,7 @@ read_AC_SAF_UV_txt <-
 
       # check first line for expected value
       if (file.header[1] != "#AC SAF offline surface UV, time-series") {
-        stop("Unexpected value at top of header.")
+        stop("Unexpected value at top of time-series file.")
       }
 
       # find start of data / end of header
@@ -169,6 +169,17 @@ read_AC_SAF_UV_txt <-
         unlist(strsplit(file.header[start.of.col.defs:(end.of.header - 1L)],
                         split = ": ", fixed = TRUE))[c(FALSE, TRUE)]
       col.names <- gsub(" \\[.*\\]", "", col.names) # remove units
+
+      if (!length(vars.to.read)) {
+        # by default use first file variables
+        vars.to.read <- col.names
+      } else if (!all(vars.to.read %in% col.names)) {
+        # error in case of missing variables
+        stop("Variable(s) ",
+             paste(setdiff(vars.to.read, col.names), collapse = ", "),
+             " are missing in file", basename(file), ".")
+      }
+
       if (!keep.QC) {
         col.classes <-
           ifelse(grepl("^Date|^Algorithm", col.names),
@@ -181,10 +192,8 @@ read_AC_SAF_UV_txt <-
                  ifelse(grepl("^QC_", col.names), "integer", "numeric"))
       }
 
-      if (length(vars.to.read)) {
-        col.classes <- ifelse(col.names %in% c("Date", vars.to.read),
-                              col.classes, "NULL")
-      }
+      col.classes <- ifelse(col.names %in% c("Date", vars.to.read),
+                            col.classes, "NULL")
 
       # read data values
       temp.tb <-
@@ -210,7 +219,7 @@ read_AC_SAF_UV_txt <-
 
 #' @rdname read_AC_SAF_UV_txt
 #'
-#' @param set.oper character One of `"intersect"`, `"union"`, or `"setdiff"`.
+#' @param set.oper character One of `"intersect"`, or `"union"`.
 #'
 #' @export
 #'
@@ -218,11 +227,10 @@ vars_AC_SAF_UV_txt <- function(files,
                                keep.QC = TRUE,
                                set.oper = "intersect") {
 
-  check_files_accessible(files)
+  files <- check_files_accessible(files)
 
   set.fun <- switch(set.oper,
                     union = base::union,
-                    setdiff = base::setdiff,
                     intersect = base::intersect,
                     {stop("'set.oper' argument '", set.oper, "' not recognized")})
 
@@ -273,7 +281,7 @@ vars_AC_SAF_UV_txt <- function(files,
   }
 
   if (!same.vars) {
-    warning("Files contain different variables, applying '", set.oper, "'.")
+    message("Files contain different variables, applying '", set.oper, "'.")
   }
 
   data.vars
@@ -290,7 +298,7 @@ vars_AC_SAF_UV_txt <- function(files,
 grid_AC_SAF_UV_txt <- function(files,
                                use.names = length(files) > 1) {
 
-  check_files_accessible(files)
+  files <- check_files_accessible(files)
 
   z.df <- data.frame()
   for (file in files) {

@@ -20,4 +20,5 @@ check_files_accessible <- function(files) {
     stop("Cannot access ", sum(missing.files), " of the files: ",
          paste(files[missing.files], collapse = ", "), sep = "")
   }
+  files
 }
