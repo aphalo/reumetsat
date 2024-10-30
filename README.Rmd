@@ -21,24 +21,22 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 <!-- [![doi](https://img.shields.io/badge/doi-10.32614/CRAN.package.surfaceuv-blue.svg)](https://doi.org/10.32614/CRAN.package.surfaceuv) -->
 
-## Package name
+## Development stage and plans
 
-The name 'surfaceuv' is provisional, and will be in use until it becomes clear the full scope of this new package. Currently the only EUMETSAT product supported is "Surface UV". 
+Currently the Surface UV data product supported is "Surface UV" from the AC SAF (atmospheric composition) project of EUMETSAT. These functions are thoroughly tested and documented, but as code that is only a few days old, may still need some further improvements.
 
-I have raised issues at [GitHub](https://github.com/aphalo/surfaceuv/issues) for possible future support of other data sets. Please, comment, give thumbs-up or thumbs-down, or suggest alternative data sources by visiting this GitHub page. (The only source of photosynthetically active radiation (PAR) seems to be NASA, while global radiation can be found as one of the products from EUMETSAT. There are interesting data from ground-based stations in E-OBS going back some 70 years.)
+Two other surface UV data sources with broad geographic coverage will be supported in the future: OMI Surface UV and the AC SAF high resolution Surface UV products.
 
 ## Purpose
 
-Package 'surfaceuv' currently only supports reading data files from the Surface UV offline data product of AC SAF EUMETSAT downloaded from the server of the Finnish Meteorological Institute (FMI). Two different functions cater for two different types of files: HDF5 files with data on a geographic grid and one file per day, and text (.txt) files with time series data for a single geographic location. Both functions can read one or more files. Irrespective of the number of files they return a single combined data frame object.
-
-For more information of these and other data products, please, see the [EUMETSAT AC SAF website](https://acsaf.org/).
+Data files from the Surface UV offline data product of AC SAF EUMETSAT can be downloaded from the server of the Finnish Meteorological Institute (FMI). Two different data "ingestion" (`read_`) functions cater for two different types of files: HDF5 files with data on a geographic grid and one file per day, and text (.txt) files with time series data for a single geographic location. Both functions can read one or more files. Irrespective of the number of files read, both functions return a single combined data frame object. Additional query functions are provided to extract information from the files without reading them in whole. For more information of these and other related data products, please, see the [EUMETSAT AC SAF website](https://acsaf.org/).
 
 ## Installation
 
 Installation of the most recent stable version from CRAN:
 
 ```{r, eval=FALSE}
-# install.packages("photobiologyInOut")
+# install.packages("surfaceuv")
 ```
 
 Installation of the current unstable version from R-Universe CRAN-like repository:
@@ -62,8 +60,7 @@ HTML documentation is available at (https://docs.r4photobiology.info/surfaceuv/)
 
 ## Contributing
 
-Pull requests, bug reports, and feature requests are welcome at (https://github.com/aphalo/surfaceuv). Contribution of example data files that could
-be supported in future versions will be very much appreciated.
+Pull requests, bug reports, and feature requests are welcome at (https://github.com/aphalo/surfaceuv). Contribution of example data files that could be supported in future versions will be very much appreciated.
 
 ## Citation
 
@@ -75,7 +72,7 @@ citation("surfaceuv")
 
 ## License
 
-The data example files redistributed in 'extdata' are © 2024 AC SAF project of EUMETSAT and used by courtesy of the AC SAF project of the EUMETSAT. If reused of republished a note similar to this must be included. 
+The data example files redistributed in folder 'extdata' are © 2024 AC SAF project of EUMETSAT and used by courtesy of the AC SAF project of the EUMETSAT. If reused of republished a note similar to this must be included. 
 
 © 2024 Pedro J. Aphalo (pedro.aphalo@helsinki.fi). Released under the GPL, version 2 or greater. This software carries no warranty of any kind.
 
