@@ -1,5 +1,5 @@
-destination: ../docs/reumetsat
-url: https://docs.r4photobiology.info/reumetsat/
+destination: ../docs/surfaceuv
+url: https://docs.r4photobiology.info/surfaceuv/
 
 template:
   bootstrap: 5
@@ -7,7 +7,7 @@ template:
 reference:
   - title: Package overview
     contents:
-    - '`reumetsat-package`'
+    - '`surfaceuv-package`'
   - title: Time-series data files
     desc: Time series data for the Surface UV product downloaded as text (`.txt`) files.
     contents:
@@ -34,7 +34,7 @@ navbar:
       href: news/index.html
     github:
       icon: fab fa-github fa-lg
-      href: https://github.com/aphalo/reumetsat/
+      href: https://github.com/aphalo/surfaceuv/
       aria-label: GitHub
     articles:
       text: Articles
