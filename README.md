@@ -85,14 +85,14 @@ publications, please cite according to:
 citation("surfaceuv")
 #> To cite package 'surfaceuv' in publications use:
 #> 
-#>   Aphalo P (2024). _surfaceuv: EUMETSAT Offline Data Products_. R
-#>   package version 0.1.0.9000,
+#>   Aphalo P (2024). _surfaceuv: Solar Ultraviolet at Ground Surface Data
+#>   Import_. R package version 0.1.0.9000,
 #>   <https://docs.r4photobiology.info/surfaceuv/>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Manual{,
-#>     title = {surfaceuv: EUMETSAT Offline Data Products},
+#>     title = {surfaceuv: Solar Ultraviolet at Ground Surface Data Import},
 #>     author = {Pedro J. Aphalo},
 #>     year = {2024},
 #>     note = {R package version 0.1.0.9000},
@@ -104,7 +104,7 @@ citation("surfaceuv")
 
 The data example files redistributed in folder ‘extdata’ are © 2024 AC
 SAF project of EUMETSAT and used by courtesy of the AC SAF project of
-the EUMETSAT. If reused of republished a note similar to this must be
+the EUMETSAT. If reused or redistributed a note similar to this must be
 included.
 
 © 2024 Pedro J. Aphalo (<pedro.aphalo@helsinki.fi>). Released under the

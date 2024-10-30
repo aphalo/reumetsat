@@ -72,7 +72,7 @@ citation("surfaceuv")
 
 ## License
 
-The data example files redistributed in folder 'extdata' are © 2024 AC SAF project of EUMETSAT and used by courtesy of the AC SAF project of the EUMETSAT. If reused of republished a note similar to this must be included. 
+The data example files redistributed in folder 'extdata' are © 2024 AC SAF project of EUMETSAT and used by courtesy of the AC SAF project of the EUMETSAT. If reused or redistributed a note similar to this must be included. 
 
 © 2024 Pedro J. Aphalo (pedro.aphalo@helsinki.fi). Released under the GPL, version 2 or greater. This software carries no warranty of any kind.
 
