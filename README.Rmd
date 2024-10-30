@@ -10,26 +10,26 @@ knitr::opts_chunk$set(
 )
 ```
 
-# reumetsat
+# surfaceuv
 
 <!-- badges: start -->
-[![CRAN version](https://www.r-pkg.org/badges/version-last-release/reumetsat)](https://cran.r-project.org/package=reumetsat) 
-<!-- [![cran checks](https://badges.cranchecks.info/worst/reumetsat.svg)](https://cran.r-project.org/web/checks/check_results_reumetsat.html) -->
-[![photobiologyInOut status badge](https://aphalo.r-universe.dev/badges/reumetsat)](https://aphalo.r-universe.dev/reumetsat)
-[![R-CMD-check](https://github.com/aphalo/reumetsat/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/aphalo/reumetsat/actions/workflows/R-CMD-check.yaml)
-[![Documentation](https://img.shields.io/badge/documentation-reumetsat-informational.svg)](https://docs.r4photobiology.info/reumetsat/)
+[![CRAN version](https://www.r-pkg.org/badges/version-last-release/surfaceuv)](https://cran.r-project.org/package=surfaceuv) 
+<!-- [![cran checks](https://badges.cranchecks.info/worst/surfaceuv.svg)](https://cran.r-project.org/web/checks/check_results_surfaceuv.html) -->
+[![photobiologyInOut status badge](https://aphalo.r-universe.dev/badges/surfaceuv)](https://aphalo.r-universe.dev/surfaceuv)
+[![R-CMD-check](https://github.com/aphalo/surfaceuv/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/aphalo/surfaceuv/actions/workflows/R-CMD-check.yaml)
+[![Documentation](https://img.shields.io/badge/documentation-surfaceuv-informational.svg)](https://docs.r4photobiology.info/surfaceuv/)
 <!-- badges: end -->
-<!-- [![doi](https://img.shields.io/badge/doi-10.32614/CRAN.package.reumetsat-blue.svg)](https://doi.org/10.32614/CRAN.package.reumetsat) -->
+<!-- [![doi](https://img.shields.io/badge/doi-10.32614/CRAN.package.surfaceuv-blue.svg)](https://doi.org/10.32614/CRAN.package.surfaceuv) -->
 
 ## Package name
 
-The name 'reumetsat' is provisional, and will be in use until it becomes clear the full scope of this new package. Currently the only EUMETSAT product supported is "Surface UV". 
+The name 'surfaceuv' is provisional, and will be in use until it becomes clear the full scope of this new package. Currently the only EUMETSAT product supported is "Surface UV". 
 
-I have raised issues at [GitHub](https://github.com/aphalo/reumetsat/issues) for possible future support of other data sets. Please, comment, give thumbs-up or thumbs-down, or suggest alternative data sources by visiting this GitHub page. (The only source of photosynthetically active radiation (PAR) seems to be NASA, while global radiation can be found as one of the products from EUMETSAT. There are interesting data from ground-based stations in E-OBS going back some 70 years.)
+I have raised issues at [GitHub](https://github.com/aphalo/surfaceuv/issues) for possible future support of other data sets. Please, comment, give thumbs-up or thumbs-down, or suggest alternative data sources by visiting this GitHub page. (The only source of photosynthetically active radiation (PAR) seems to be NASA, while global radiation can be found as one of the products from EUMETSAT. There are interesting data from ground-based stations in E-OBS going back some 70 years.)
 
 ## Purpose
 
-Package 'reumetsat' currently only supports reading data files from the Surface UV offline data product of AC SAF EUMETSAT downloaded from the server of the Finnish Meteorological Institute (FMI). Two different functions cater for two different types of files: HDF5 files with data on a geographic grid and one file per day, and text (.txt) files with time series data for a single geographic location. Both functions can read one or more files. Irrespective of the number of files they return a single combined data frame object.
+Package 'surfaceuv' currently only supports reading data files from the Surface UV offline data product of AC SAF EUMETSAT downloaded from the server of the Finnish Meteorological Institute (FMI). Two different functions cater for two different types of files: HDF5 files with data on a geographic grid and one file per day, and text (.txt) files with time series data for a single geographic location. Both functions can read one or more files. Irrespective of the number of files they return a single combined data frame object.
 
 For more information of these and other data products, please, see the [EUMETSAT AC SAF website](https://acsaf.org/).
 
@@ -44,7 +44,7 @@ Installation of the most recent stable version from CRAN:
 Installation of the current unstable version from R-Universe CRAN-like repository:
 
 ```{r, eval=FALSE}
-install.packages('reumetsat', 
+install.packages('surfaceuv', 
                  repos = c('https://aphalo.r-universe.dev', 
                            'https://cloud.r-project.org'))
 ```
@@ -53,16 +53,16 @@ Installation of the current unstable version from GitHub:
 
 ```{r, eval=FALSE}
 # install.packages("remotes")
-remotes::install_github("aphalo/reumetsat")
+remotes::install_github("aphalo/surfaceuv")
 ```
 
 ## Documentation 
 
-HTML documentation is available at (https://docs.r4photobiology.info/reumetsat/), including a _User Guide_.
+HTML documentation is available at (https://docs.r4photobiology.info/surfaceuv/), including a _User Guide_.
 
 ## Contributing
 
-Pull requests, bug reports, and feature requests are welcome at (https://github.com/aphalo/reumetsat). Contribution of example data files that could
+Pull requests, bug reports, and feature requests are welcome at (https://github.com/aphalo/surfaceuv). Contribution of example data files that could
 be supported in future versions will be very much appreciated.
 
 ## Citation
@@ -70,7 +70,7 @@ be supported in future versions will be very much appreciated.
 If you use this package to produce scientific or commercial publications, please cite according to:
 
 ```{r}
-citation("reumetsat")
+citation("surfaceuv")
 ```
 
 ## License

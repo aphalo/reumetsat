@@ -1,8 +1,8 @@
 ---
 title: "User Guide"
-subtitle: "Package 'reumetsat' `r packageVersion('reumetsat')` "
+subtitle: "Package 'surfaceuv' `r packageVersion('surfaceuv')` "
 author: "Pedro J. Aphalo"
-date: "`r packageDate('reumetsat')`"
+date: "`r packageDate('surfaceuv')`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{User Guide}
@@ -21,14 +21,14 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(reumetsat)
+library(surfaceuv)
 ```
 
 ## Introduction
 
 The AC SAF project of EUMETSAT on atmospheric composition provides several different data products, including "Surface UV", for ultraviolet radiation doses and irradiances. The "Surface UV" data are on a $0.5^\circ \times 0.5^\circ$ longitude E and latitude N grid. That is to say that latitudes south of the equator and longitudes west of Greenwich are expressed as negative numbers. The data consist in several different variables, both daily doses and daily maximum irradiances, biologically weighted and not weighted, estimate errors for them as well as quality flags.
 
-Data can be downloaded in two different formats, suitable for different uses. The most efficient way of downloading data for a single location is to download then as a _time series_ in a text file. When we intend to download data for a region or the whole Earth gridded data are the right approach. These are available as binary files in HDF5 format, that are smaller and allow selective reading of variables and grid regions, allowing fast "ingestion" of the data. This package provides functions that make it easy to selectively important data in either format into R data frames. Please, see the [online-only article for step-by-step instructions on how to obtain the data files from the server](https://docs.r4photobiology.info/reumetsat/articles/surface-uv.html). This must be done at a web page as there is no API available and in addition the files can be downloaded only after a delay, as preparation involved processing in the server.
+Data can be downloaded in two different formats, suitable for different uses. The most efficient way of downloading data for a single location is to download then as a _time series_ in a text file. When we intend to download data for a region or the whole Earth gridded data are the right approach. These are available as binary files in HDF5 format, that are smaller and allow selective reading of variables and grid regions, allowing fast "ingestion" of the data. This package provides functions that make it easy to selectively important data in either format into R data frames. Please, see the [online-only article for step-by-step instructions on how to obtain the data files from the server](https://docs.r4photobiology.info/surfaceuv/articles/surface-uv.html). This must be done at a web page as there is no API available and in addition the files can be downloaded only after a delay, as preparation involved processing in the server.
 
 ## Time series
 
@@ -80,7 +80,7 @@ We fetch the path to an example file included in the package, originally downloa
 ```{r}
 one.file.name <-
    system.file("extdata", "AC_SAF-Viikki-FI-6masl.txt",
-               package = "reumetsat", mustWork = TRUE)
+               package = "surfaceuv", mustWork = TRUE)
 ```
 
 Query functions make it possible to find out the names of the variables contained in a file and the coordinates of location corresponding to the time series data. They are very useful as these depend on what is requested at the time the file was downloaded.
@@ -162,7 +162,7 @@ One consideration is that when reading multiple time-series files, we must ensur
 ```{r}
 path.to.files <-
     system.file("extdata",
-                package = "reumetsat", mustWork = TRUE)
+                package = "surfaceuv", mustWork = TRUE)
 two.file.names <-
     list.files(path.to.files, pattern = "*masl\\.txt$", full.names = TRUE)
 ```
@@ -221,7 +221,7 @@ Worldwide coverage consists in $720 \times 360 = `r 720 * 360`$ grid points. As 
 
 ### Format of gridded data
 
-The HDF5 files have a specific format and content organization that makes it possible to efficiently read subsets of the data they contain. The functions in package 'reumetsat' call functions from package 'rhdf5' to access these files. The column names are stored as metadata and can be queried without reading the whole file. Thus, decoding is simpler than for the time series files in text format. Reading the data is also simple as it is stored as numeric values no requiring interpretation. The dates, in contrast, need to be decoded from the file names, making it crucial that if users rename the files they preserve the date string and the `_` at its boundary. The HDF5 files are contained in a `.zip` archive. The `.zip` archives can be freely renamed if desired.
+The HDF5 files have a specific format and content organization that makes it possible to efficiently read subsets of the data they contain. The functions in package 'surfaceuv' call functions from package 'rhdf5' to access these files. The column names are stored as metadata and can be queried without reading the whole file. Thus, decoding is simpler than for the time series files in text format. Reading the data is also simple as it is stored as numeric values no requiring interpretation. The dates, in contrast, need to be decoded from the file names, making it crucial that if users rename the files they preserve the date string and the `_` at its boundary. The HDF5 files are contained in a `.zip` archive. The `.zip` archives can be freely renamed if desired.
 
 ### Reading one gridded-data file
 
@@ -232,7 +232,7 @@ As above for the time series file, we fetch the path to an example file included
 ```{r}
 one.file.name <-
    system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
-               package = "reumetsat", mustWork = TRUE)
+               package = "surfaceuv", mustWork = TRUE)
 ```
 
 Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of the grid.
@@ -291,7 +291,7 @@ five.file.names <-
                  "O3MOUV_L3_20240622_v02p02.HDF5",
                  "O3MOUV_L3_20240623_v02p02.HDF5",
                  "O3MOUV_L3_20240624_v02p02.HDF5"),
-               package = "reumetsat", mustWork = TRUE)
+               package = "surfaceuv", mustWork = TRUE)
 ```
 
 The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `read_AC_SAF_UV_hdf5()` should share identical grids and contain all the variables to be read (by default all those in the first file read).* If this is not the case, currently `read_AC_SAF_UV_hdf5()` should be used to read them individually and later combined, which is a slower approach.
@@ -358,7 +358,7 @@ We can use `r `vars__AC_SAF_UV_hdf5()` to obtain a vector with the names of all 
 ```{r}
 path.to.files <-
    system.file("extdata",
-               package = "reumetsat", mustWork = TRUE)
+               package = "surfaceuv", mustWork = TRUE)
 ```
 
 ```{r}

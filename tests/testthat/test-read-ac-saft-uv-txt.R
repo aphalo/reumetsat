@@ -2,7 +2,7 @@ test_that("reads one time series file", {
 
   one.file.name <-
     system.file("extdata", "AC_SAF-Viikki-FI-6masl.txt",
-                package = "reumetsat", mustWork = TRUE)
+                package = "surfaceuv", mustWork = TRUE)
 
   all.variables <-
     c("Date", "DailyDoseUva", "DailyDoseUvb", "DailyMaxDoseRateUva",
@@ -70,7 +70,7 @@ test_that("reads two time series files", {
     system.file("extdata",
                 c("AC_SAF-Viikki-FI-6masl.txt",
                   "AC_SAF-Salar-Olaroz-AR-3900masl.txt"),
-                package = "reumetsat", mustWork = TRUE)
+                package = "surfaceuv", mustWork = TRUE)
 
   shared.variables <-
     c("Date", "DailyDoseUva", "DailyDoseUvb", "DailyMaxDoseRateUva",
@@ -151,7 +151,7 @@ test_that("errors are triggered", {
 
   one.file.name <-
     system.file("extdata", "AC_SAF-Viikki-FI-6masl.txt",
-                package = "reumetsat", mustWork = TRUE)
+                package = "surfaceuv", mustWork = TRUE)
 
   # bad set.oper arguments
   expect_error(z <- vars_AC_SAF_UV_txt(one.file.name, set.oper = "bad"))

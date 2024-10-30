@@ -1,4 +1,4 @@
-library(reumetsat)
+library(surfaceuv)
 
 old.wd <- setwd("./inst-not")
 

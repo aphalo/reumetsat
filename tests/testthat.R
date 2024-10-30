@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(reumetsat)
+library(surfaceuv)
 
-test_check("reumetsat")
+test_check("surfaceuv")

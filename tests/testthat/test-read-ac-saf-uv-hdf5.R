@@ -2,7 +2,7 @@ test_that("reads one grid data file", {
 
   one.file.name <-
     system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
-                package = "reumetsat", mustWork = TRUE)
+                package = "surfaceuv", mustWork = TRUE)
 
   all.variables.no.QC <- c("Date", "Longitude", "Latitude", "DailyDoseUva", "DailyDoseUvb",
                               "DailyMaxDoseRateUva", "DailyMaxDoseRateUvb")
@@ -70,7 +70,7 @@ test_that("reads two consistent grid data files", {
     system.file("extdata",
                 c("O3MOUV_L3_20240621_v02p02.HDF5",
                   "O3MOUV_L3_20240622_v02p02.HDF5"),
-                package = "reumetsat", mustWork = TRUE)
+                package = "surfaceuv", mustWork = TRUE)
 
   all.variables <-
     c("Date", "Longitude", "Latitude", "DailyDoseUva", "DailyDoseUvb",
@@ -120,7 +120,7 @@ test_that("reads two different grid data files", {
     system.file("extdata",
                 c("O3MOUV_L3_20240621_v02p02.HDF5",
                   "O3MOUV_L3_20241021_v02p02.HDF5"),
-                package = "reumetsat", mustWork = TRUE)
+                package = "surfaceuv", mustWork = TRUE)
 
   all.variables <-
     c("Date", "Longitude", "Latitude", "DailyDoseUva", "DailyDoseUvb",
@@ -177,7 +177,7 @@ test_that("errors are triggered", {
 
   one.file.name <-
     system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
-                package = "reumetsat", mustWork = TRUE)
+                package = "surfaceuv", mustWork = TRUE)
 
   # errors early with not accessible files
   expect_error(read_AC_SAF_UV_hdf5(c("missing-file1", one.file.name, "missing-file2"),

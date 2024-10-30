@@ -84,7 +84,7 @@
 #' # find location of one example file
 #' one.file.name <-
 #'    system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
-#'                package = "reumetsat", mustWork = TRUE)
+#'                package = "surfaceuv", mustWork = TRUE)
 #'
 #' # available variables
 #' vars_AC_SAF_UV_hdf5(one.file.name)
@@ -114,7 +114,7 @@
 #'                c("O3MOUV_L3_20240621_v02p02.HDF5",
 #'                  "O3MOUV_L3_20240622_v02p02.HDF5",
 #'                  "O3MOUV_L3_20240623_v02p02.HDF5"),
-#'                package = "reumetsat", mustWork = TRUE)
+#'                package = "surfaceuv", mustWork = TRUE)
 #'
 #' date_AC_SAF_UV_hdf5(three.file.names)
 #'

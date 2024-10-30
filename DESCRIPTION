@@ -1,4 +1,4 @@
-Package: reumetsat
+Package: surfaceuv
 Type: Package
 Title: EUMETSAT Offline Data Products
 Version: 0.1.0.9000
@@ -26,8 +26,8 @@ Suggests:
 LazyLoad: yes
 ByteCompile: true
 Encoding: UTF-8
-URL: https://docs.r4photobiology.info/reumetsat/
-BugReports: https://github.com/aphalo/reumetsat/issues/
+URL: https://docs.r4photobiology.info/surfaceuv/
+BugReports: https://github.com/aphalo/surfaceuv/issues/
 Roxygen:  list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Language: en-US

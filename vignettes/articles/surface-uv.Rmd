@@ -1,8 +1,8 @@
 ---
 title: "Getting data: Surface UV"
-subtitle: "Package 'reumetsat' `r packageVersion('reumetsat')` "
+subtitle: "Package 'surfaceuv' `r packageVersion('surfaceuv')` "
 author: "Pedro J. Aphalo"
-date: "`r packageDate('reumetsat')`"
+date: "`r packageDate('surfaceuv')`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Getting data: Surface UV}
@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(reumetsat)
+library(surfaceuv)
 library(rhdf5)
 ```
 
@@ -112,12 +112,12 @@ The next form makes it possible to select variables, files (= days) and the encl
 
 ![Select variables and files, and enter the longitude and latitude in degrees E and degrees N.](AC_SAF_6.png)
 
-The data are prepared and some time later an e-mail is sent by the server containing a link to download a `zip`.compressed archive file. This `.zip` file contains one HDF5 file for selected each day in the time period. As these files are binary, we can explore their contents using special functions from R packages 'rhdf5' and 'reumetsat'. From its contents we see that it includes only some of the variables available for download.
+The data are prepared and some time later an e-mail is sent by the server containing a link to download a `zip`.compressed archive file. This `.zip` file contains one HDF5 file for selected each day in the time period. As these files are binary, we can explore their contents using special functions from R packages 'rhdf5' and 'surfaceuv'. From its contents we see that it includes only some of the variables available for download.
 
 ```{r, include=FALSE}
 one.file.name <-
    system.file("extdata", "O3MOUV_L3_20240621_v02p02.HDF5",
-               package = "reumetsat", mustWork = TRUE)
+               package = "surfaceuv", mustWork = TRUE)
 ```
 
 ```{r, echo=FALSE}
@@ -129,7 +129,7 @@ The file used as an example is for an area that includes the Iberian peninsula, 
 grid_AC_SAF_UV_hdf5(one.file.name)
 ```
 
-The User Guide and other documentation of package 'reumetsat' show how to import the data into R's data frames.
+The User Guide and other documentation of package 'surfaceuv' show how to import the data into R's data frames.
 
 ## References
 
