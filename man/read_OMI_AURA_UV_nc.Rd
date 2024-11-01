@@ -7,12 +7,7 @@
 \alias{date_OMI_AURA_UV_nc}
 \title{OMI/Aura Surface UV}
 \usage{
-read_OMI_AURA_UV_nc(
-  files,
-  vars.to.read = NULL,
-  fill = NA_real_,
-  verbose = interactive()
-)
+read_OMI_AURA_UV_nc(files, vars.to.read = NULL, verbose = interactive())
 
 vars_OMI_AURA_UV_nc(files, set.oper = "intersect")
 
@@ -25,11 +20,7 @@ date_OMI_AURA_UV_nc(files, use.names = length(files > 1))
 than available memory to hold the data.}
 
 \item{vars.to.read}{character A vector of variable names. If \code{NULL} all the
-variables present in the first file are read.}
-
-\item{fill}{numeric The R value used to replace the fill value used in the
-file, which is retrieved from the file metadata, and also used to fill
-missing variables.}
+variables present are read.}
 
 \item{verbose}{logical Flag indicating if progress, and time and size of
 the returned object should be printed.}
@@ -70,20 +61,17 @@ to be identical in all files that are imported in a call to
 \code{read_OMI_AURA_UV_nc()}, and grid subsetting is currently not supported. If
 not all the files named in the argument to \code{files} are accessible, an error
 is triggered early. If the files differ in the grid, an error is triggered
-when reading the first mismatching file. Missing variables named in
-\code{vars.to.read} if detected when reading the first file, are filled with the
-\code{fill} value, otherwise they trigger an error when an attempt is made to
-read them.
+after reading all files. Missing variables are filled with
+\code{NA} values.
 }
 \note{
-The constraint on the consistency among all files to be read allows
-very fast reading into a single data frame. If the files differ in the grid
-or set of variables, this function can be used to read the files
-individually into separate data frames. These data frames can later be
-row-bound together.
+The constraint on the consistency of the grid among all files to be
+read makes the code simpler. If the files differ in the grid, this function
+can be used to read the files individually into separate data frames. These
+data frames can later be row-bound together.
 
 The example data included in the package are only for Helsinki and
-five summer days. They are used in examples and automated tests. Function
+three Autumn days. They are used in examples and automated tests. Function
 \code{read_OMI_AURA_UV_nc()} will be also tested by importing one-year's worth
 of data with worldwide coverage on a PC with 64GB RAM.
 }
@@ -100,6 +88,7 @@ vars_OMI_AURA_UV_nc(file.names)
 
 # available grid
 grid_OMI_AURA_UV_nc(file.names)
+grid_OMI_AURA_UV_nc(file.names, expand = TRUE)
 
 # decode date from file name
 date_OMI_AURA_UV_nc(file.names)
@@ -110,4 +99,15 @@ helsinki_3days.tb <- read_OMI_AURA_UV_nc(file.names)
 dim(helsinki_3days.tb)
 summary(helsinki_3days.tb)
 
+# read some variables
+helsinki_UVI_3days.tb <- read_OMI_AURA_UV_nc(file.names, vars.to.read = "UVindex")
+dim(helsinki_UVI_3days.tb)
+summary(helsinki_UVI_3days.tb)
+
+}
+\references{
+Jari Hovila, Antii Arola, and Johanna Tamminen (2013), OMI/Aura Surface UVB
+Irradiance and Erythemal Dose Daily L3 Global Gridded 1.0 degree x 1.0 degree
+V3, NASA Goddard Space Flight Center, Goddard Earth Sciences Data and
+Information Services Center (GES DISC).
 }
