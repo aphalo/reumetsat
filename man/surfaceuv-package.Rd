@@ -6,7 +6,7 @@
 \alias{surfaceuv-package}
 \title{surfaceuv: Solar Ultraviolet at Ground Surface Data Import}
 \description{
-Functions for reading files containing data on "Surface UV" such as daily doses, irradiances and theUV Index (UVI). Curently the Surface UV product from the AC SAF project of EUMETSAT is supported in both geographic grid (HDF5) and time series (text) formats. Additionaly the OMI/Aura Surface UV product in NetCDF4 files is supported.
+Functions for reading files containing data on "Surface UV" such as daily doses, irradiances and the UV Index (UVI). Curently the Surface UV product from the AC SAF project of EUMETSAT is supported in both geographic grid (HDF5) and time series (text) formats. Additionally the OMI/Aura Surface UV product in NetCDF4 files is supported.
 }
 \seealso{
 Useful links:

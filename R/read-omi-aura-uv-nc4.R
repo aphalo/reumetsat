@@ -11,29 +11,29 @@
 #' @param verbose logical Flag indicating if progress, and time and size of
 #'   the returned object should be printed.
 #'
-#' @details Function `read_OMI_AURA_UV_nc()` can be used to read the data
+#' @details Function `read_OMI_AURA_UV_nc4()` can be used to read the data
 #'   stored in a file, either in full or selected variables. Query functions
-#'   `vars_OMI_AURA_UV_nc()`, `grid_OMI_AURA_UV_nc()` and
-#'   `date_OMI_AURA_UV_nc()` extract the names of the variables, the range of
+#'   `vars_OMI_AURA_UV_nc4()`, `grid_OMI_AURA_UV_nc4()` and
+#'   `date_OMI_AURA_UV_nc4()` extract the names of the variables, the range of
 #'   the grid and the dates of measurements more efficiently than by using
-#'   `read_OMI_AURA_UV_nc()`. The dates are decoded from the file names,
+#'   `read_OMI_AURA_UV_nc4()`. The dates are decoded from the file names,
 #'   expecting these to be those set by the data provider or at least retaining
 #'   the date encoded as in the original name. The grid is expected
 #'   to be identical in all files that are imported in a call to
-#'   `read_OMI_AURA_UV_nc()`, and grid subsetting is currently not supported. If
+#'   `read_OMI_AURA_UV_nc4()`, and grid subsetting is currently not supported. If
 #'   not all the files named in the argument to `files` are accessible, an error
 #'   is triggered early. If the files differ in the grid, an error is triggered
 #'   after reading all files. Missing variables are filled with
 #'   `NA` values.
 #'
-#' @return Function `read_OMI_AURA_UV_nc()` returns a data frame with columns
+#' @return Function `read_OMI_AURA_UV_nc4()` returns a data frame with columns
 #'   named `"Date"`, `"Longitude"`, `"Latitude"`, and the data variables with their
 #'   original names. The data variables have their
-#'   metadata stored as R attributes. `vars_OMI_AURA_UV_nc()` returns a
-#'   `character` vector of variable names, `grid_OMI_AURA_UV_nc()` returns a
+#'   metadata stored as R attributes. `vars_OMI_AURA_UV_nc4()` returns a
+#'   `character` vector of variable names, `grid_OMI_AURA_UV_nc4()` returns a
 #'   data frame with two numeric variables, `Longitude` and `Latitude`, with two
 #'   rows or an expanded grid depending on the argument passed to `expand`,
-#'   while `date_OMI_AURA_UV_nc()` returns a named vector of class `Date`, with
+#'   while `date_OMI_AURA_UV_nc4()` returns a named vector of class `Date`, with
 #'   file names as names.
 #'
 #' @note The constraint on the consistency of the grid among all files to be
@@ -43,7 +43,7 @@
 #'
 #'   The example data included in the package are only for Helsinki and
 #'   three Autumn days. They are used in examples and automated tests. Function
-#'   `read_OMI_AURA_UV_nc()` will be also tested by importing one-year's worth
+#'   `read_OMI_AURA_UV_nc4()` will be also tested by importing one-year's worth
 #'   of data with worldwide coverage on a PC with 64GB RAM.
 #'
 #' @references
@@ -61,23 +61,23 @@
 #' file.names <- list.files(path.to.files, pattern = "*.nc4$", full.names = TRUE)
 #'
 #' # available variables
-#' vars_OMI_AURA_UV_nc(file.names)
+#' vars_OMI_AURA_UV_nc4(file.names)
 #'
 #' # available grid
-#' grid_OMI_AURA_UV_nc(file.names)
-#' grid_OMI_AURA_UV_nc(file.names, expand = TRUE)
+#' grid_OMI_AURA_UV_nc4(file.names)
+#' grid_OMI_AURA_UV_nc4(file.names, expand = TRUE)
 #'
 #' # decode date from file name
-#' date_OMI_AURA_UV_nc(file.names)
-#' date_OMI_AURA_UV_nc(file.names, use.names = FALSE)
+#' date_OMI_AURA_UV_nc4(file.names)
+#' date_OMI_AURA_UV_nc4(file.names, use.names = FALSE)
 #'
 #' # read all variables
-#' helsinki_3days.tb <- read_OMI_AURA_UV_nc(file.names)
+#' helsinki_3days.tb <- read_OMI_AURA_UV_nc4(file.names)
 #' dim(helsinki_3days.tb)
 #' summary(helsinki_3days.tb)
 #'
 #' # read some variables
-#' helsinki_UVI_3days.tb <- read_OMI_AURA_UV_nc(file.names, vars.to.read = "UVindex")
+#' helsinki_UVI_3days.tb <- read_OMI_AURA_UV_nc4(file.names, vars.to.read = "UVindex")
 #' dim(helsinki_UVI_3days.tb)
 #' summary(helsinki_UVI_3days.tb)
 #'
@@ -85,7 +85,7 @@
 #' @import tidync
 #' @import dplyr
 #'
-read_OMI_AURA_UV_nc <-
+read_OMI_AURA_UV_nc4 <-
   function(files,
            vars.to.read = NULL,
            verbose = interactive()) {
@@ -108,7 +108,7 @@ read_OMI_AURA_UV_nc <-
         add = TRUE, after = FALSE)
     }
 
-    dates <- date_OMI_AURA_UV_nc(files)
+    dates <- date_OMI_AURA_UV_nc4(files)
     names <- basename(files)
 
     tibbles.ls <- list()
@@ -148,13 +148,13 @@ read_OMI_AURA_UV_nc <-
 
   }
 
-#' @rdname read_OMI_AURA_UV_nc
+#' @rdname read_OMI_AURA_UV_nc4
 #'
 #' @param set.oper character One of `"intersect"`, or `"union"`.
 #'
 #' @export
 #'
-vars_OMI_AURA_UV_nc <- function(files,
+vars_OMI_AURA_UV_nc4 <- function(files,
                                 set.oper = "intersect") {
 
   files <- check_files_accessible(files)
@@ -189,14 +189,14 @@ vars_OMI_AURA_UV_nc <- function(files,
 
 }
 
-#' @rdname read_OMI_AURA_UV_nc
+#' @rdname read_OMI_AURA_UV_nc4
 #'
 #' @param expand logical Flag indicating whether to return ranges or a
 #'   full grid.
 #'
 #' @export
 #'
-grid_OMI_AURA_UV_nc <- function(files,
+grid_OMI_AURA_UV_nc4 <- function(files,
                                 expand = FALSE) {
   # could we read the grid range directly from the NetCDF4 file?
   # As a brute-force approach we read the expanded grid from the files
@@ -204,7 +204,7 @@ grid_OMI_AURA_UV_nc <- function(files,
   # mismatched grids.
 
   expanded.tb <-
-    read_OMI_AURA_UV_nc(files, vars.to.read = character(), verbose = FALSE)
+    read_OMI_AURA_UV_nc4(files, vars.to.read = character(), verbose = FALSE)
 
   if (expand) {
     expanded.tb[expanded.tb[["Date"]] == expanded.tb[["Date"]][1],
@@ -216,13 +216,13 @@ grid_OMI_AURA_UV_nc <- function(files,
 
 }
 
-#' @rdname read_OMI_AURA_UV_nc
+#' @rdname read_OMI_AURA_UV_nc4
 #'
 #' @param use.names logical. Should names be added to the returned vector?
 #'
 #' @export
 #'
-date_OMI_AURA_UV_nc <- function(files,
+date_OMI_AURA_UV_nc4 <- function(files,
                              use.names = length(files > 1)) {
   files <- check_files_accessible(files)
   files <- basename(files)

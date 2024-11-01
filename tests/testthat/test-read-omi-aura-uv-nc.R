@@ -12,22 +12,22 @@ test_that("reads one OMI grid data file", {
   grid.range <- data.frame(Longitude = c(24.5, 26.5),
                            Latitude = c(58.5, 60.5))
 
-  expect_equal(vars_OMI_AURA_UV_nc(one.file.name), all.variables)
+  expect_equal(vars_OMI_AURA_UV_nc4(one.file.name), all.variables)
 
-  expect_equal(grid_OMI_AURA_UV_nc(one.file.name), grid.range)
+  expect_equal(grid_OMI_AURA_UV_nc4(one.file.name), grid.range)
 
-  expanded.grid <- grid_OMI_AURA_UV_nc(one.file.name, expand = TRUE)
+  expanded.grid <- grid_OMI_AURA_UV_nc4(one.file.name, expand = TRUE)
   expect_s3_class(expanded.grid, "data.frame", exact = FALSE)
   expect_named(expanded.grid, c("Longitude", "Latitude"))
   expect_equal(nrow(expanded.grid), 9)
   expect_equal(range(expanded.grid$Longitude), grid.range$Longitude)
   expect_equal(range(expanded.grid$Latitude), grid.range$Latitude)
 
-  expect_equal(names(date_OMI_AURA_UV_nc(one.file.name)), basename(one.file.name))
-  expect_equal(unname(date_OMI_AURA_UV_nc(one.file.name)), as.Date("2023-10-01"))
-  expect_equal(date_OMI_AURA_UV_nc(one.file.name, use.names = FALSE), as.Date("2023-10-01"))
+  expect_equal(names(date_OMI_AURA_UV_nc4(one.file.name)), basename(one.file.name))
+  expect_equal(unname(date_OMI_AURA_UV_nc4(one.file.name)), as.Date("2023-10-01"))
+  expect_equal(date_OMI_AURA_UV_nc4(one.file.name, use.names = FALSE), as.Date("2023-10-01"))
 
-  test1.df <- read_OMI_AURA_UV_nc(one.file.name, verbose = FALSE)
+  test1.df <- read_OMI_AURA_UV_nc4(one.file.name, verbose = FALSE)
   expect_s3_class(test1.df, "data.frame", exact = FALSE)
   expect_s3_class(test1.df$Date, "Date", exact = TRUE)
   expect_equal(length(unique(test1.df$Date)), 1)
@@ -39,7 +39,7 @@ test_that("reads one OMI grid data file", {
 
   vars.to.read <- c("CloudOpticalThickness", "UVindex")
 
-  test2.df <- read_OMI_AURA_UV_nc(one.file.name,
+  test2.df <- read_OMI_AURA_UV_nc4(one.file.name,
                                   vars.to.read = vars.to.read, verbose = FALSE)
   expect_s3_class(test2.df, "data.frame", exact = FALSE)
   expect_s3_class(test2.df$Date, "Date", exact = TRUE)
@@ -67,20 +67,20 @@ test_that("reads multiple consistent NetCDF4 grid data files", {
   grid.range <- data.frame(Longitude = c(24.5, 26.5),
                            Latitude = c(58.5, 60.5))
 
-  expect_silent(vars_OMI_AURA_UV_nc(file.names))
-  expect_equal(vars_OMI_AURA_UV_nc(file.names), all.variables)
+  expect_silent(vars_OMI_AURA_UV_nc4(file.names))
+  expect_equal(vars_OMI_AURA_UV_nc4(file.names), all.variables)
 
-  expect_silent(grid_OMI_AURA_UV_nc(file.names))
-  expect_equal(grid_OMI_AURA_UV_nc(file.names), grid.range)
+  expect_silent(grid_OMI_AURA_UV_nc4(file.names))
+  expect_equal(grid_OMI_AURA_UV_nc4(file.names), grid.range)
 
-  expect_equal(names(date_OMI_AURA_UV_nc(file.names)),
+  expect_equal(names(date_OMI_AURA_UV_nc4(file.names)),
                basename(file.names))
-  expect_equal(unname(date_OMI_AURA_UV_nc(file.names)),
+  expect_equal(unname(date_OMI_AURA_UV_nc4(file.names)),
                as.Date(c("2023-10-01", "2023-10-02", "2023-10-03")))
-  expect_equal(date_OMI_AURA_UV_nc(file.names, use.names = FALSE),
+  expect_equal(date_OMI_AURA_UV_nc4(file.names, use.names = FALSE),
                as.Date(c("2023-10-01", "2023-10-02", "2023-10-03")))
 
-  test1.df <- read_OMI_AURA_UV_nc(file.names, verbose = FALSE)
+  test1.df <- read_OMI_AURA_UV_nc4(file.names, verbose = FALSE)
   expect_s3_class(test1.df, "data.frame", exact = FALSE)
   expect_s3_class(test1.df$Date, "Date", exact = TRUE)
   expect_equal(length(unique(test1.df$Date)), 3)
@@ -90,7 +90,7 @@ test_that("reads multiple consistent NetCDF4 grid data files", {
 
   vars.to.read <- c("CloudOpticalThickness", "UVindex")
 
-  test2.df <- read_OMI_AURA_UV_nc(file.names,
+  test2.df <- read_OMI_AURA_UV_nc4(file.names,
                                   vars.to.read = vars.to.read, verbose = FALSE)
   expect_s3_class(test2.df, "data.frame", exact = FALSE)
   expect_s3_class(test2.df$Date, "Date", exact = TRUE)
@@ -109,18 +109,18 @@ test_that("errors are triggered", {
                 package = "surfaceuv", mustWork = TRUE)
 
   # errors early with not accessible files
-  expect_error(read_OMI_AURA_UV_nc(c("missing-file1", one.file.name, "missing-file2"),
+  expect_error(read_OMI_AURA_UV_nc4(c("missing-file1", one.file.name, "missing-file2"),
                                    data.product = "Surface UV",
                                    verbose = FALSE))
-  expect_error(vars_OMI_AURA_UV_nc(c("missing-file1", one.file.name, "missing-file2")))
-  expect_error(grid_OMI_AURA_UV_nc(c("missing-file1", one.file.name, "missing-file2")))
-  expect_error(date_OMI_AURA_UV_nc(c("missing-file1", one.file.name, "missing-file2")))
+  expect_error(vars_OMI_AURA_UV_nc4(c("missing-file1", one.file.name, "missing-file2")))
+  expect_error(grid_OMI_AURA_UV_nc4(c("missing-file1", one.file.name, "missing-file2")))
+  expect_error(date_OMI_AURA_UV_nc4(c("missing-file1", one.file.name, "missing-file2")))
 
-  expect_error(read_OMI_AURA_UV_nc("missing-file", verbose = FALSE))
-  expect_error(read_OMI_AURA_UV_nc(c(one.file.name, "missing-file"), verbose = FALSE))
-  expect_error(read_OMI_AURA_UV_nc(1L, verbose = FALSE))
+  expect_error(read_OMI_AURA_UV_nc4("missing-file", verbose = FALSE))
+  expect_error(read_OMI_AURA_UV_nc4(c(one.file.name, "missing-file"), verbose = FALSE))
+  expect_error(read_OMI_AURA_UV_nc4(1L, verbose = FALSE))
 
   # verbose works
-  expect_no_error(z <- read_OMI_AURA_UV_nc(one.file.name, verbose = TRUE))
+  expect_no_error(z <- read_OMI_AURA_UV_nc4(one.file.name, verbose = TRUE))
 
 })

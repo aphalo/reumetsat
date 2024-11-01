@@ -24,11 +24,13 @@ knitr::opts_chunk$set(
 library(surfaceuv)
 ```
 
+# AC SAF Project of EUMETSAT
+
 ## Introduction
 
-The AC SAF project of EUMETSAT on atmospheric composition provides several different data products, including "Surface UV", for ultraviolet radiation doses and irradiances. The "Surface UV" data are on a $0.5^\circ \times 0.5^\circ$ longitude E and latitude N grid. That is to say that latitudes south of the equator and longitudes west of Greenwich are expressed as negative numbers. The data consist in several different variables, both daily doses and daily maximum irradiances, biologically weighted and not weighted, estimate errors for them as well as quality flags.
+The AC SAF project of EUMETSAT on atmospheric composition provides several different data products, including "Surface UV", for ultraviolet radiation doses and irradiances. The AC SAF "Surface UV" data are on a $0.5^\circ \times 0.5^\circ$ longitude E and latitude N grid. That is to say that latitudes south of the equator and longitudes west of Greenwich are expressed as negative numbers. The data consist in several different variables, both daily doses and daily maximum irradiances, biologically weighted and not weighted, estimate errors for them as well as quality flags.
 
-Data can be downloaded in two different formats, suitable for different uses. The most efficient way of downloading data for a single location is to download then as a _time series_ in a text file. When we intend to download data for a region or the whole Earth gridded data are the right approach. These are available as binary files in HDF5 format, that are smaller and allow selective reading of variables and grid regions, allowing fast "ingestion" of the data. This package provides functions that make it easy to selectively important data in either format into R data frames. Please, see the [online-only article for step-by-step instructions on how to obtain the data files from the server](https://docs.r4photobiology.info/surfaceuv/articles/surface-uv.html). This must be done at a web page as there is no API available and in addition the files can be downloaded only after a delay, as preparation involved processing in the server.
+Data can be downloaded in two different formats, suitable for different uses. The most efficient way of downloading data for a single location is to download then as a _time series_ in a text file. When we intend to download data for a region or the whole Earth gridded data are the right approach. These are available as binary files in HDF5 format, that are smaller and allow selective reading of variables and grid regions, allowing fast "ingestion" of the data. This package provides functions that make it easy to selectively import data in either format into R data frames. Please, see the [online-only article for step-by-step instructions on how to obtain the data files from the server](https://docs.r4photobiology.info/surfaceuv/articles/surface-uv.html). This must be done at a web page as there is no API available and in addition the files can be downloaded only after a delay, as preparation is involved processing in the server. However, multiple gridded files are bundled into a single `.zip` file making downloading them very easy.
 
 ## Time series
 
@@ -279,7 +281,7 @@ colnames(midsummer_spain_daily.tb)
 
 ### Reading multiple gridded-data files
 
-We can read multiple files, with a limit to their maximum number imposed by the available computer RAM as data frames as used reside in RAM during computations. The amount of RAM required varies with the geographic area covered and number of variables read. *In practice, this limit is unlikely to be a problem only with data with world-wide or continental coverage.* (The size of the data frame affects performance when the total number of cells or length of the underlying vector(s) is so large that cannot be represented as an R (32 bit) `integer`, $n > `r  .Machine$integer.max`$).
+We can read multiple files, with a limit to their maximum number imposed by the available computer RAM as data frames as used reside in RAM during computations. The amount of RAM required varies with the geographic area covered and number of variables read. *In practice, this limit is unlikely to be a problem only with data with world-wide or continental coverage.* Running time increases linearly with the number of files and roughly proportionally with the number of variables read, at least for large numbers of files with global coverage.
 
 We fetch the paths to the example files included in the package. In normal use, this step is not needed as the user will know the paths to the files to read, or will use function `list.files()` with a search pattern if he/she knows the folder where the files to be read reside. _In normal use this step is unnecessary as the user will already know the folder where the file to be read is located._
 
@@ -301,7 +303,7 @@ summer_5days_spain.tb <- read_AC_SAF_UV_hdf5(five.file.names)
 dim(summer_5days_spain.tb)
 colnames(summer_5days_spain.tb)
 ```
-Why can silence progress reporting.
+We can silence progress reporting.
 
 ```{r}
 summer_5days_spain.tb <- 
@@ -425,3 +427,138 @@ Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
    (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
    SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
 
+# OMI/Aura Surface UV product
+
+## Introduction
+
+Compared to the AC SAFT Surface UV data, these data are based on an older
+algorithm and provide lower spatial resolution. The OMI/Aura "Surface UV" data are on a $1^\circ \times 1^\circ$ longitude E and latitude N grid. However, although this data
+set lacks some very useful variables, it includes solar-noon-time irradiances
+for specific UV wavelengths and cloud depth estimates not included in the AC SAF data.
+
+Data can be downloaded in different formats, but always on a grid and one file
+per day: they are not available as time series. The original HDF5 files are available for download only with global coverage. Subsets of data can be downloaded in NetCDF4 formatted files or as text files. The files to be downloaded are not bundled into `.zip` files but instead have to be downloaded individually. Individual files can be downloaded through the web page but this is tedious when data for many days are needed. It possible to download a list of links, and then use `wget` or `curl` to download by batch. However, this requires setting up the computer following the instructions provided in the EarthData website.
+
+This package provides functions that make it easy to selectively import data in NetCDF4 format into R data frames.
+
+The functions to be used work similarly to those described above. The examples
+below are based on those above.
+
+## Data on a geographic grid
+
+Worldwide coverage consists in $360 \times 180 = `r 360 * 180`$ grid points. The actual number of grid points and data columns varies depending on what is selected for download. The format of the files is NetCDF4, which are binary files that allow selective reading. The data are provided as one file per day, with the size of the files depending on the number of grid points included as well as the number of variables. The data are available for download without delay. In most cases we are interested in data for a certain period of time rather than for a single day.
+
+### Reading one gridded-data file
+
+As NetCDF4 gridded data files contain data for a single day, frequently we need to read several of them concatenating the data they contain. Anyway, in the first example we read a single file for simplicity.
+
+As above for HDF5 files, we fetch the path to an example file included in the package, originally downloaded from the NASA EARTHDATA server. These data cover a small region that includes Helsinki, Finland. A selection of variables were requested from the server, including several not available in the AC SAF Surface UV data product. _In normal use this step is unnecessary as the user will already know the folder where the file to be read is located._ (The file name is shortened compared to the original name.)
+
+```{r}
+one.file.name <-
+   system.file("extdata", "OMI-Aura_L3-OMUVBd_2023m1001_v003.nc4",
+               package = "surfaceuv", mustWork = TRUE)
+```
+
+Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of the grid.
+
+```{r}
+vars_OMI_AURA_UV_nc4(one.file.name)
+```
+
+By default only the boundaries of the grid are returned.
+
+```{r}
+grid_OMI_AURA_UV_nc4(one.file.name)
+```
+
+With defaults all variables are read, and because the data can include multiple geographic grid points, `Longitude` and `Latitude` are always returned in the data frame.
+
+```{r}
+autumn_helsinki.tb <- read_OMI_AURA_UV_nc4(one.file.name)
+dim(autumn_helsinki.tb)
+colnames(autumn_helsinki.tb)
+```
+
+Grid and date variables names are consistent between the data frames returned by `read_AC_SAF_UV_hdf5()`, `read_AC_SAF_UV_txt()` and `read_OMI_AURA_UV_nc4()`. For other variables the original names are preserved and may differ. The position of columns may vary between functions and also between versions of the package. *Use names rather than numeric positional indices to extract columns!*
+
+```{r}
+str(lapply(autumn_helsinki.tb, class))
+```
+
+We can as before read only specific variables if needed by passing their names as argument to `vars.to.read`.
+
+```{r}
+uvi_helsinki.tb <-
+  read_OMI_AURA_UV_nc4(one.file.name,
+                       vars.to.read = "UVindex")
+dim(uvi_helsinki.tb)
+colnames(uvi_helsinki.tb)
+```
+
+### Reading multiple gridded-data files
+
+We can read multiple files, with a limit to their maximum number imposed by the available computer RAM as data frames as used reside in RAM during computations. The amount of RAM required varies with the geographic area covered and number of variables read. *In practice, this limit is unlikely to be a problem only with data with world-wide or continental coverage.*
+
+We fetch the paths to the example files included in the package. In normal use, this step is not needed as the user will know the paths to the files to read, or will use function `list.files()` with a search pattern if he/she knows the folder where the files to be read reside. _In normal use this step is unnecessary as the user will already know the folder where the file to be read is located._
+
+```{r}
+path.to.files <-
+   system.file("extdata",
+               package = "surfaceuv", mustWork = TRUE)
+
+three.file.names <- list.files(path.to.files, pattern = "\\.nc4$", full.names = TRUE)
+```
+
+The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `read_OMI_AURA_UV_nc4()` should share identical grids and contain all the variables to be read (by default all those in the first file read).* If this is not the case, currently `read_OMI_AURA_UV_nc4()` should be used to read them individually and later combined, which is a slower approach.
+
+```{r}
+three.days.helsinki.tb <- read_OMI_AURA_UV_nc4(three.file.names)
+dim(three.days.helsinki.tb)
+colnames(three.days.helsinki.tb)
+```
+We can silence progress reporting.
+
+```{r}
+three.days.helsinki.tb <- 
+  read_OMI_AURA_UV_nc4(three.file.names, verbose = FALSE)
+```
+
+As shown above for text files, query functions can be used to extract information about the files, in this case without reading them in whole.
+
+```{r}
+vars_OMI_AURA_UV_nc4(three.file.names)
+```
+
+```{r}
+grid_OMI_AURA_UV_nc4(three.file.names)
+```
+
+```{r}
+grid_OMI_AURA_UV_nc4(three.file.names, expand = TRUE)
+```
+
+```{r}
+date_OMI_AURA_UV_nc4(three.file.names)
+```
+
+```{r}
+date_OMI_AURA_UV_nc4(three.file.names, use.names = FALSE)
+```
+
+If the files differ in the variables they contain, or we want to only extract some, as shown above, we can select them with `grep()` or some other function once we have a list of their names. (Of course, we can also simply pass the names of the variables as an in-line character vector in the call.)
+
+```{r}
+all.vars <- vars_OMI_AURA_UV_nc4(three.file.names)
+daily.dose.vars <- grep("^Irradiance", all.vars, value = TRUE)
+
+irardiances_helsinki.tb <- 
+  read_OMI_AURA_UV_nc4(three.file.names, vars.to.read = daily.dose.vars)
+dim(irardiances_helsinki.tb)
+colnames(irardiances_helsinki.tb)
+
+```
+
+## References
+
+Jari Hovila, Antti Arola, and Johanna Tamminen (2013), OMI/Aura Surface UVB Irradiance and Erythemal Dose Daily L3 Global Gridded 1.0 degree x 1.0 degree V3, NASA Goddard Space Flight Center, Goddard Earth Sciences Data and Information Services Center (GES DISC).
