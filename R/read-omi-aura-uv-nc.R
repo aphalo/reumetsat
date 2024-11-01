@@ -53,6 +53,12 @@
 #'   of data with worldwide coverage on a PC with 64GB RAM.
 #'
 #' @references
+#' Jari Hovila, Antii Arola, and Johanna Tamminen (2013), OMI/Aura Surface UVB
+#' Irradiance and Erythemal Dose Daily L3 Global Gridded 1.0 degree x 1.0 degree
+#' V3, NASA Goddard Space Flight Center, Goddard Earth Sciences Data and
+#' Information Services Center (GES DISC).
+#'
+#'
 #'
 #' @examples
 #' # find location of one example file
@@ -60,28 +66,27 @@
 #'    system.file("extdata",
 #'                package = "surfaceuv", mustWork = TRUE)
 #'
-#' file.names <- list.files(path.to.files, pattern = "*.nc4$")
+#' file.names <- list.files(path.to.files, pattern = "*.nc4$", full.names = TRUE)
 #'
 #' # available variables
 #' vars_OMI_AURA_UV_nc(file.names)
 #'
 #' # available grid
-#' grid_OMI_AURA_UV_nc(one.file.name)
+#' grid_OMI_AURA_UV_nc(file.names)
 #'
 #' # decode date from file name
-#' date_OMI_AURA_UV_nc(one.file.name)
-#' date_OMI_AURA_UV_nc(one.file.name, use.names = FALSE)
+#' date_OMI_AURA_UV_nc(file.names)
+#' date_OMI_AURA_UV_nc(file.names, use.names = FALSE)
 #'
 #' # read all variables
-#' midsummer_spain.tb <- read_OMI_AURA_UV_nc(one.file.name)
-#' dim(midsummer_spain.tb)
-#' summary(midsummer_spain.tb)
+#' helsinki_3days.tb <- read_OMI_AURA_UV_nc(file.names)
+#' dim(helsinki_3days.tb)
+#' summary(helsinki_3days.tb)
 #'
-#' date_OMI_AURA_UV_nc(file.names)
-#'
-#' # summer_3days_spain.tb <- read_OMI_AURA_UV_nc(file.names)
-#' # dim(summer_3days_spain.tb)
-#' # summary(summer_3days_spain.tb)
+#' # read some variables
+#' helsinki_UVI_3days.tb <- read_OMI_AURA_UV_nc(file.names, vars.to.read = "UVindex")
+#' dim(helsinki_UVI_3days.tb)
+#' summary(helsinki_UVI_3days.tb)
 #'
 #' @export
 #' @import tidync
@@ -93,7 +98,9 @@ read_OMI_AURA_UV_nc <-
            fill = NA_real_,
            verbose = interactive()) {
 
-    dates <- date_OMI_AURA_nc(files)
+    files <- check_files_accessible(files)
+
+    dates <- date_OMI_AURA_UV_nc(files)
     names <- basename(files)
 
     tibbles.ls <- list()
@@ -104,7 +111,17 @@ read_OMI_AURA_UV_nc <-
       tibbles.ls[[i]] <- temp.tb
     }
 
-    dplyr::bind_rows(tibbles.ls)
+    z.tb <- dplyr::bind_rows(tibbles.ls) |>
+      dplyr::mutate(lon = as.numeric(lon),
+                    lat = as.numeric(lat))
+
+    if (!is.null(vars.to.read)) {
+      z.tb <- base::subset(z.tb,
+                   select = union(vars.to.read,
+                                  c("lon", "lat", "Date")))
+    }
+
+    dplyr::rename(z.tb, c(Longitude = "lon", Latitude = "lat"))
 
   }
 
@@ -114,7 +131,7 @@ read_OMI_AURA_UV_nc <-
 #'
 #' @export
 #'
-vars_AC_SAF_UV_hdf5 <- function(files,
+vars_OMI_AURA_UV_nc <- function(files,
                                 set.oper = "intersect") {
 
   files <- check_files_accessible(files)
@@ -129,14 +146,13 @@ vars_AC_SAF_UV_hdf5 <- function(files,
 
   for (file in files) {
     for (i in seq_along(names)) {
-      data.vars <- c(tidync::hyper_vars(tidync(files[[i]])))[["name"]]
+      this.file.vars <- c(tidync::hyper_vars(tidync(files[[i]])))[["name"]]
       if (!length(data.vars)) {
-        data.vars <- file.str[["name"]][vars.selector]
+        data.vars <- this.file.vars
       } else {
-        temp <- file.str[["name"]][vars.selector]
-        if (!setequal(data.vars, temp)) {
+        if (!setequal(data.vars, this.file.vars)) {
           same.vars <- FALSE
-          data.vars <- set.fun(data.vars, temp)
+          data.vars <- set.fun(data.vars, this.file.vars)
         }
       }
     }
@@ -146,7 +162,7 @@ vars_AC_SAF_UV_hdf5 <- function(files,
     }
   }
   # available variables
-  c("Date", "Longitude", "Latitude", data.vars)
+  c(data.vars, "Longitude", "Latitude", "Date")
 
 }
 
@@ -160,7 +176,29 @@ vars_AC_SAF_UV_hdf5 <- function(files,
 grid_OMI_AURA_UV_nc <- function(files,
                                 expand = FALSE) {
 
-  data.frame()
+  expanded.tb <-
+    read_OMI_AURA_UV_nc(files, vars.to.read = character())
+
+  if (expand) {
+    expanded.tb
+  } else {
+    expanded.tb |>
+      dplyr::group_by(Date) |>
+      dplyr::reframe(Longitude = range(Longitude),
+                     Latitude = range(Latitude)) -> z.tb
+
+    z.tb |>
+      dplyr::summarize(Longitude.n = length(unique(Longitude)),
+                       Latitude.n = length(unique(Latitude))) -> counts.tb
+
+    if (any(counts.tb > 2L)) {
+      warning("The grid is not consistent among files!")
+      z.tb
+    } else {
+      data.frame(Longitude = range(z.tb[["Longitude"]]),
+                 Latitude = range(z.tb[["Latitude"]]))
+    }
+  }
 
 }
 
@@ -171,7 +209,7 @@ grid_OMI_AURA_UV_nc <- function(files,
 #'
 #' @export
 #'
-date_OMI_AURA_nc <- function(files,
+date_OMI_AURA_UV_nc <- function(files,
                              use.names = length(files > 1)) {
   files <- check_files_accessible(files)
   files <- basename(files)
