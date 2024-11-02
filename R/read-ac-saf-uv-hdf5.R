@@ -134,7 +134,7 @@ read_AC_SAF_UV_hdf5 <-
            keep.QC = TRUE,
            verbose = interactive()) {
 
-    files <- check_files_accessible(files)
+    files <- check_files_accessible(files, name.pattern = "^O3MOUV.*\\.HDF5$")
 
     # We guess the data product from the file name
     if (is.null(data.product)) {
@@ -297,7 +297,7 @@ vars_AC_SAF_UV_hdf5 <- function(files,
                                 keep.QC = TRUE,
                                 set.oper = "intersect") {
 
-  files <- check_files_accessible(files)
+  files <- check_files_accessible(files, name.pattern = "^O3MOUV.*\\.HDF5$")
 
   # We guess the data product from the file name
   if (is.null(data.product)) {
@@ -354,7 +354,7 @@ vars_AC_SAF_UV_hdf5 <- function(files,
 grid_AC_SAF_UV_hdf5 <- function(files,
                                 expand = FALSE) {
 
-  files <- check_files_accessible(files)
+  files <- check_files_accessible(files, name.pattern = "^O3MOUV.*\\.HDF5$")
 
   # the grid is described but not stored explicitly in these files
   first_grid_desc <- attributes(rhdf5::h5read(files[1],
@@ -404,7 +404,7 @@ grid_AC_SAF_UV_hdf5 <- function(files,
 date_AC_SAF_UV_hdf5 <- function(files,
                                 use.names = length(files > 1)) {
 
-  files <- check_files_accessible(files)
+  files <- check_files_accessible(files, name.pattern = "^O3MOUV.*\\.HDF5$")
 
   files <- basename(files)
   z <- as.Date(sub(".*_([0-9]{8})_.*", "\\1", files), format = "%Y%m%d")

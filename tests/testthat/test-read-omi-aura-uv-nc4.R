@@ -113,6 +113,7 @@ test_that("errors are triggered", {
                                    data.product = "Surface UV",
                                    verbose = FALSE))
   expect_error(vars_OMI_AURA_UV_nc4(c("missing-file1", one.file.name, "missing-file2")))
+  expect_error(vars_OMI_AURA_UV_nc4(one.file.name, set.oper = "bad.oper"))
   expect_error(grid_OMI_AURA_UV_nc4(c("missing-file1", one.file.name, "missing-file2")))
   expect_error(date_OMI_AURA_UV_nc4(c("missing-file1", one.file.name, "missing-file2")))
 

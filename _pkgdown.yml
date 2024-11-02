@@ -13,10 +13,11 @@ reference:
     contents:
     - read_AC_SAF_UV_txt
   - title: Gridded data files
-    desc: Data for the Surface UV product on a grid of geographic locations (`.HDF5` or `.nc4`), one file per day.
+    desc: Data for the Surface UV products on a grid of geographic locations (`.HDF5` or `.nc4`), one file per day.
     contents:
     - read_AC_SAF_UV_hdf5
     - read_OMI_AURA_UV_nc4
+    - read_OMI_AURA_UV_he5
 
 navbar:
   structure:

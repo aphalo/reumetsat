@@ -431,20 +431,20 @@ Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
 
 ## Introduction
 
-Compared to the AC SAFT Surface UV data, these data are based on an older
+Compared to the AC SAF Surface UV data, these data are based on an older
 algorithm and provide lower spatial resolution. The OMI/Aura "Surface UV" data are on a $1^\circ \times 1^\circ$ longitude E and latitude N grid. However, although this data
 set lacks some very useful variables, it includes solar-noon-time irradiances
 for specific UV wavelengths and cloud depth estimates not included in the AC SAF data.
 
 Data can be downloaded in different formats, but always on a grid and one file
-per day: they are not available as time series. The original HDF5 files are available for download only with global coverage. Subsets of data can be downloaded in NetCDF4 formatted files or as text files. The files to be downloaded are not bundled into `.zip` files but instead have to be downloaded individually. Individual files can be downloaded through the web page but this is tedious when data for many days are needed. It possible to download a list of links, and then use `wget` or `curl` to download by batch. However, this requires setting up the computer following the instructions provided in the EarthData website.
+per day: they are not available as time series. The original HDF5 files are available for download only with global coverage. Subsets of data can be downloaded in NetCDF4 formatted files or as text files. The files to be downloaded are not bundled into `.zip` files but instead have to be downloaded individually. Individual files can be downloaded through the web page but this is tedious when data for many days are needed. It possible to download a list of links, and then use `wget` or `curl` to download by batch. However, this requires setting up the computer following the instructions provided at the NASA EARTHDATA website.
 
-This package provides functions that make it easy to selectively import data in NetCDF4 format into R data frames.
+This package provides functions that make it easy to selectively import data in both NetCDF4 and HDF5 formats into R data frames.
 
 The functions to be used work similarly to those described above. The examples
 below are based on those above.
 
-## Data on a geographic grid
+## Data on a geographic grid subset
 
 Worldwide coverage consists in $360 \times 180 = `r 360 * 180`$ grid points. The actual number of grid points and data columns varies depending on what is selected for download. The format of the files is NetCDF4, which are binary files that allow selective reading. The data are provided as one file per day, with the size of the files depending on the number of grid points included as well as the number of variables. The data are available for download without delay. In most cases we are interested in data for a certain period of time rather than for a single day.
 
@@ -558,6 +558,64 @@ dim(irardiances_helsinki.tb)
 colnames(irardiances_helsinki.tb)
 
 ```
+## Data on the original geographic grid
+
+Worldwide coverage consists in $360 \times 180 = `r 360 * 180`$ grid points. The actual number of grid points is always the same as there is no possibility to subset the files before download. The format of the files is HDF5, which are binary files that allow selective reading. The data are provided as one file per day, with the size of the files depending on the number of variables. The data are available for download without delay. In most cases we are interested in data for a certain period of time rather than for a single day.
+
+### Reading one gridded-data file
+
+As HDF5 gridded data files contain data for a single day, frequently we need to read several of them concatenating the data they contain. Anyway, in the first example we read a single file for simplicity.
+
+As above for other files, we fetch the path to an example file included in the package, originally downloaded from the NASA EARTHDATA server. These data have global coverage and all variables. _In normal use this step is unnecessary as the user will already know the folder where the file to be read is located._
+
+```{r}
+path.to.files <-
+   system.file("extdata",
+               package = "surfaceuv", mustWork = TRUE)
+
+one.file.name <-
+  list.files(path.to.files, pattern = "\\.he5$", full.names = TRUE)
+```
+
+Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of the grid.
+
+```{r}
+vars_OMI_AURA_UV_he5(one.file.name)
+```
+
+By default only the boundaries of the grid are returned.
+
+```{r}
+grid_OMI_AURA_UV_he5(one.file.name)
+```
+
+With defaults all variables are read, and because the data can include multiple geographic grid points, `Longitude` and `Latitude` are always returned in the data frame.
+
+```{r}
+global_one_day.tb <- read_OMI_AURA_UV_he5(one.file.name)
+dim(global_one_day.tb)
+colnames(global_one_day.tb)
+```
+
+Grid and date variables names are consistent between the data frames returned by `read_AC_SAF_UV_hdf5()`, `read_AC_SAF_UV_txt()` and `read_OMI_AURA_UV_nc4()`. For other variables the original names are preserved and may differ. The position of columns may vary between functions and also between versions of the package. *Use names rather than numeric positional indices to extract columns!*
+
+```{r}
+str(lapply(global_one_day.tb, class))
+```
+
+We can as before read only specific variables if needed by passing their names as argument to `vars.to.read`.
+
+```{r}
+uvi_global.tb <-
+  read_OMI_AURA_UV_he5(one.file.name,
+                       vars.to.read = "UVindex")
+dim(uvi_global.tb)
+colnames(uvi_global.tb)
+```
+
+### Reading multiple gridded-data files
+
+As for other functions in the package, `read_OMI_AURA_UV_he5()` accepts a `character` vector of file names to read and returns a single concatenated data frame.
 
 ## References
 

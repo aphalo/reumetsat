@@ -107,7 +107,7 @@ read_AC_SAF_UV_txt <-
            keep.QC = TRUE,
            verbose = interactive()) {
 
-    files <- check_files_accessible(files)
+    files <- check_files_accessible(files, name.pattern = ".*\\.txt$")
 
     # progress reporting
     if (verbose) {
@@ -227,7 +227,7 @@ vars_AC_SAF_UV_txt <- function(files,
                                keep.QC = TRUE,
                                set.oper = "intersect") {
 
-  files <- check_files_accessible(files)
+  files <- check_files_accessible(files, name.pattern = ".*\\.txt$")
 
   set.fun <- switch(set.oper,
                     union = base::union,
@@ -298,7 +298,7 @@ vars_AC_SAF_UV_txt <- function(files,
 grid_AC_SAF_UV_txt <- function(files,
                                use.names = length(files) > 1) {
 
-  files <- check_files_accessible(files)
+  files <- check_files_accessible(files, name.pattern = ".*\\.txt$")
 
   z.df <- data.frame()
   for (file in files) {

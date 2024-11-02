@@ -4,11 +4,15 @@
 \alias{check_files_accessible}
 \title{Check files}
 \usage{
-check_files_accessible(files)
+check_files_accessible(files, name.pattern = NULL)
 }
 \arguments{
 \item{files}{character A vector of file names, no other limitation in length
 than available memory to hold the data.}
+
+\item{name.pattern}{character A vector of accepted file name patterns, used
+as pattern in a call to \code{\link[=grepl]{grepl()}} If \code{NULL} the test is skipped, if
+match fails, a warning is issued.}
 }
 \description{
 Internal utility function used to check that file names passed

@@ -5,7 +5,7 @@
 \alias{vars_OMI_AURA_UV_nc4}
 \alias{grid_OMI_AURA_UV_nc4}
 \alias{date_OMI_AURA_UV_nc4}
-\title{OMI/Aura Surface UV}
+\title{OMI/Aura Surface UV gridded subsets}
 \usage{
 read_OMI_AURA_UV_nc4(files, vars.to.read = NULL, verbose = interactive())
 
@@ -34,18 +34,18 @@ full grid.}
 }
 \value{
 Function \code{read_OMI_AURA_UV_nc4()} returns a data frame with columns
-named \code{"Date"}, \code{"Longitude"}, \code{"Latitude"}, and the data variables with their
-original names. The data variables have their
-metadata stored as R attributes. \code{vars_OMI_AURA_UV_nc4()} returns a
-\code{character} vector of variable names, \code{grid_OMI_AURA_UV_nc4()} returns a
-data frame with two numeric variables, \code{Longitude} and \code{Latitude}, with two
-rows or an expanded grid depending on the argument passed to \code{expand},
-while \code{date_OMI_AURA_UV_nc4()} returns a named vector of class \code{Date}, with
-file names as names.
+named \code{"Date"}, \code{"Longitude"}, \code{"Latitude"}, and the data variables with
+their original names. The data variables have their metadata stored as R
+attributes. \code{vars_OMI_AURA_UV_nc4()} returns a \code{character} vector of
+variable names, \code{grid_OMI_AURA_UV_nc4()} returns a data frame with two
+numeric variables, \code{Longitude} and \code{Latitude}, with two rows or an expanded
+grid depending on the argument passed to \code{expand}, while
+\code{date_OMI_AURA_UV_nc4()} returns a named vector of class \code{Date}, by default
+with file names as names.
 }
 \description{
 Import \strong{gridded} "Surface UV" data released by
-FMI/NASA from \strong{netcdf4} files downloaded from the NASA Earthwatch
+FMI/NASA from \strong{NetCDF4} files downloaded from the NASA EARTHDATA
 server.
 }
 \details{
@@ -53,27 +53,24 @@ Function \code{read_OMI_AURA_UV_nc4()} can be used to read the data
 stored in a file, either in full or selected variables. Query functions
 \code{vars_OMI_AURA_UV_nc4()}, \code{grid_OMI_AURA_UV_nc4()} and
 \code{date_OMI_AURA_UV_nc4()} extract the names of the variables, the range of
-the grid and the dates of measurements more efficiently than by using
-\code{read_OMI_AURA_UV_nc4()}. The dates are decoded from the file names,
-expecting these to be those set by the data provider or at least retaining
-the date encoded as in the original name. The grid is expected
-to be identical in all files that are imported in a call to
-\code{read_OMI_AURA_UV_nc4()}, and grid subsetting is currently not supported. If
-not all the files named in the argument to \code{files} are accessible, an error
-is triggered early. If the files differ in the grid, an error is triggered
-after reading all files. Missing variables are filled with
-\code{NA} values.
+the grid and the dates of measurements. The dates are decoded from the file
+names, expecting these to be those set by the data provider or at least
+retaining the date encoded as in the original name. The grid is not
+expected to be identical in all files that are imported in a call to
+\code{read_OMI_AURA_UV_nc4()}, and grid sub-setting during file reading is
+currently not supported. If not all the files named in the argument to
+\code{files} are accessible, an error is triggered early. Missing variables are
+filled with \code{NA} values.
 }
 \note{
-The constraint on the consistency of the grid among all files to be
-read makes the code simpler. If the files differ in the grid, this function
-can be used to read the files individually into separate data frames. These
-data frames can later be row-bound together.
+The current implementation lacking a constraint on the consistency of
+the grid or variables among all files is much slower than the functions for
+HDF5 files imposing such constraints. This matters when the geographic
+coverage is very broad, especially if many files need to be imported.
 
-The example data included in the package are only for Helsinki and
-three Autumn days. They are used in examples and automated tests. Function
-\code{read_OMI_AURA_UV_nc4()} will be also tested by importing one-year's worth
-of data with worldwide coverage on a PC with 64GB RAM.
+The example data included in the package are only for nine grid points
+close to Helsinki, Finland, and three Autumn days. They are used in
+examples and automated tests.
 }
 \examples{
 # find location of one example file

@@ -172,7 +172,6 @@ test_that("reads two different grid data files", {
 
 })
 
-
 test_that("errors are triggered", {
 
   one.file.name <-

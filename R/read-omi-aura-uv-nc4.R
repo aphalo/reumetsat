@@ -1,7 +1,7 @@
-#' OMI/Aura Surface UV
+#' OMI/Aura Surface UV gridded subsets
 #'
 #' @description Import \strong{gridded} "Surface UV" data released by
-#'   FMI/NASA from \strong{netcdf4} files downloaded from the NASA Earthwatch
+#'   FMI/NASA from \strong{NetCDF4} files downloaded from the NASA EARTHDATA
 #'   server.
 #'
 #' @param files character A vector of file names, no other limitation in length
@@ -15,36 +15,33 @@
 #'   stored in a file, either in full or selected variables. Query functions
 #'   `vars_OMI_AURA_UV_nc4()`, `grid_OMI_AURA_UV_nc4()` and
 #'   `date_OMI_AURA_UV_nc4()` extract the names of the variables, the range of
-#'   the grid and the dates of measurements more efficiently than by using
-#'   `read_OMI_AURA_UV_nc4()`. The dates are decoded from the file names,
-#'   expecting these to be those set by the data provider or at least retaining
-#'   the date encoded as in the original name. The grid is expected
-#'   to be identical in all files that are imported in a call to
-#'   `read_OMI_AURA_UV_nc4()`, and grid subsetting is currently not supported. If
-#'   not all the files named in the argument to `files` are accessible, an error
-#'   is triggered early. If the files differ in the grid, an error is triggered
-#'   after reading all files. Missing variables are filled with
-#'   `NA` values.
+#'   the grid and the dates of measurements. The dates are decoded from the file
+#'   names, expecting these to be those set by the data provider or at least
+#'   retaining the date encoded as in the original name. The grid is not
+#'   expected to be identical in all files that are imported in a call to
+#'   `read_OMI_AURA_UV_nc4()`, and grid sub-setting during file reading is
+#'   currently not supported. If not all the files named in the argument to
+#'   `files` are accessible, an error is triggered early. Missing variables are
+#'   filled with `NA` values.
 #'
 #' @return Function `read_OMI_AURA_UV_nc4()` returns a data frame with columns
-#'   named `"Date"`, `"Longitude"`, `"Latitude"`, and the data variables with their
-#'   original names. The data variables have their
-#'   metadata stored as R attributes. `vars_OMI_AURA_UV_nc4()` returns a
-#'   `character` vector of variable names, `grid_OMI_AURA_UV_nc4()` returns a
-#'   data frame with two numeric variables, `Longitude` and `Latitude`, with two
-#'   rows or an expanded grid depending on the argument passed to `expand`,
-#'   while `date_OMI_AURA_UV_nc4()` returns a named vector of class `Date`, with
-#'   file names as names.
+#'   named `"Date"`, `"Longitude"`, `"Latitude"`, and the data variables with
+#'   their original names. The data variables have their metadata stored as R
+#'   attributes. `vars_OMI_AURA_UV_nc4()` returns a `character` vector of
+#'   variable names, `grid_OMI_AURA_UV_nc4()` returns a data frame with two
+#'   numeric variables, `Longitude` and `Latitude`, with two rows or an expanded
+#'   grid depending on the argument passed to `expand`, while
+#'   `date_OMI_AURA_UV_nc4()` returns a named vector of class `Date`, by default
+#'   with file names as names.
 #'
-#' @note The constraint on the consistency of the grid among all files to be
-#'   read makes the code simpler. If the files differ in the grid, this function
-#'   can be used to read the files individually into separate data frames. These
-#'   data frames can later be row-bound together.
+#' @note The current implementation lacking a constraint on the consistency of
+#'   the grid or variables among all files is much slower than the functions for
+#'   HDF5 files imposing such constraints. This matters when the geographic
+#'   coverage is very broad, especially if many files need to be imported.
 #'
-#'   The example data included in the package are only for Helsinki and
-#'   three Autumn days. They are used in examples and automated tests. Function
-#'   `read_OMI_AURA_UV_nc4()` will be also tested by importing one-year's worth
-#'   of data with worldwide coverage on a PC with 64GB RAM.
+#'   The example data included in the package are only for nine grid points
+#'   close to Helsinki, Finland, and three Autumn days. They are used in
+#'   examples and automated tests.
 #'
 #' @references
 #' Jari Hovila, Antti Arola, and Johanna Tamminen (2013), OMI/Aura Surface UVB
@@ -90,7 +87,7 @@ read_OMI_AURA_UV_nc4 <-
            vars.to.read = NULL,
            verbose = interactive()) {
 
-    files <- check_files_accessible(files)
+    files <- check_files_accessible(files, name.pattern = "^OMI-Aura.*\\.nc4$")
 
     # progress reporting
     if (verbose) {
@@ -157,7 +154,7 @@ read_OMI_AURA_UV_nc4 <-
 vars_OMI_AURA_UV_nc4 <- function(files,
                                 set.oper = "intersect") {
 
-  files <- check_files_accessible(files)
+  files <- check_files_accessible(files, name.pattern = "^OMI-Aura.*\\.nc4$")
 
   set.fun <- switch(set.oper,
                     union = base::union,
@@ -222,13 +219,4 @@ grid_OMI_AURA_UV_nc4 <- function(files,
 #'
 #' @export
 #'
-date_OMI_AURA_UV_nc4 <- function(files,
-                             use.names = length(files > 1)) {
-  files <- check_files_accessible(files)
-  files <- basename(files)
-  z <- as.Date(sub(".*_([0-9]{4}m[0-9]{4})_.*", "\\1", files), format = "%Ym%m%d")
-  if (use.names) {
-    names(z) <- files
-  }
-  z
-}
+date_OMI_AURA_UV_nc4 <- date_OMI_AURA_UV_he5
