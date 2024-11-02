@@ -23,13 +23,15 @@ knitr::opts_chunk$set(
 
 ## Development stage and plans
 
-Currently the Surface UV data product supported is "Surface UV" from the AC SAF (atmospheric composition) project of EUMETSAT. These functions are thoroughly tested and documented, but as code that is only a few days old, may still need some further improvements.
+The main Surface UV data product supported is "Surface UV" from the AC SAF (atmospheric composition) project of EUMETSAT. The functions implemented for these files are optimised for fast performance. In addition, "Surface UV" data from the OMI/Aura project hosted at NASA are supported giving access to additional variables.
 
-Two other surface UV data sources with broad geographic coverage will be supported in the future: OMI Surface UV and the AC SAF high resolution Surface UV products.
+An additional surface UV data source with broad, but not global, geographic coverage is the AC SAF high resolution Surface UV product. Support of these date is planned for a future version of the package.
 
 ## Purpose
 
 Data files from the Surface UV offline data product of AC SAF EUMETSAT can be downloaded from the server of the Finnish Meteorological Institute (FMI). Two different data "ingestion" (`read_`) functions cater for two different types of files: HDF5 files with data on a geographic grid and one file per day, and text (.txt) files with time series data for a single geographic location. Both functions can read one or more files. Irrespective of the number of files read, both functions return a single combined data frame object. Additional query functions are provided to extract information from the files without reading them in whole. For more information of these and other related data products, please, see the [EUMETSAT AC SAF website](https://acsaf.org/).
+
+The OMI/Aura Surface UV offline data are available through NASA and can be downloaded from the [NASA EARTHDATA website](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd). Currently only the NetCDF file format is supported. HDF5 files are available for download without possibility of subsetting, and are not yet supported.
 
 ## Installation
 
@@ -72,7 +74,7 @@ citation("surfaceuv")
 
 ## License
 
-The data example files redistributed in folder 'extdata' are © 2024 AC SAF project of EUMETSAT and used by courtesy of the AC SAF project of the EUMETSAT. If reused of republished a note similar to this must be included. 
+The data example files redistributed in folder 'extdata' are © 2024 AC SAF project of EUMETSAT and used by courtesy of the AC SAF project of the EUMETSAT. If reused or redistributed a note similar to this must be included. 
 
 © 2024 Pedro J. Aphalo (pedro.aphalo@helsinki.fi). Released under the GPL, version 2 or greater. This software carries no warranty of any kind.
 

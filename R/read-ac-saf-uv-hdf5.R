@@ -370,8 +370,8 @@ grid_AC_SAF_UV_hdf5 <- function(files,
       warning("The grid is not consistent among files!")
       # ABORT on failure
       return(data.frame(
-        Longitudes = NA_real_,
-        Latitudes = NA_real_
+        Longitudes = rep(NA_real_, 2L),
+        Latitudes = rep(NA_real_, 2L)
       ))
     }
   }
