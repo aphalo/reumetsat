@@ -23,19 +23,20 @@ supported. Currently, data are read much faster from HDF5 files than
 from the other formats.
 
 An additional surface UV data source with broad, but not global,
-geographic coverage is the AC SAF high resolution Surface UV product.
-Support of these date is planned for a future version of the package.
+geographic coverage is the AC SAF high resolution Europe Surface UV
+product (EUV). Support of these date is planned for a future version of
+the package.
 
 ## Purpose
 
 Surface UV irradiances and doses derived from remotely sensed data
-acquired with instruments on satellites is important as ground level
-measurements of these variables is rather sparse, with a much lower
-spatial resolution than temperature and rainfall. Thus, it is frequent
-to rely on remote sensing when studying effects on human, animal and
-plant health at a large scale. This package supports reading of data
-from files downloaded from open-access internet servers- These data can
-have very few restrictions to their use, in most cases only the
+acquired with instruments on satellites are important as ground level
+measurements of these variables are rather sparse, with a much lower
+spatial resolution than temperature and rainfall. It is frequent to rely
+on remote sensing when studying effects of solar UV radiation on human,
+animal and plant health at a large scale. This package supports reading
+of data from files downloaded from open-access internet servers. These
+data have very few restrictions to their use, in most cases only the
 requirement to cite the source.
 
 **O3M SAF Offline surface ultraviolet (OUV) radiation product.** Data
@@ -118,7 +119,7 @@ citation("surfaceuv")
 #> To cite package 'surfaceuv' in publications use:
 #> 
 #>   Aphalo P (2024). _surfaceuv: Solar Ultraviolet at Ground Surface Data
-#>   Import_. R package version 0.1.0.9001,
+#>   Import_. R package version 0.1.0.9002,
 #>   <https://docs.r4photobiology.info/surfaceuv/>.
 #> 
 #> A BibTeX entry for LaTeX users is
@@ -127,7 +128,7 @@ citation("surfaceuv")
 #>     title = {surfaceuv: Solar Ultraviolet at Ground Surface Data Import},
 #>     author = {Pedro J. Aphalo},
 #>     year = {2024},
-#>     note = {R package version 0.1.0.9001},
+#>     note = {R package version 0.1.0.9002},
 #>     url = {https://docs.r4photobiology.info/surfaceuv/},
 #>   }
 ```

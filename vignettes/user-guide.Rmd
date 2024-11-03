@@ -24,7 +24,18 @@ knitr::opts_chunk$set(
 library(surfaceuv)
 ```
 
-# AC SAF Project of EUMETSAT
+## Package purpose
+
+Surface UV irradiances and doses derived from remotely sensed data acquired with instruments on satellites are important as ground level measurements of these variables are rather sparse, with a much lower spatial resolution than temperature and rainfall. It is frequent to rely on remote sensing when studying effects of solar UV radiation on human, animal and plant health at a large scale. This package supports reading of data from files downloaded from open-access internet servers. These data have very few restrictions to their use, in most cases only the requirement to cite the source.
+
+The main Surface UV data product supported is "Surface UV" from the AC SAF (atmospheric composition) project of EUMETSAT. In addition, "Surface UV" data from the OMI/Aura project hosted at NASA are supported giving access to additional variables. In each case, two file formats are supported. Currently, data are read much faster from HDF5 files than from the other formats.
+
+**O3M SAF Offline surface ultraviolet radiation product (OUV).** Data files from the Surface UV offline data product of AC SAF EUMETSAT can be downloaded from the server of the Finnish Meteorological Institute (FMI) [EUMETSAT AC SAF website](https://acsaf.org/). Two different data "ingestion" (`read_`) functions cater for two different types of files: HDF5 files with data on a geographic grid and one file per day, and text (.txt) files with time series data for a single geographic location.
+For more information on these and other related data products, please, see the [EUMETSAT AC SAF website](https://acsaf.org/).
+
+**OMI/Aura Surface UVB Irradiance and Erythemal Dose Daily L3 Global Gridded 1.0 degree x 1.0 degree V3 (OMUVBd).** The OMI/Aura Surface UV offline data are available through NASA and can be downloaded from the [NASA EARTHDATA website](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd) as NetCDF4 files with the possibility of sub-setting before download. HDF5 files are also available for download without possibility of sub-setting. In both cases the data are provided as one file per day on a geographic grid basis. Two different data "ingestion" (`read_`) functions cater for the two different types of files. The OMI/Aura Surface UV offline data are available through NASA and can be downloaded from the [NASA EARTHDATA website](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd). 
+
+# AC SAF Offline surface ultraviolet (OUV)
 
 ## Introduction
 
@@ -427,17 +438,31 @@ Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
    (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
    SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
 
-# OMI/Aura Surface UV product
+# OMI/Aura Surface UV (OMUVBd)
 
 ## Introduction
 
+The _OMI/Aura Surface UVB Irradiance and Erythemal Dose Daily L3 Global Gridded
+1.0 degree x 1.0 degree V3 (OMUVBd)_ data can be accessed as well as the
+documentation through [NASA's EARTHDATA GES DISC
+webpage](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd).
 Compared to the AC SAF Surface UV data, these data are based on an older
-algorithm and provide lower spatial resolution. The OMI/Aura "Surface UV" data are on a $1^\circ \times 1^\circ$ longitude E and latitude N grid. However, although this data
-set lacks some very useful variables, it includes solar-noon-time irradiances
-for specific UV wavelengths and cloud depth estimates not included in the AC SAF data.
+algorithm and provide lower spatial resolution. The OMI/Aura "Surface UV" data
+are on a $1^\circ \times 1^\circ$ longitude E and latitude N grid. However,
+although this data set lacks some very useful variables, it includes
+solar-noon-time irradiances for specific UV wavelengths and cloud depth
+estimates not included in the AC SAF data.
 
 Data can be downloaded in different formats, but always on a grid and one file
-per day: they are not available as time series. The original HDF5 files are available for download only with global coverage. Subsets of data can be downloaded in NetCDF4 formatted files or as text files. The files to be downloaded are not bundled into `.zip` files but instead have to be downloaded individually. Individual files can be downloaded through the web page but this is tedious when data for many days are needed. It possible to download a list of links, and then use `wget` or `curl` to download by batch. However, this requires setting up the computer following the instructions provided at the NASA EARTHDATA website.
+per day: they are not available as time series. The original HDF5 files are
+available for download only with global coverage. Subsets of data can be
+downloaded in NetCDF4 formatted files or as text files. The files to be
+downloaded are not bundled into `.zip` files but instead have to be downloaded
+individually. Individual files can be downloaded through the web page but this
+is tedious when data for many days are needed. It possible to download a list of
+links, and then use `wget` or `curl` to download by batch. However, this
+requires setting up the computer following the instructions provided at the NASA
+EARTHDATA website.
 
 This package provides functions that make it easy to selectively import data in both NetCDF4 and HDF5 formats into R data frames.
 

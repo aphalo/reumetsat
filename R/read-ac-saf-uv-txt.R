@@ -111,6 +111,7 @@ read_AC_SAF_UV_txt <-
 
     # progress reporting
     if (verbose) {
+      z.tb <- NULL # ensure exit code works on early termination
       start_time <- Sys.time()
       on.exit(
         {

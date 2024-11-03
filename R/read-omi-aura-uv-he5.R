@@ -123,9 +123,8 @@ read_OMI_AURA_UV_he5 <-
     }
 
     # progress reporting
-    z.tb <- data.frame() # ensure it exists even on early stop
-
     if (verbose) {
+      z.tb <- NULL # ensure exit code works on early termination
       start_time <- Sys.time()
       on.exit(
         {
@@ -361,7 +360,11 @@ grid_OMI_AURA_UV_he5 <- function(files,
 #'
 date_OMI_AURA_UV_he5 <- function(files,
                                  use.names = length(files > 1)) {
-  files <- check_files_accessible(files)
+
+  files <-
+    check_files_accessible(files,
+                           name.pattern = "^OMI-Aura.*\\.he5$|^OMI-Aura.*\\.nc4$")
+
   files <- basename(files)
   z <- as.Date(sub(".*_([0-9]{4}m[0-9]{4})_.*", "\\1", files), format = "%Ym%m%d")
   if (use.names) {

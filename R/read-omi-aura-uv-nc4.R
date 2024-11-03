@@ -91,6 +91,7 @@ read_OMI_AURA_UV_nc4 <-
 
     # progress reporting
     if (verbose) {
+      z.tb <- NULL # ensure exit code works on early termination
       start_time <- Sys.time()
       on.exit(
         {
