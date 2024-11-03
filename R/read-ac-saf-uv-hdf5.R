@@ -150,6 +150,7 @@ read_AC_SAF_UV_hdf5 <-
 
     # progress reporting
     if (verbose) {
+      z.tb <- NULL # ensure reporting works with early termination
       start_time <- Sys.time()
       on.exit(
         {

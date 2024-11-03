@@ -123,9 +123,8 @@ read_OMI_AURA_UV_he5 <-
     }
 
     # progress reporting
-    z.tb <- data.frame() # ensure it exists even on early stop
-
     if (verbose) {
+      z.tb <- NULL # ensure reporting works with early termination
       start_time <- Sys.time()
       on.exit(
         {
