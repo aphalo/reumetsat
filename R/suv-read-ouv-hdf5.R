@@ -19,15 +19,15 @@
 #' @param verbose logical Flag indicating if progress, and time and size of
 #'   the returned object should be printed.
 #'
-#' @details Function `read_AC_SAF_UV_hdf5()` can be used to read the data
+#' @details Function `sUV_read_OUV_hdf5()` can be used to read the data
 #'   stored in a file, either in full or selected variables. Query functions
-#'   `vars_AC_SAF_UV_hdf5()`, `grid_AC_SAF_UV_hdf5()` and
-#'   `date_AC_SAF_UV_hdf5()` extract the names of the variables, the range of
+#'   `sUV_vars_OUV_hdf5()`, `sUV_grid_OUV_hdf5()` and
+#'   `sUV_date_OUV_hdf5()` extract the names of the variables, the range of
 #'   the grid and the dates of measurements much more efficiently than by using
-#'   `read_AC_SAF_UV_hdf5()`. The dates are decoded from the file names,
+#'   `sUV_read_OUV_hdf5()`. The dates are decoded from the file names,
 #'   expecting these to be those set by the data provider. The grid is expected
 #'   to be identical in all files that are imported in a call to
-#'   `read_AC_SAF_UV_hdf5()`, and grid subsetting is currently not supported. If
+#'   `sUV_read_OUV_hdf5()`, and grid subsetting is currently not supported. If
 #'   not all the files named in the argument to `files` are accessible, an error
 #'   is triggered early. If the files differ in the grid, an error is triggered
 #'   when reading the first mismatching file. Missing variables named in
@@ -35,14 +35,14 @@
 #'   `fill` value, otherwise they trigger an error when an attempt is made to
 #'   read them.
 #'
-#' @return Function `read_AC_SAF_UV_hdf5()` returns a data frame with columns
+#' @return Function `sUV_read_OUV_hdf5()` returns a data frame with columns
 #'   named `"Date"`, `"Longitude"`, `"Latitude"`, the data variables with their
 #'   original names, and `"QualityFlags"`. The data variables have their
-#'   metadata stored as R attributes. `vars_AC_SAF_UV_hdf5()` returns a
-#'   `character` vector of variable names, `grid_AC_SAF_UV_hdf5()` returns a
+#'   metadata stored as R attributes. `sUV_vars_OUV_hdf5()` returns a
+#'   `character` vector of variable names, `sUV_grid_OUV_hdf5()` returns a
 #'   data frame with two numeric variables, `Longitude` and `Latitude`, with two
 #'   rows or an expanded grid depending on the argument passed to `expand`,
-#'   while `date_AC_SAF_UV_hdf5()` returns a named vector of class `Date`, with
+#'   while `sUV_date_OUV_hdf5()` returns a named vector of class `Date`, with
 #'   file names as names.
 #'
 #' @note The constraint on the consistency among all files to be read allows
@@ -69,7 +69,7 @@
 #'   available to hold the data frame and the files are read from a reasonably
 #'   fast SSD. The example data included in the package are only for Spain and
 #'   five summer days. They are used in examples and automated tests. Function
-#'   `read_AC_SAF_UV_hdf5()` has been also tested by importing one-year's worth
+#'   `sUV_read_OUV_hdf5()` has been also tested by importing one-year's worth
 #'   of data with worldwide coverage on a PC with 64GB RAM.
 #'
 #' @references
@@ -77,7 +77,7 @@
 #'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
 #'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
 #'
-#' @seealso [`read_AC_SAF_UV_txt()`] supporting the same Surface UV data stored
+#' @seealso [`sUV_read_OUV_txt()`] supporting the same Surface UV data stored
 #' in text files as single-location time series.
 #'
 #' @examples
@@ -87,23 +87,23 @@
 #'                package = "surfaceuv", mustWork = TRUE)
 #'
 #' # available variables
-#' vars_AC_SAF_UV_hdf5(one.file.name)
+#' sUV_vars_OUV_hdf5(one.file.name)
 #'
 #' # available grid
-#' grid_AC_SAF_UV_hdf5(one.file.name)
+#' sUV_grid_OUV_hdf5(one.file.name)
 #'
 #' # decode date from file name
-#' date_AC_SAF_UV_hdf5(one.file.name)
-#' date_AC_SAF_UV_hdf5(one.file.name, use.names = FALSE)
+#' sUV_date_OUV_hdf5(one.file.name)
+#' sUV_date_OUV_hdf5(one.file.name, use.names = FALSE)
 #'
 #' # read all variables
-#' midsummer_spain.tb <- read_AC_SAF_UV_hdf5(one.file.name)
+#' midsummer_spain.tb <- sUV_read_OUV_hdf5(one.file.name)
 #' dim(midsummer_spain.tb)
 #' summary(midsummer_spain.tb)
 #'
 #' # read two variables
 #' midsummer_spain_daily.tb <-
-#'   read_AC_SAF_UV_hdf5(one.file.name,
+#'   sUV_read_OUV_hdf5(one.file.name,
 #'                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 #' dim(midsummer_spain_daily.tb)
 #' summary(midsummer_spain_daily.tb)
@@ -116,16 +116,16 @@
 #'                  "O3MOUV_L3_20240623_v02p02.HDF5"),
 #'                package = "surfaceuv", mustWork = TRUE)
 #'
-#' date_AC_SAF_UV_hdf5(three.file.names)
+#' sUV_date_OUV_hdf5(three.file.names)
 #'
-#' summer_3days_spain.tb <- read_AC_SAF_UV_hdf5(three.file.names)
+#' summer_3days_spain.tb <- sUV_read_OUV_hdf5(three.file.names)
 #' dim(summer_3days_spain.tb)
 #' summary(summer_3days_spain.tb)
 #'
 #' @export
 #' @import rhdf5
 #'
-read_AC_SAF_UV_hdf5 <-
+sUV_read_OUV_hdf5 <-
   function(files,
            data.product = NULL,
            group.name = "GRID_PRODUCT",
@@ -134,7 +134,7 @@ read_AC_SAF_UV_hdf5 <-
            keep.QC = TRUE,
            verbose = interactive()) {
 
-    files <- check_files_accessible(files, name.pattern = "^O3MOUV.*\\.HDF5$")
+    files <- check_files(files, name.pattern = "^O3MOUV.*\\.HDF5$")
 
     # We guess the data product from the file name
     if (is.null(data.product)) {
@@ -144,7 +144,7 @@ read_AC_SAF_UV_hdf5 <-
     # Warn about untested data products
     known.data.products <- c("SURFACE UV", "O3MOUV")
     if (!toupper(data.product) %in% known.data.products) {
-      warning("'read_AC_SAF_UV_hdf5()' has not been tested with '",
+      warning("'sUV_read_OUV_hdf5()' has not been tested with '",
               data.product, "' files. Returned values need validation!")
     }
 
@@ -155,12 +155,14 @@ read_AC_SAF_UV_hdf5 <-
       on.exit(
         {
           end_time <- Sys.time()
-          cat("Read ", length(files), " grid-based HDF5 file(s) into a ",
-              format(utils::object.size(z.tb), units = "auto", standard = "SI"),
-              " data frame [",
-              paste(dim(z.tb), collapse = " rows x "),
-              " cols] in ",
-              format(signif(end_time - start_time, 2)), "\n", sep = "")
+          message(
+            "Read ", length(files), " OUV grid-based HDF5 file(s) into a ",
+            format(utils::object.size(z.tb), units = "auto", standard = "SI"),
+            " data frame [",
+            paste(dim(z.tb), collapse = " rows x "),
+            " cols] in ",
+            format(signif(end_time - start_time, 2))
+          )
         },
         add = TRUE, after = FALSE)
     }
@@ -219,6 +221,9 @@ read_AC_SAF_UV_hdf5 <-
 
     # we read one file at a time
     for (i in seq_along(files)) {
+      if (verbose) {
+        message("Reading: ", basename(files[i]))
+      }
       # ensure grid consistency across files
       if (!identical(grid_desc,
                      attributes(rhdf5::h5read(files[i],
@@ -231,9 +236,6 @@ read_AC_SAF_UV_hdf5 <-
       # advance the position of the window of indexes
       slice.selector <- base.selector + (i - 1) * max(base.selector)
 
-      if (verbose) {
-        cat("Reading: ", basename(files[i]), "\n", sep = "")
-      }
       data_date <-
         as.Date(sub(".*_([0-9]{8})_.*", "\\1", basename(files[i])),
                 format = "%Y%m%d")
@@ -245,10 +247,10 @@ read_AC_SAF_UV_hdf5 <-
       for (col in col.names[!to_skip]) {
         # read data matrix for variable as a vector
         var_data.ls[[col]][slice.selector] <-
-            rhdf5::h5read(files[i], name = vars.to.read[[col]],
-                          read.attributes = TRUE,
-                          drop = TRUE,
-                          bit64conversion = "bit64")
+          rhdf5::h5read(files[i], name = vars.to.read[[col]],
+                        read.attributes = TRUE,
+                        drop = TRUE,
+                        bit64conversion = "bit64")
       }
 
     }
@@ -286,19 +288,19 @@ read_AC_SAF_UV_hdf5 <-
     z.tb
   }
 
-#' @rdname read_AC_SAF_UV_hdf5
+#' @rdname sUV_read_OUV_hdf5
 #'
 #' @param set.oper character One of `"intersect"`, or `"union"`.
 #'
 #' @export
 #'
-vars_AC_SAF_UV_hdf5 <- function(files,
-                                data.product = NULL,
-                                group.name = "GRID_PRODUCT",
-                                keep.QC = TRUE,
-                                set.oper = "intersect") {
+sUV_vars_OUV_hdf5 <- function(files,
+                              data.product = NULL,
+                              group.name = "GRID_PRODUCT",
+                              keep.QC = TRUE,
+                              set.oper = "intersect") {
 
-  files <- check_files_accessible(files, name.pattern = "^O3MOUV.*\\.HDF5$")
+  files <- check_files(files, name.pattern = "^O3MOUV.*\\.HDF5$")
 
   # We guess the data product from the file name
   if (is.null(data.product)) {
@@ -345,17 +347,17 @@ vars_AC_SAF_UV_hdf5 <- function(files,
 
 }
 
-#' @rdname read_AC_SAF_UV_hdf5
+#' @rdname sUV_read_OUV_hdf5
 #'
 #' @param expand logical Flag indicating whether to return ranges or a
 #'   full grid.
 #'
 #' @export
 #'
-grid_AC_SAF_UV_hdf5 <- function(files,
-                                expand = FALSE) {
+sUV_grid_OUV_hdf5 <- function(files,
+                              expand = FALSE) {
 
-  files <- check_files_accessible(files, name.pattern = "^O3MOUV.*\\.HDF5$")
+  files <- check_files(files, name.pattern = "^O3MOUV.*\\.HDF5$")
 
   # the grid is described but not stored explicitly in these files
   first_grid_desc <- attributes(rhdf5::h5read(files[1],
@@ -396,16 +398,16 @@ grid_AC_SAF_UV_hdf5 <- function(files,
   }
 }
 
-#' @rdname read_AC_SAF_UV_hdf5
+#' @rdname sUV_read_OUV_hdf5
 #'
 #' @param use.names logical. Should names be added to the returned vector?
 #'
 #' @export
 #'
-date_AC_SAF_UV_hdf5 <- function(files,
-                                use.names = length(files > 1)) {
+sUV_date_OUV_hdf5 <- function(files,
+                              use.names = length(files > 1)) {
 
-  files <- check_files_accessible(files, name.pattern = "^O3MOUV.*\\.HDF5$")
+  files <- check_files(files, name.pattern = "^O3MOUV.*\\.HDF5$")
 
   files <- basename(files)
   z <- as.Date(sub(".*_([0-9]{8})_.*", "\\1", files), format = "%Y%m%d")

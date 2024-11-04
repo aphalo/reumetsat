@@ -30,10 +30,10 @@ Surface UV irradiances and doses derived from remotely sensed data acquired with
 
 The main Surface UV data product supported is "Surface UV" from the AC SAF (atmospheric composition) project of EUMETSAT. In addition, "Surface UV" data from the OMI/Aura project hosted at NASA are supported giving access to additional variables. In each case, two file formats are supported. Currently, data are read much faster from HDF5 files than from the other formats.
 
-**O3M SAF Offline surface ultraviolet radiation product (OUV).** Data files from the Surface UV offline data product of AC SAF EUMETSAT can be downloaded from the server of the Finnish Meteorological Institute (FMI) [EUMETSAT AC SAF website](https://acsaf.org/). Two different data "ingestion" (`read_`) functions cater for two different types of files: HDF5 files with data on a geographic grid and one file per day, and text (.txt) files with time series data for a single geographic location.
+**O3M SAF Offline surface ultraviolet radiation product (OUV).** Data files from the Surface UV offline data product of AC SAF EUMETSAT can be downloaded from the server of the Finnish Meteorological Institute (FMI) [EUMETSAT AC SAF website](https://acsaf.org/). Two different data "ingestion" (`sUV_read_`) functions cater for two different types of files: HDF5 files with data on a geographic grid and one file per day, and text (.txt) files with time series data for a single geographic location.
 For more information on these and other related data products, please, see the [EUMETSAT AC SAF website](https://acsaf.org/).
 
-**OMI/Aura Surface UVB Irradiance and Erythemal Dose Daily L3 Global Gridded 1.0 degree x 1.0 degree V3 (OMUVBd).** The OMI/Aura Surface UV offline data are available through NASA and can be downloaded from the [NASA EARTHDATA website](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd) as NetCDF4 files with the possibility of sub-setting before download. HDF5 files are also available for download without possibility of sub-setting. In both cases the data are provided as one file per day on a geographic grid basis. Two different data "ingestion" (`read_`) functions cater for the two different types of files. The OMI/Aura Surface UV offline data are available through NASA and can be downloaded from the [NASA EARTHDATA website](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd). 
+**OMI/Aura Surface UVB Irradiance and Erythemal Dose Daily L3 Global Gridded 1.0 degree x 1.0 degree V3 (OMUVBd).** The OMI/Aura Surface UV offline data are available through NASA and can be downloaded from the [NASA EARTHDATA website](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd) as NetCDF4 files with the possibility of sub-setting before download. HDF5 files are also available for download without possibility of sub-setting. In both cases the data are provided as one file per day on a geographic grid basis. Two different data "ingestion" (`sUV_read_`) functions cater for the two different types of files. The OMI/Aura Surface UV offline data are available through NASA and can be downloaded from the [NASA EARTHDATA website](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd). 
 
 # AC SAF Offline surface ultraviolet (OUV)
 
@@ -99,25 +99,25 @@ one.file.name <-
 Query functions make it possible to find out the names of the variables contained in a file and the coordinates of location corresponding to the time series data. They are very useful as these depend on what is requested at the time the file was downloaded.
 
 ```{r}
-vars_AC_SAF_UV_txt(one.file.name)
+sUV_vars_OUV_txt(one.file.name)
 ```
 
 To skip the quality control (`QC`) flags from the listed variables we can add `keep.QC = FALSE` to the call above.
 
 ```{r}
-vars_AC_SAF_UV_txt(one.file.name, keep.QC = FALSE)
+sUV_vars_OUV_txt(one.file.name, keep.QC = FALSE)
 ```
 
 The geographic coordinates of the location are returned based on the file header.
 
 ```{r}
-grid_AC_SAF_UV_txt(one.file.name)
+sUV_grid_OUV_txt(one.file.name)
 ```
 
-The variables included in downloaded files can be chosen when the request is submitted on-line. The default in function `read_AC_SAF_UV_txt()` is to read all the variables present in the file.
+The variables included in downloaded files can be chosen when the request is submitted on-line. The default in function `sUV_read_OUV_txt()` is to read all the variables present in the file.
 
 ```{r}
-summer_viikki.tb <- read_AC_SAF_UV_txt(one.file.name)
+summer_viikki.tb <- sUV_read_OUV_txt(one.file.name)
 dim(summer_viikki.tb)
 colnames(summer_viikki.tb)
 ```
@@ -138,7 +138,7 @@ As bad data values are filled with `NA` in the measured/derived variables, a sma
 
 ```{r}
 summer_viikki_QCf.tb <-
-  read_AC_SAF_UV_txt(one.file.name, keep.QC = FALSE)
+  sUV_read_OUV_txt(one.file.name, keep.QC = FALSE)
 dim(summer_viikki_QCf.tb)
 colnames(summer_viikki_QCf.tb)
 ```
@@ -148,7 +148,7 @@ In some cases we may want to read only specific variables out of the file. This 
 ```{r}
 # read two variables
 summer_viikki_2.tb <-
-  read_AC_SAF_UV_txt(one.file.name,
+  sUV_read_OUV_txt(one.file.name,
                      vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 dim(summer_viikki_2.tb)
 colnames(summer_viikki_2.tb)
@@ -158,9 +158,9 @@ To read variables based on name matching we can first retrieve the names of all 
 ```{r}
 # read UV-A and UV-B variables and QC flags
 uvb.vars <- grep("uvb$|uva$|^QC_", 
-                 vars_AC_SAF_UV_txt(one.file.name), value = TRUE, ignore.case = TRUE)
+                 sUV_vars_OUV_txt(one.file.name), value = TRUE, ignore.case = TRUE)
 summer_viikki_3.tb <-
-  read_AC_SAF_UV_txt(one.file.name,
+  sUV_read_OUV_txt(one.file.name,
                      vars.to.read = uvb.vars)
 dim(summer_viikki_3.tb)
 colnames(summer_viikki_3.tb)
@@ -170,7 +170,7 @@ colnames(summer_viikki_3.tb)
 
 In the case of time-series data one may want to read several files for the same location, for example for different time periods at the same location or for a few different locations for the same time period. This can be achieved by passing to parameter `files` a vector of file names.
 
-One consideration is that when reading multiple time-series files, we must ensure that the variables we intend to read are present in all the files. The presence of additional variables in only some files is not a problem as the files are read selectively, and the name and position of columns found from the header of each file. We can find out which variables are present in all the files we intend to read as shown below, relying on the default behavior of function `vars_AC_SAF_UV_txt()`. We first locate the folder where the files are stored and then search for files with names matching a pattern.
+One consideration is that when reading multiple time-series files, we must ensure that the variables we intend to read are present in all the files. The presence of additional variables in only some files is not a problem as the files are read selectively, and the name and position of columns found from the header of each file. We can find out which variables are present in all the files we intend to read as shown below, relying on the default behavior of function `sUV_vars_OUV_txt()`. We first locate the folder where the files are stored and then search for files with names matching a pattern.
 
 ```{r}
 path.to.files <-
@@ -183,19 +183,19 @@ two.file.names <-
 We can find out if the two files contain data for the same location.
 
 ```{r}
-grid_AC_SAF_UV_txt(two.file.names)
+sUV_grid_OUV_txt(two.file.names)
 ```
 
 We can ignore the quality control variables to keep the output simpler and easier to understand. A warning is issued because the files contain different sets of variables. By default the returned vector contains the names of the variables that are present in all files. 
  
 ```{r}
-shared.variables <- vars_AC_SAF_UV_txt(two.file.names, keep.QC = FALSE)
+shared.variables <- sUV_vars_OUV_txt(two.file.names, keep.QC = FALSE)
 ```
 
-In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `read_AC_SAF_UV_txt()`. 
+In the case of reading multiple time series for different locations it is important to include the geographic coordinates in the returned data frame. The default is to include these coordinates when more than one file is read in a single call to `sUV_read_OUV_txt()`. 
 ```{r}
 two_locations.tb <-
-  read_AC_SAF_UV_txt(two.file.names, vars.to.read = shared.variables, keep.QC = FALSE)
+  sUV_read_OUV_txt(two.file.names, vars.to.read = shared.variables, keep.QC = FALSE)
 dim(two_locations.tb)
 colnames(two_locations.tb)
 ```
@@ -205,7 +205,7 @@ The returned value is a single data frame with the concatenated contents of the 
 We can check the variables present in each file.
 
 ```{r}
-  vars.ls <- lapply(two.file.names, FUN = vars_AC_SAF_UV_txt, keep.QC = FALSE)
+  vars.ls <- lapply(two.file.names, FUN = sUV_vars_OUV_txt, keep.QC = FALSE)
   names(vars.ls) <- basename(two.file.names)
   vars.ls
 ```
@@ -251,24 +251,24 @@ one.file.name <-
 Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of the grid.
 
 ```{r}
-vars_AC_SAF_UV_hdf5(one.file.name)
+sUV_vars_OUV_hdf5(one.file.name)
 ```
 
 By default only the boundaries of the grid are returned.
 
 ```{r}
-grid_AC_SAF_UV_hdf5(one.file.name)
+sUV_grid_OUV_hdf5(one.file.name)
 ```
 
 With defaults all variables are read, and because the data can include multiple geographic grid points, `Longitude` and `Latitude` are always returned in the data frame.
 
 ```{r}
-midsummer_spain.tb <- read_AC_SAF_UV_hdf5(one.file.name)
+midsummer_spain.tb <- sUV_read_OUV_hdf5(one.file.name)
 dim(midsummer_spain.tb)
 colnames(midsummer_spain.tb)
 ```
 
-Variable names are consistent between the data frames returned by `read_AC_SAF_UV_hdf5()` and `read_AC_SAF_UV_txt()`, but the position of the columns, can vary. *Use names rather than numeric positional indices to extract columns!*
+Variable names are consistent between the data frames returned by `sUV_read_OUV_hdf5()` and `sUV_read_OUV_txt()`, but the position of the columns, can vary. *Use names rather than numeric positional indices to extract columns!*
 
 ```{r}
 str(lapply(midsummer_spain.tb, class))
@@ -284,7 +284,7 @@ We can as before read only specific variables if needed by passing their names a
 
 ```{r}
 midsummer_spain_daily.tb <-
-  read_AC_SAF_UV_hdf5(one.file.name,
+  sUV_read_OUV_hdf5(one.file.name,
                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 dim(midsummer_spain_daily.tb)
 colnames(midsummer_spain_daily.tb)
@@ -307,10 +307,10 @@ five.file.names <-
                package = "surfaceuv", mustWork = TRUE)
 ```
 
-The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `read_AC_SAF_UV_hdf5()` should share identical grids and contain all the variables to be read (by default all those in the first file read).* If this is not the case, currently `read_AC_SAF_UV_hdf5()` should be used to read them individually and later combined, which is a slower approach.
+The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `sUV_read_OUV_hdf5()` should share identical grids and contain all the variables to be read (by default all those in the first file read).* If this is not the case, currently `sUV_read_OUV_hdf5()` should be used to read them individually and later combined, which is a slower approach.
 
 ```{r}
-summer_5days_spain.tb <- read_AC_SAF_UV_hdf5(five.file.names)
+summer_5days_spain.tb <- sUV_read_OUV_hdf5(five.file.names)
 dim(summer_5days_spain.tb)
 colnames(summer_5days_spain.tb)
 ```
@@ -318,45 +318,45 @@ We can silence progress reporting.
 
 ```{r}
 summer_5days_spain.tb <- 
-  read_AC_SAF_UV_hdf5(five.file.names, verbose = FALSE)
+  sUV_read_OUV_hdf5(five.file.names, verbose = FALSE)
 ```
 
 As shown above for text files, query functions can be used to extract information about the files, in this case without reading them in whole.
 
 ```{r}
-vars_AC_SAF_UV_hdf5(five.file.names)
+sUV_vars_OUV_hdf5(five.file.names)
 ```
 
 ```{r}
-vars_AC_SAF_UV_hdf5(five.file.names, keep.QC = FALSE)
+sUV_vars_OUV_hdf5(five.file.names, keep.QC = FALSE)
 ```
 
 ```{r}
-grid_AC_SAF_UV_hdf5(five.file.names)
+sUV_grid_OUV_hdf5(five.file.names)
 ```
 
 ```{r}
-grid_AC_SAF_UV_hdf5(five.file.names, expand = TRUE) |>
+sUV_grid_OUV_hdf5(five.file.names, expand = TRUE) |>
   head(10)
 ```
 
 ```{r}
-date_AC_SAF_UV_hdf5(five.file.names)
+sUV_date_OUV_hdf5(five.file.names)
 ```
 
 ```{r}
-date_AC_SAF_UV_hdf5(five.file.names, use.names = FALSE)
+sUV_date_OUV_hdf5(five.file.names, use.names = FALSE)
 ```
 
 
 If the files differ in the variables they contain, or we want to only extract some, as shown above, we can select them with `grep()` or some other function once we have a list of their names. (Of course, we can also simply pass the names of the variables as an inline character vector in the call, as shown above for time-series data files.)
 
 ```{r}
-all.vars <- vars_AC_SAF_UV_hdf5(five.file.names)
+all.vars <- sUV_vars_OUV_hdf5(five.file.names)
 daily.dose.vars <- grep("^DailyDose", all.vars, value = TRUE)
 
 doses_5days_spain.tb <- 
-  read_AC_SAF_UV_hdf5(five.file.names, vars.to.read = daily.dose.vars)
+  sUV_read_OUV_hdf5(five.file.names, vars.to.read = daily.dose.vars)
 dim(doses_5days_spain.tb)
 colnames(doses_5days_spain.tb)
 
@@ -366,7 +366,7 @@ colnames(doses_5days_spain.tb)
 
 As memory is pre-allocated the set of variables to be read is decided when or before the first file is read. If no argument is passed to `vars.to.read`, the default becomes the set of variables found in the first file read. In contrast, if an argument is passed, it determines the set of variables to read. If any variable in this set is not found in a file, currently, an error is triggered.
 
-We can use `r `vars__AC_SAF_UV_hdf5()` to obtain a vector with the names of all the variables that are present consistently across all the files. This is the case with the default argument `set.oper = "intersect"`. Passing `"union"` lists all the variables found in at least one of the files.
+We can use `r `sUV_vars_OUV_hdf5()` to obtain a vector with the names of all the variables that are present consistently across all the files. This is the case with the default argument `set.oper = "intersect"`. Passing `"union"` lists all the variables found in at least one of the files.
 
 ```{r}
 path.to.files <-
@@ -381,17 +381,17 @@ gridded.files <-
 
 
 ```{r}
-grid_AC_SAF_UV_hdf5(gridded.files)
+sUV_grid_OUV_hdf5(gridded.files)
 ```
 
 ```{r}
-shared.variables <- vars_AC_SAF_UV_hdf5(gridded.files, keep.QC = FALSE)
+shared.variables <- sUV_vars_OUV_hdf5(gridded.files, keep.QC = FALSE)
 shared.variables
 ```
 We can check the variables present in each file.
 
 ```{r}
-  vars.ls <- lapply(gridded.files, FUN = vars_AC_SAF_UV_hdf5, keep.QC = FALSE)
+  vars.ls <- lapply(gridded.files, FUN = sUV_vars_OUV_hdf5, keep.QC = FALSE)
   names(vars.ls) <- basename(gridded.files)
   vars.ls
 ```
@@ -400,7 +400,7 @@ By default progress is reported when the function is called interactively. Thus,
 
 ```{r}
 six.days.tb <- 
-  read_AC_SAF_UV_hdf5(gridded.files, 
+  sUV_read_OUV_hdf5(gridded.files, 
                       vars.to.read = shared.variables, 
                       keep.QC = FALSE,
                       verbose = TRUE)
@@ -488,24 +488,24 @@ one.file.name <-
 Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of the grid.
 
 ```{r}
-vars_OMI_AURA_UV_nc4(one.file.name)
+sUV_vars_OMUVBd_nc4(one.file.name)
 ```
 
 By default only the boundaries of the grid are returned.
 
 ```{r}
-grid_OMI_AURA_UV_nc4(one.file.name)
+sUV_grid_OMUVBd_nc4(one.file.name)
 ```
 
 With defaults all variables are read, and because the data can include multiple geographic grid points, `Longitude` and `Latitude` are always returned in the data frame.
 
 ```{r}
-autumn_helsinki.tb <- read_OMI_AURA_UV_nc4(one.file.name)
+autumn_helsinki.tb <- sUV_read_OMUVBd_nc4(one.file.name)
 dim(autumn_helsinki.tb)
 colnames(autumn_helsinki.tb)
 ```
 
-Grid and date variables names are consistent between the data frames returned by `read_AC_SAF_UV_hdf5()`, `read_AC_SAF_UV_txt()` and `read_OMI_AURA_UV_nc4()`. For other variables the original names are preserved and may differ. The position of columns may vary between functions and also between versions of the package. *Use names rather than numeric positional indices to extract columns!*
+Grid and date variables names are consistent between the data frames returned by `sUV_read_OUV_hdf5()`, `sUV_read_OUV_txt()` and `sUV_read_OMUVBd_nc4()`. For other variables the original names are preserved and may differ. The position of columns may vary between functions and also between versions of the package. *Use names rather than numeric positional indices to extract columns!*
 
 ```{r}
 str(lapply(autumn_helsinki.tb, class))
@@ -515,7 +515,7 @@ We can as before read only specific variables if needed by passing their names a
 
 ```{r}
 uvi_helsinki.tb <-
-  read_OMI_AURA_UV_nc4(one.file.name,
+  sUV_read_OMUVBd_nc4(one.file.name,
                        vars.to.read = "UVindex")
 dim(uvi_helsinki.tb)
 colnames(uvi_helsinki.tb)
@@ -535,10 +535,10 @@ path.to.files <-
 three.file.names <- list.files(path.to.files, pattern = "\\.nc4$", full.names = TRUE)
 ```
 
-The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `read_OMI_AURA_UV_nc4()` should share identical grids and contain all the variables to be read (by default all those in the first file read).* If this is not the case, currently `read_OMI_AURA_UV_nc4()` should be used to read them individually and later combined, which is a slower approach.
+The only difference to the case of reading a single file is in the length of the character vector containing file names. *The different files read in the same call to `sUV_read_OMUVBd_nc4()` should share identical grids and contain all the variables to be read (by default all those in the first file read).* If this is not the case, currently `sUV_read_OMUVBd_nc4()` should be used to read them individually and later combined, which is a slower approach.
 
 ```{r}
-three.days.helsinki.tb <- read_OMI_AURA_UV_nc4(three.file.names)
+three.days.helsinki.tb <- sUV_read_OMUVBd_nc4(three.file.names)
 dim(three.days.helsinki.tb)
 colnames(three.days.helsinki.tb)
 ```
@@ -546,39 +546,39 @@ We can silence progress reporting.
 
 ```{r}
 three.days.helsinki.tb <- 
-  read_OMI_AURA_UV_nc4(three.file.names, verbose = FALSE)
+  sUV_read_OMUVBd_nc4(three.file.names, verbose = FALSE)
 ```
 
 As shown above for text files, query functions can be used to extract information about the files, in this case without reading them in whole.
 
 ```{r}
-vars_OMI_AURA_UV_nc4(three.file.names)
+sUV_vars_OMUVBd_nc4(three.file.names)
 ```
 
 ```{r}
-grid_OMI_AURA_UV_nc4(three.file.names)
+sUV_grid_OMUVBd_nc4(three.file.names)
 ```
 
 ```{r}
-grid_OMI_AURA_UV_nc4(three.file.names, expand = TRUE)
+sUV_grid_OMUVBd_nc4(three.file.names, expand = TRUE)
 ```
 
 ```{r}
-date_OMI_AURA_UV_nc4(three.file.names)
+sUV_date_OMUVBd_nc4(three.file.names)
 ```
 
 ```{r}
-date_OMI_AURA_UV_nc4(three.file.names, use.names = FALSE)
+sUV_date_OMUVBd_nc4(three.file.names, use.names = FALSE)
 ```
 
 If the files differ in the variables they contain, or we want to only extract some, as shown above, we can select them with `grep()` or some other function once we have a list of their names. (Of course, we can also simply pass the names of the variables as an in-line character vector in the call.)
 
 ```{r}
-all.vars <- vars_OMI_AURA_UV_nc4(three.file.names)
+all.vars <- sUV_vars_OMUVBd_nc4(three.file.names)
 daily.dose.vars <- grep("^Irradiance", all.vars, value = TRUE)
 
 irardiances_helsinki.tb <- 
-  read_OMI_AURA_UV_nc4(three.file.names, vars.to.read = daily.dose.vars)
+  sUV_read_OMUVBd_nc4(three.file.names, vars.to.read = daily.dose.vars)
 dim(irardiances_helsinki.tb)
 colnames(irardiances_helsinki.tb)
 
@@ -605,24 +605,24 @@ one.file.name <-
 Two query functions make it possible to find out the names of the variables contained in a file and the coordinates of the grid.
 
 ```{r}
-vars_OMI_AURA_UV_he5(one.file.name)
+sUV_vars_OMUVBd_he5(one.file.name)
 ```
 
 By default only the boundaries of the grid are returned.
 
 ```{r}
-grid_OMI_AURA_UV_he5(one.file.name)
+sUV_grid_OMUVBd_he5(one.file.name)
 ```
 
 With defaults all variables are read, and because the data can include multiple geographic grid points, `Longitude` and `Latitude` are always returned in the data frame.
 
 ```{r}
-global_one_day.tb <- read_OMI_AURA_UV_he5(one.file.name)
+global_one_day.tb <- sUV_read_OMUVBd_he5(one.file.name)
 dim(global_one_day.tb)
 colnames(global_one_day.tb)
 ```
 
-Grid and date variables names are consistent between the data frames returned by `read_AC_SAF_UV_hdf5()`, `read_AC_SAF_UV_txt()` and `read_OMI_AURA_UV_nc4()`. For other variables the original names are preserved and may differ. The position of columns may vary between functions and also between versions of the package. *Use names rather than numeric positional indices to extract columns!*
+Grid and date variables names are consistent between the data frames returned by `sUV_read_OUV_hdf5()`, `sUV_read_OUV_txt()` and `sUV_read_OMUVBd_nc4()`. For other variables the original names are preserved and may differ. The position of columns may vary between functions and also between versions of the package. *Use names rather than numeric positional indices to extract columns!*
 
 ```{r}
 str(lapply(global_one_day.tb, class))
@@ -632,7 +632,7 @@ We can as before read only specific variables if needed by passing their names a
 
 ```{r}
 uvi_global.tb <-
-  read_OMI_AURA_UV_he5(one.file.name,
+  sUV_read_OMUVBd_he5(one.file.name,
                        vars.to.read = "UVindex")
 dim(uvi_global.tb)
 colnames(uvi_global.tb)
@@ -640,7 +640,7 @@ colnames(uvi_global.tb)
 
 ### Reading multiple gridded-data files
 
-As for other functions in the package, `read_OMI_AURA_UV_he5()` accepts a `character` vector of file names to read and returns a single concatenated data frame.
+As for other functions in the package, `sUV_read_OMUVBd_he5()` accepts a `character` vector of file names to read and returns a single concatenated data frame.
 
 ## References
 

@@ -11,27 +11,27 @@
 #' @param verbose logical Flag indicating if progress, and time and size of
 #'   the returned object should be printed.
 #'
-#' @details Function `read_OMI_AURA_UV_nc4()` can be used to read the data
+#' @details Function `sUV_read_OMUVBd_nc4()` can be used to read the data
 #'   stored in a file, either in full or selected variables. Query functions
-#'   `vars_OMI_AURA_UV_nc4()`, `grid_OMI_AURA_UV_nc4()` and
-#'   `date_OMI_AURA_UV_nc4()` extract the names of the variables, the range of
+#'   `sUV_vars_OMUVBd_nc4()`, `sUV_grid_OMUVBd_nc4()` and
+#'   `sUV_date_OMUVBd_nc4()` extract the names of the variables, the range of
 #'   the grid and the dates of measurements. The dates are decoded from the file
 #'   names, expecting these to be those set by the data provider or at least
 #'   retaining the date encoded as in the original name. The grid is not
 #'   expected to be identical in all files that are imported in a call to
-#'   `read_OMI_AURA_UV_nc4()`, and grid sub-setting during file reading is
+#'   `sUV_read_OMUVBd_nc4()`, and grid sub-setting during file reading is
 #'   currently not supported. If not all the files named in the argument to
 #'   `files` are accessible, an error is triggered early. Missing variables are
 #'   filled with `NA` values.
 #'
-#' @return Function `read_OMI_AURA_UV_nc4()` returns a data frame with columns
+#' @return Function `sUV_read_OMUVBd_nc4()` returns a data frame with columns
 #'   named `"Date"`, `"Longitude"`, `"Latitude"`, and the data variables with
 #'   their original names. The data variables have their metadata stored as R
-#'   attributes. `vars_OMI_AURA_UV_nc4()` returns a `character` vector of
-#'   variable names, `grid_OMI_AURA_UV_nc4()` returns a data frame with two
+#'   attributes. `sUV_vars_OMUVBd_nc4()` returns a `character` vector of
+#'   variable names, `sUV_grid_OMUVBd_nc4()` returns a data frame with two
 #'   numeric variables, `Longitude` and `Latitude`, with two rows or an expanded
 #'   grid depending on the argument passed to `expand`, while
-#'   `date_OMI_AURA_UV_nc4()` returns a named vector of class `Date`, by default
+#'   `sUV_date_OMUVBd_nc4()` returns a named vector of class `Date`, by default
 #'   with file names as names.
 #'
 #' @note The current implementation lacking a constraint on the consistency of
@@ -58,23 +58,23 @@
 #' file.names <- list.files(path.to.files, pattern = "*.nc4$", full.names = TRUE)
 #'
 #' # available variables
-#' vars_OMI_AURA_UV_nc4(file.names)
+#' sUV_vars_OMUVBd_nc4(file.names)
 #'
 #' # available grid
-#' grid_OMI_AURA_UV_nc4(file.names)
-#' grid_OMI_AURA_UV_nc4(file.names, expand = TRUE)
+#' sUV_grid_OMUVBd_nc4(file.names)
+#' sUV_grid_OMUVBd_nc4(file.names, expand = TRUE)
 #'
 #' # decode date from file name
-#' date_OMI_AURA_UV_nc4(file.names)
-#' date_OMI_AURA_UV_nc4(file.names, use.names = FALSE)
+#' sUV_date_OMUVBd_nc4(file.names)
+#' sUV_date_OMUVBd_nc4(file.names, use.names = FALSE)
 #'
 #' # read all variables
-#' helsinki_3days.tb <- read_OMI_AURA_UV_nc4(file.names)
+#' helsinki_3days.tb <- sUV_read_OMUVBd_nc4(file.names)
 #' dim(helsinki_3days.tb)
 #' summary(helsinki_3days.tb)
 #'
 #' # read some variables
-#' helsinki_UVI_3days.tb <- read_OMI_AURA_UV_nc4(file.names, vars.to.read = "UVindex")
+#' helsinki_UVI_3days.tb <- sUV_read_OMUVBd_nc4(file.names, vars.to.read = "UVindex")
 #' dim(helsinki_UVI_3days.tb)
 #' summary(helsinki_UVI_3days.tb)
 #'
@@ -82,12 +82,12 @@
 #' @import tidync
 #' @import dplyr
 #'
-read_OMI_AURA_UV_nc4 <-
+sUV_read_OMUVBd_nc4 <-
   function(files,
            vars.to.read = NULL,
            verbose = interactive()) {
 
-    files <- check_files_accessible(files, name.pattern = "^OMI-Aura.*\\.nc4$")
+    files <- check_files(files, name.pattern = "^OMI-Aura.*\\.nc4$")
 
     # progress reporting
     if (verbose) {
@@ -96,23 +96,28 @@ read_OMI_AURA_UV_nc4 <-
       on.exit(
         {
           end_time <- Sys.time()
-          cat("Read ", length(files), " grid-based NetCDF file(s) into a ",
-              format(utils::object.size(z.tb), units = "auto", standard = "SI"),
-              " data frame [",
-              paste(dim(z.tb), collapse = " rows x "),
-              " cols] in ",
-              format(signif(end_time - start_time, 2)), "\n", sep = "")
+          message(
+            "Read ", length(files), " OMUVBd grid-based netCDF4 file(s) into a ",
+            format(utils::object.size(z.tb), units = "auto", standard = "SI"),
+            " data frame [",
+            paste(dim(z.tb), collapse = " rows x "),
+            " cols] in ",
+            format(signif(end_time - start_time, 2))
+          )
         },
         add = TRUE, after = FALSE)
     }
 
-    dates <- date_OMI_AURA_UV_nc4(files)
+    dates <- sUV_date_OMUVBd_nc4(files)
     names <- basename(files)
 
     tibbles.ls <- list()
     lon.range <- lat.range <- character()
 
     for (i in seq_along(names)) {
+      if (verbose) {
+        message("Reading: ", basename(files[i]))
+      }
       temp.tb <- tidync::hyper_tibble(files[[i]], na.rm = FALSE)
       temp.tb[["Date"]] <- rep(dates[[i]], nrow(temp.tb))
       tibbles.ls[[i]] <- temp.tb
@@ -146,16 +151,16 @@ read_OMI_AURA_UV_nc4 <-
 
   }
 
-#' @rdname read_OMI_AURA_UV_nc4
+#' @rdname sUV_read_OMUVBd_nc4
 #'
 #' @param set.oper character One of `"intersect"`, or `"union"`.
 #'
 #' @export
 #'
-vars_OMI_AURA_UV_nc4 <- function(files,
+sUV_vars_OMUVBd_nc4 <- function(files,
                                 set.oper = "intersect") {
 
-  files <- check_files_accessible(files, name.pattern = "^OMI-Aura.*\\.nc4$")
+  files <- check_files(files, name.pattern = "^OMI-Aura.*\\.nc4$")
 
   set.fun <- switch(set.oper,
                     union = base::union,
@@ -187,14 +192,14 @@ vars_OMI_AURA_UV_nc4 <- function(files,
 
 }
 
-#' @rdname read_OMI_AURA_UV_nc4
+#' @rdname sUV_read_OMUVBd_nc4
 #'
 #' @param expand logical Flag indicating whether to return ranges or a
 #'   full grid.
 #'
 #' @export
 #'
-grid_OMI_AURA_UV_nc4 <- function(files,
+sUV_grid_OMUVBd_nc4 <- function(files,
                                 expand = FALSE) {
   # could we read the grid range directly from the NetCDF4 file?
   # As a brute-force approach we read the expanded grid from the files
@@ -202,7 +207,7 @@ grid_OMI_AURA_UV_nc4 <- function(files,
   # mismatched grids.
 
   expanded.tb <-
-    read_OMI_AURA_UV_nc4(files, vars.to.read = character(), verbose = FALSE)
+    sUV_read_OMUVBd_nc4(files, vars.to.read = character(), verbose = FALSE)
 
   if (expand) {
     expanded.tb[expanded.tb[["Date"]] == expanded.tb[["Date"]][1],
@@ -214,10 +219,10 @@ grid_OMI_AURA_UV_nc4 <- function(files,
 
 }
 
-#' @rdname read_OMI_AURA_UV_nc4
+#' @rdname sUV_read_OMUVBd_nc4
 #'
 #' @param use.names logical. Should names be added to the returned vector?
 #'
 #' @export
 #'
-date_OMI_AURA_UV_nc4 <- date_OMI_AURA_UV_he5
+sUV_date_OMUVBd_nc4 <- sUV_date_OMUVBd_he5

@@ -39,32 +39,32 @@ of data from files downloaded from open-access internet servers. These
 data have very few restrictions to their use, in most cases only the
 requirement to cite the source.
 
-**O3M SAF Offline surface ultraviolet (OUV) radiation product.** Data
+**O3M SAF Offline surface ultraviolet radiation product (OUV).** Data
 files from the Surface UV offline data product of AC SAF EUMETSAT can be
 downloaded from the server of the Finnish Meteorological Institute (FMI)
 [EUMETSAT AC SAF website](https://acsaf.org/). Two different data
-“ingestion” (`read_`) functions cater for two different types of files:
-HDF5 files with data on a geographic grid and one file per day, and text
-(.txt) files with time series data for a single geographic location. For
-more information on these and other related data products, please, see
-the [EUMETSAT AC SAF website](https://acsaf.org/).
+“ingestion” (`sUV_read_`) functions cater for two different types of
+files: HDF5 files with data on a geographic grid and one file per day,
+and text (.txt) files with time series data for a single geographic
+location. For more information on these and other related data products,
+please, see the [EUMETSAT AC SAF website](https://acsaf.org/).
 
 **OMI/Aura Surface UVB Irradiance and Erythemal Dose Daily L3 Global
-Gridded 1.0 degree x 1.0 degree V3.** The OMI/Aura Surface UV offline
-data are available through NASA and can be downloaded from the [NASA
-EARTHDATA
+Gridded 1.0 degree x 1.0 degree V3 (OMUVBd).** The OMI/Aura Surface UV
+offline data are available through NASA and can be downloaded from the
+[NASA EARTHDATA
 website](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd)
 as NetCDF4 files with the possibility of sub-setting before download.
 HDF5 files are also available for download without possibility of
 sub-setting. In both cases the data are provided as one file per day on
-a geographic grid basis. Two different data “ingestion” (`read_`)
+a geographic grid basis. Two different data “ingestion” (`sUV_read_`)
 functions cater for the two different types of files. The OMI/Aura
 Surface UV offline data are available through NASA and can be downloaded
 from the [NASA EARTHDATA
 website](https://disc.gsfc.nasa.gov/datasets/OMUVBd_003/summary?keywords=OMUVBd).
 
 All functions can read one or more files in a single call. Irrespective
-of the number of files read, all `read_` functions return a single
+of the number of files read, all `sUV_read_` functions return a single
 combined data frame object, with locations and time coordinates in long
 form. Additional query functions are provided to extract information
 from files, when possible, without reading them in whole.
@@ -74,6 +74,7 @@ from files, when possible, without reading them in whole.
 Installation of the most recent stable version from CRAN:
 
 ``` r
+# NOT YET IN CRAN
 # install.packages("surfaceuv")
 ```
 
@@ -119,7 +120,7 @@ citation("surfaceuv")
 #> To cite package 'surfaceuv' in publications use:
 #> 
 #>   Aphalo P (2024). _surfaceuv: Solar Ultraviolet at Ground Surface Data
-#>   Import_. R package version 0.1.0.9002,
+#>   Import_. R package version 0.1.1,
 #>   <https://docs.r4photobiology.info/surfaceuv/>.
 #> 
 #> A BibTeX entry for LaTeX users is
@@ -128,7 +129,7 @@ citation("surfaceuv")
 #>     title = {surfaceuv: Solar Ultraviolet at Ground Surface Data Import},
 #>     author = {Pedro J. Aphalo},
 #>     year = {2024},
-#>     note = {R package version 0.1.0.9002},
+#>     note = {R package version 0.1.1},
 #>     url = {https://docs.r4photobiology.info/surfaceuv/},
 #>   }
 ```
@@ -142,7 +143,7 @@ redistributed a note similar to this must be included, but it is
 recommended to download them directly from the original source.
 
 The package includes data example files redistributed in folder
-‘extdata’ that contain modified Copernicus Sentinel data \[2024\]. If
+`extdata` that contain modified Copernicus Sentinel data \[2024\]. If
 reused or redistributed a note similar to this must be included, but it
 is recommended to download them directly from the original source.
 

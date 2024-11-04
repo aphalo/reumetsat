@@ -27,14 +27,14 @@
 #'   Data from multiple files are concatenated. By default, the geographic
 #'   coordinates are added in such a case.
 #'
-#' @return `read_AC_SAF_UV_txt()` returns a data frame with columns named
+#' @return `sUV_read_OUV_txt()` returns a data frame with columns named
 #'   `"Date"`, `"Longitude"`, `"Latitude"`, and the data variables with their
 #'   original names (with no units). The data variables have no metadata stored
 #'   as R attributes. When reading multiple files, by default the format is
-#'   similar to that from function `read_AC_SAF_UV_hdf5()`. Column names are the
+#'   similar to that from function `sUV_read_OUV_hdf5()`. Column names are the
 #'   same but column order can differ. File headers are saved as a list in R
-#'   attribute `file.headers`. `vars_AC_SAF_UV_txt()` returns a `character`
-#'   vector of variable names, and `grid_AC_SAF_UV_txt()` a dataframe with two
+#'   attribute `file.headers`. `sUV_vars_OUV_txt()` returns a `character`
+#'   vector of variable names, and `sUV_grid_OUV_txt()` a dataframe with two
 #'   numeric variables, `Longitude` and `Latitude`, and a single row.
 #'
 #' @note When requesting the data from the EUMETSAT AC SAF FMI server at
@@ -53,7 +53,7 @@
 #'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
 #'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
 #'
-#' @seealso [`read_AC_SAF_UV_hdf5()`] supporting the same Surface UV data stored
+#' @seealso [`sUV_read_OUV_hdf5()`] supporting the same Surface UV data stored
 #'   in a gridded format.
 #'
 #' @examples
@@ -63,15 +63,15 @@
 #'                package = "surfaceuv", mustWork = TRUE)
 #'
 #' # Available variables
-#' vars_AC_SAF_UV_txt(one.file.name)
-#' vars_AC_SAF_UV_txt(one.file.name, keep.QC = FALSE)
+#' sUV_vars_OUV_txt(one.file.name)
+#' sUV_vars_OUV_txt(one.file.name, keep.QC = FALSE)
 #'
 #' # Grid point coordinates
-#' grid_AC_SAF_UV_txt(one.file.name)
+#' sUV_grid_OUV_txt(one.file.name)
 #'
 #' # read all variables
 #' summer_viikki.tb <-
-#'   read_AC_SAF_UV_txt(one.file.name)
+#'   sUV_read_OUV_txt(one.file.name)
 #' dim(summer_viikki.tb)
 #' colnames(summer_viikki.tb)
 #' str(sapply(summer_viikki.tb, class))
@@ -80,19 +80,19 @@
 #'
 #' # read all data variables
 #' summer_viikki_QCf.tb <-
-#'   read_AC_SAF_UV_txt(one.file.name, keep.QC = FALSE)
+#'   sUV_read_OUV_txt(one.file.name, keep.QC = FALSE)
 #' dim(summer_viikki_QCf.tb)
 #' summary(summer_viikki_QCf.tb)
 #'
 #' # read all data variables including geographic coordinates
 #' summer_viikki_geo.tb <-
-#'   read_AC_SAF_UV_txt(one.file.name, keep.QC = FALSE, add.geo = TRUE)
+#'   sUV_read_OUV_txt(one.file.name, keep.QC = FALSE, add.geo = TRUE)
 #' dim(summer_viikki_geo.tb)
 #' summary(summer_viikki_geo.tb)
 #'
 #' # read two variables
 #' summer_viikki_2.tb <-
-#'   read_AC_SAF_UV_txt(one.file.name,
+#'   sUV_read_OUV_txt(one.file.name,
 #'                     vars.to.read = c("DailyDoseUva", "DailyDoseUvb"))
 #' dim(summer_viikki_2.tb)
 #' summary(summer_viikki_2.tb)
@@ -100,14 +100,14 @@
 #' @export
 #' @import utils
 #'
-read_AC_SAF_UV_txt <-
+sUV_read_OUV_txt <-
   function(files,
            vars.to.read = NULL,
            add.geo = length(files) > 1,
            keep.QC = TRUE,
            verbose = interactive()) {
 
-    files <- check_files_accessible(files, name.pattern = ".*\\.txt$")
+    files <- check_files(files, name.pattern = ".*\\.txt$")
 
     # progress reporting
     if (verbose) {
@@ -116,12 +116,14 @@ read_AC_SAF_UV_txt <-
       on.exit(
         {
           end_time <- Sys.time()
-          cat("Read ", length(files), " time-series .txt file(s) into a ",
-              format(utils::object.size(z.tb), units = "auto", standard = "SI"),
-              " data frame [",
-              paste(dim(z.tb), collapse = " rows x "),
-              " cols] in ",
-              format(signif(end_time - start_time, 2)), "\n", sep = "")
+          message(
+            "Read ", length(files), " OUV time-series file(s) into a ",
+            format(utils::object.size(z.tb), units = "auto", standard = "SI"),
+            " data frame [",
+            paste(dim(z.tb), collapse = " rows x "),
+            " cols] in ",
+            format(signif(end_time - start_time, 2))
+          )
         },
         add = TRUE, after = FALSE)
     }
@@ -130,11 +132,9 @@ read_AC_SAF_UV_txt <-
     file.headers.ls <- list()
 
     for (file in files) {
-
       if (verbose) {
-        cat("Reading: ", basename(file), "\n", sep = "")
+        message("Reading: ", basename(file))
       }
-
       # read header
       file.header <- scan(
         file = file,
@@ -218,17 +218,17 @@ read_AC_SAF_UV_txt <-
     z.tb
   }
 
-#' @rdname read_AC_SAF_UV_txt
+#' @rdname sUV_read_OUV_txt
 #'
 #' @param set.oper character One of `"intersect"`, or `"union"`.
 #'
 #' @export
 #'
-vars_AC_SAF_UV_txt <- function(files,
-                               keep.QC = TRUE,
-                               set.oper = "intersect") {
+sUV_vars_OUV_txt <- function(files,
+                             keep.QC = TRUE,
+                             set.oper = "intersect") {
 
-  files <- check_files_accessible(files, name.pattern = ".*\\.txt$")
+  files <- check_files(files, name.pattern = ".*\\.txt$")
 
   set.fun <- switch(set.oper,
                     union = base::union,
@@ -289,17 +289,17 @@ vars_AC_SAF_UV_txt <- function(files,
 
 }
 
-#' @rdname read_AC_SAF_UV_txt
+#' @rdname sUV_read_OUV_txt
 #'
 #' @param use.names logical. Should row names be added to the returned data
 #'  frame?
 #'
 #' @export
 #'
-grid_AC_SAF_UV_txt <- function(files,
-                               use.names = length(files) > 1) {
+sUV_grid_OUV_txt <- function(files,
+                             use.names = length(files) > 1) {
 
-  files <- check_files_accessible(files, name.pattern = ".*\\.txt$")
+  files <- check_files(files, name.pattern = ".*\\.txt$")
 
   z.df <- data.frame()
   for (file in files) {

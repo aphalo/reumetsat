@@ -17,15 +17,15 @@
 #' @param verbose logical Flag indicating if progress, and time and size of
 #'   the returned object should be printed.
 #'
-#' @details Function `read_OMI_AURA_UV_he5()` can be used to read the data
+#' @details Function `sUV_read_OMUVBd_he5()` can be used to read the data
 #'   stored in a file, either in full or selected variables. Query functions
-#'   `vars_OMI_AURA_UV_he5()`, `grid_OMI_AURA_UV_he5()` and
-#'   `date_OMI_AURA_UV_he5()` extract the names of the variables, the range of
+#'   `sUV_vars_OMUVBd_he5()`, `sUV_grid_OMUVBd_he5()` and
+#'   `sUV_date_OMUVBd_he5()` extract the names of the variables, the range of
 #'   the grid and the dates of measurements much more efficiently than by using
-#'   `read_OMI_AURA_UV_he5()`. The dates are decoded from the file names,
+#'   `sUV_read_OMUVBd_he5()`. The dates are decoded from the file names,
 #'   expecting these to be those set by the data provider. The grid is expected
 #'   to be identical in all files that are imported in a call to
-#'   `read_OMI_AURA_UV_he5()`, and grid subsetting is currently not supported. If
+#'   `sUV_read_OMUVBd_he5()`, and grid subsetting is currently not supported. If
 #'   not all the files named in the argument to `files` are accessible, an error
 #'   is triggered early. If the files differ in the grid, an error is triggered
 #'   when reading the first mismatching file. Missing variables named in
@@ -33,14 +33,14 @@
 #'   `fill` value, otherwise they trigger an error when an attempt is made to
 #'   read them.
 #'
-#' @return Function `read_OMI_AURA_UV_he5()` returns a data frame with columns
+#' @return Function `sUV_read_OMUVBd_he5()` returns a data frame with columns
 #'   named `"Date"`, `"Longitude"`, `"Latitude"`, and the data variables with
 #'   their original names. The data variables have their metadata stored as R
-#'   attributes. `vars_OMI_AURA_UV_he5()` returns a `character` vector of
-#'   variable names, `grid_OMI_AURA_UV_he5()` returns a data frame with two
+#'   attributes. `sUV_vars_OMUVBd_he5()` returns a `character` vector of
+#'   variable names, `sUV_grid_OMUVBd_he5()` returns a data frame with two
 #'   numeric variables, `Longitude` and `Latitude`, with two rows or an expanded
 #'   grid depending on the argument passed to `expand`, while
-#'   `date_OMI_AURA_UV_he5()` returns a vector of class `Date`, with file names
+#'   `sUV_date_OMUVBd_he5()` returns a vector of class `Date`, with file names
 #'   as member names by default.
 #'
 #' @note The constraint on the consistency among all files to be read allows
@@ -52,7 +52,7 @@
 #'   available to hold the data frame and the files are read from a reasonably
 #'   fast SSD. The example data included in the package are global and one day.
 #'   They are used in examples and automated tests. Function
-#'   `read_OMI_AURA_UV_he5()` has also been tested by importing multiple files
+#'   `sUV_read_OMUVBd_he5()` has also been tested by importing multiple files
 #'   off-line as only one example file is included in the package due to these
 #'   files' large size.
 #'
@@ -62,7 +62,7 @@
 #' V3, NASA Goddard Space Flight Center, Goddard Earth Sciences Data and
 #' Information Services Center (GES DISC).
 #'
-#' @seealso [`read_OMI_AURA_UV_nc4()`] supporting the same Surface UV data,
+#' @seealso [`sUV_read_OMUVBd_nc4()`] supporting the same Surface UV data,
 #' in NetCDF4 files, possibly as a subset of the grid and/or variables.
 #'
 #' @examples
@@ -75,32 +75,32 @@
 #'   list.files(path.to.files, pattern = "*\\.he5$", full.names = TRUE)
 #'
 #' # available variables
-#' vars_OMI_AURA_UV_he5(file.names)
+#' sUV_vars_OMUVBd_he5(file.names)
 #'
 #' # available grid
-#' grid_OMI_AURA_UV_he5(file.names)
-#' grid_OMI_AURA_UV_he5(file.names, expand = TRUE)
+#' sUV_grid_OMUVBd_he5(file.names)
+#' sUV_grid_OMUVBd_he5(file.names, expand = TRUE)
 #'
 #' # decode date from file name
-#' date_OMI_AURA_UV_he5(file.names)
-#' date_OMI_AURA_UV_he5(file.names, use.names = FALSE)
+#' sUV_date_OMUVBd_he5(file.names)
+#' sUV_date_OMUVBd_he5(file.names, use.names = FALSE)
 #'
 #' # read all variables
 #' helsinki_3days.tb <-
-#'   read_OMI_AURA_UV_he5(file.names)
+#'   sUV_read_OMUVBd_he5(file.names)
 #' dim(helsinki_3days.tb)
 #' summary(helsinki_3days.tb)
 #'
 #' # read some variables
 #' helsinki_UVI_3days.tb <-
-#'   read_OMI_AURA_UV_he5(file.names, vars.to.read = "UVindex")
+#'   sUV_read_OMUVBd_he5(file.names, vars.to.read = "UVindex")
 #' dim(helsinki_UVI_3days.tb)
 #' summary(helsinki_UVI_3days.tb)
 #'
 #' @export
 #' @import rhdf5
 #'
-read_OMI_AURA_UV_he5 <-
+sUV_read_OMUVBd_he5 <-
   function(files,
            data.product = NULL,
            group.name = "OMI UVB Product/Data Fields",
@@ -108,7 +108,7 @@ read_OMI_AURA_UV_he5 <-
            fill = NA_real_,
            verbose = interactive()) {
 
-    files <- check_files_accessible(files, name.pattern = "^OMI-Aura.*\\.he5$")
+    files <- check_files(files, name.pattern = "^OMI-Aura.*\\.he5$")
 
     # We guess the data product from the file name
     if (is.null(data.product)) {
@@ -118,7 +118,7 @@ read_OMI_AURA_UV_he5 <-
     # Warn about untested data products
     known.data.products <- c("SURFACE UV", "OMI-AURA")
     if (!toupper(data.product) %in% known.data.products) {
-      warning("'read_OMI_AURA_UV_he5()' has not been tested with '",
+      warning("'sUV_read_OMUVBd_he5()' has not been tested with '",
               data.product, "' files. Returned values need validation!")
     }
 
@@ -129,12 +129,14 @@ read_OMI_AURA_UV_he5 <-
       on.exit(
         {
           end_time <- Sys.time()
-          cat("Read ", length(files), " grid-based '.he5' (HDF5) file(s) into a ",
-              format(utils::object.size(z.tb), units = "auto", standard = "SI"),
-              " data frame [",
-              paste(dim(z.tb), collapse = " rows x "),
-              " cols] in ",
-              format(signif(end_time - start_time, 2)), "\n", sep = "")
+          message(
+            "Read ", length(files), " OMUVBd grid-based HDF5 file(s) into a ",
+            format(utils::object.size(z.tb), units = "auto", standard = "SI"),
+            " data frame [",
+            paste(dim(z.tb), collapse = " rows x "),
+            " cols] in ",
+            format(signif(end_time - start_time, 2))
+          )
         },
         add = TRUE, after = FALSE)
     }
@@ -193,7 +195,7 @@ read_OMI_AURA_UV_he5 <-
       slice.selector <- base.selector + (i - 1) * max(base.selector)
 
       if (verbose) {
-        cat("Reading: ", basename(files[i]), "\n", sep = "")
+        message("Reading: ", basename(files[i]))
       }
       data_date <-
         as.Date(sub(".*_([0-9]{4}m[0-9]{4})_.*", "\\1", basename(files[i])),
@@ -206,9 +208,9 @@ read_OMI_AURA_UV_he5 <-
       for (col in col.names[!to_skip]) {
         # read data matrix for variable as a vector
         var_data.ls[[col]][slice.selector] <-
-            rhdf5::h5read(files[i], name = vars.to.read[[col]],
-                          read.attributes = TRUE,
-                          drop = TRUE)
+          rhdf5::h5read(files[i], name = vars.to.read[[col]],
+                        read.attributes = TRUE,
+                        drop = TRUE)
       }
 
     }
@@ -243,7 +245,7 @@ read_OMI_AURA_UV_he5 <-
     z.tb
   }
 
-#' @rdname read_OMI_AURA_UV_he5
+#' @rdname sUV_read_OMUVBd_he5
 #'
 #' @param set.oper character One of `"intersect"`, or `"union"`.
 #'
@@ -256,12 +258,12 @@ read_OMI_AURA_UV_he5 <-
 #'
 #' @export
 #'
-vars_OMI_AURA_UV_he5 <- function(files,
+sUV_vars_OMUVBd_he5 <- function(files,
                                 data.product = NULL,
                                 group.name = "OMI UVB Product/Data Fields",
                                 set.oper = "intersect") {
 
-  files <- check_files_accessible(files, name.pattern = "^OMI-Aura.*\\.he5$")
+  files <- check_files(files, name.pattern = "^OMI-Aura.*\\.he5$")
 
   set.fun <- switch(set.oper,
                     union = base::union,
@@ -299,18 +301,18 @@ vars_OMI_AURA_UV_he5 <- function(files,
 
 }
 
-#' @rdname read_OMI_AURA_UV_he5
+#' @rdname sUV_read_OMUVBd_he5
 #'
 #' @param expand logical Flag indicating whether to return ranges or a
 #'   full grid.
 #'
 #' @export
 #'
-grid_OMI_AURA_UV_he5 <- function(files,
-                                 group.name = "OMI UVB Product/Data Fields",
-                                 expand = FALSE) {
+sUV_grid_OMUVBd_he5 <- function(files,
+                                group.name = "OMI UVB Product/Data Fields",
+                                expand = FALSE) {
 
-  files <- check_files_accessible(files, name.pattern = "^OMI-Aura.*\\.he5$")
+  files <- check_files(files, name.pattern = "^OMI-Aura.*\\.he5$")
 
   # check consistency
   for (file in files) {
@@ -352,17 +354,17 @@ grid_OMI_AURA_UV_he5 <- function(files,
   }
 }
 
-#' @rdname read_OMI_AURA_UV_he5
+#' @rdname sUV_read_OMUVBd_he5
 #'
 #' @param use.names logical. Should names be added to the returned vector?
 #'
 #' @export
 #'
-date_OMI_AURA_UV_he5 <- function(files,
-                                 use.names = length(files > 1)) {
+sUV_date_OMUVBd_he5 <- function(files,
+                                use.names = length(files > 1)) {
 
   files <-
-    check_files_accessible(files,
+    check_files(files,
                            name.pattern = "^OMI-Aura.*\\.he5$|^OMI-Aura.*\\.nc4$")
 
   files <- basename(files)

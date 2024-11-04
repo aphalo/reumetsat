@@ -1,9 +1,9 @@
 Antti
 Arola
-center
 CMD
-EUMETSAT
 EARTHDATA
+EUMETSAT
+EUV
 Erythemal
 FMI
 GES
@@ -14,6 +14,7 @@ Jari
 Kujanpää
 NetCDF
 OMI
+OMUVBd
 ORCID
 OUV
 PUM
@@ -24,6 +25,7 @@ UVB
 UVI
 Viikki
 YYYYMMDD
+centre
 circ
 extdata
 gridded
@@ -31,9 +33,10 @@ hdf
 irradiance
 irradiances
 metres
-netcdf
+oper
 photobiologyInOut
 pre
 rhdf
+sUV
 spectrally
 vectorised
