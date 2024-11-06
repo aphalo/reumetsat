@@ -78,13 +78,16 @@ Installation of the most recent stable version from CRAN:
 # install.packages("surfaceuv")
 ```
 
-Installation of the current unstable version from R-Universe CRAN-like
-repository:
+Installation of the current unstable version from the R-Universe
+CRAN-like repository can be done with the code below. Including the URLs
+of the CRAN and Bioconductor repositories ensures that dependencies are
+installed automatically.
 
 ``` r
 install.packages('surfaceuv', 
                  repos = c('https://aphalo.r-universe.dev', 
-                           'https://cloud.r-project.org'))
+                           'https://cloud.r-project.org',
+                           "https://bioconductor.org/packages/3.19/bioc"))
 ```
 
 Installation of the current unstable version from GitHub:
@@ -120,7 +123,7 @@ citation("surfaceuv")
 #> To cite package 'surfaceuv' in publications use:
 #> 
 #>   Aphalo P (2024). _surfaceuv: Solar Ultraviolet at Ground Surface Data
-#>   Import_. R package version 0.1.1,
+#>   Import_. R package version 0.1.1.9000,
 #>   <https://docs.r4photobiology.info/surfaceuv/>.
 #> 
 #> A BibTeX entry for LaTeX users is
@@ -129,7 +132,7 @@ citation("surfaceuv")
 #>     title = {surfaceuv: Solar Ultraviolet at Ground Surface Data Import},
 #>     author = {Pedro J. Aphalo},
 #>     year = {2024},
-#>     note = {R package version 0.1.1},
+#>     note = {R package version 0.1.1.9000},
 #>     url = {https://docs.r4photobiology.info/surfaceuv/},
 #>   }
 ```
