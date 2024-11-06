@@ -1,8 +1,7 @@
 #' OMI/Aura Surface UV gridded subsets
 #'
-#' @description Import \strong{gridded} "Surface UV" data released by
-#'   FMI/NASA from \strong{NetCDF4} files downloaded from the NASA EARTHDATA
-#'   server.
+#' @description Import \strong{gridded} "Surface UV" data released by FMI/NASA
+#'   from \strong{NetCDF4} files downloaded from the NASA EARTHDATA server.
 #'
 #' @param files character A vector of file names, no other limitation in length
 #'   than available memory to hold the data.
@@ -11,15 +10,13 @@
 #' @param fill numeric The R value used to replace the fill value used in the
 #'   file, which is retrieved from the file metadata, and also used to fill
 #'   missing variables.
-#' @param keep.QC logical Add to the returned data frame or vector the quality
-#'   control variable, always present in the files.
-#' @param verbose logical Flag indicating if progress, and time and size of
-#'   the returned object should be printed.
+#' @param verbose logical Flag indicating if progress, and time and size of the
+#'   returned object should be printed.
 #'
-#' @details Function `sUV_read_OMUVBd_nc4()` can be used to read the data
-#'   stored in a file, either in full or selected variables. Query functions
-#'   `sUV_vars_OMUVBd_hdf5()`, `sUV_grid_OMUVBd_hdf5()` and
-#'   `sUV_date_OMUVBd_hdf5()` extract the names of the variables, the range of
+#' @details Function `sUV_read_OMUVBd_nc4()` can be used to read the data stored
+#'   in a file, either in full or selected variables. Query functions
+#'   `sUV_vars_OMUVBd_nc4()`, `sUV_grid_OMUVBd_nc4()` and
+#'   `sUV_date_OMUVBd_nc4()` extract the names of the variables, the range of
 #'   the grid and the dates of measurements much more efficiently than by using
 #'   `sUV_read_OMUVBd_nc4()`. The dates are decoded from the file names,
 #'   expecting these to be those set by the data provider. The grid is expected
@@ -33,14 +30,14 @@
 #'   read them.
 #'
 #' @return Function `sUV_read_OMUVBd_nc4()` returns a data frame with columns
-#'   named `"Date"`, `"Longitude"`, `"Latitude"`, the data variables with their
-#'   original names, and `"QualityFlags"`. The data variables have their
-#'   metadata stored as R attributes. `sUV_vars_OMUVBd_hdf5()` returns a
-#'   `character` vector of variable names, `sUV_grid_OMUVBd_hdf5()` returns a
-#'   data frame with two numeric variables, `Longitude` and `Latitude`, with two
-#'   rows or an expanded grid depending on the argument passed to `expand`,
-#'   while `sUV_date_OMUVBd_hdf5()` returns a named vector of class `Date`, with
-#'   file names as names.
+#'   named `"Date"`, `"Longitude"`, `"Latitude"`, and the data variables with
+#'   their original names. The data variables have their metadata stored as R
+#'   attributes. `sUV_vars_OMUVBd_nc4()` returns a `character` vector of
+#'   variable names, `sUV_grid_OMUVBd_nc4()` returns a data frame with two
+#'   numeric variables, `Longitude` and `Latitude`, with two rows or an expanded
+#'   grid depending on the argument passed to `expand`, while
+#'   `sUV_date_OMUVBd_nc4()` returns a, by default named, vector of class
+#'   `Date`, with file names as names.
 #'
 #' @note The constraint on the consistency among all files to be read allows
 #'   very fast reading into a single data frame. If the files differ in the grid
@@ -48,34 +45,19 @@
 #'   individually into separate data frames. These data frames can later be
 #'   row-bound together.
 #'
-#'   Variable `QualityFlags` is encoded as 64 bit integers in the HDF5 file and
-#'   read as a double. R package 'bit64' can be used to print these values as
-#'   64 bit integers.
-#'
-#'   When requesting the data from the EUMETSAT AC SAF FMI server at
-#'   \url{https://acsaf.org/} it is possible to select the range of latitudes
-#'   and longitudes and the variables to be included in the file. This is more
-#'   efficient than doing the selection after importing the data into R. The
-#'   data are returned as a .zip compressed file containing one .HDF5 file for
-#'   each day in the range of dates selected. For world coverage each of these
-#'   files can be as large as 10 MB in size depending on how many variables they
-#'   contain. These files in HDF5 format are binary files so the size in RAM of
-#'   a `data.frame` object containing one-year of data can be a few 10's of GB.
-#'
 #'   This function's performance is fast as long as there is enough RAM
 #'   available to hold the data frame and the files are read from a reasonably
 #'   fast SSD. The example data included in the package are only for Spain and
-#'   five summer days. They are used in examples and automated tests. Function
-#'   `sUV_read_OMUVBd_nc4()` has been also tested by importing one-year's worth
-#'   of data with worldwide coverage on a PC with 64GB RAM.
+#'   five summer days. They are used in examples and automated tests.
 #'
 #' @references
-#' Kujanpää, J. (2019) _PRODUCT USER MANUAL Offline UV Products v2
-#'   (IDs: O3M-450 - O3M-464) and Data Record R1 (IDs: O3M-138 - O3M-152)_. Ref.
-#'   SAF/AC/FMI/PUM/001. 18 pp. EUMETSAT AC SAF.
+#' Jari Hovila, Antti Arola, and Johanna Tamminen (2013), OMI/Aura Surface UVB
+#' Irradiance and Erythemal Dose Daily L3 Global Gridded 1.0 degree x 1.0 degree
+#' V3, NASA Goddard Space Flight Center, Goddard Earth Sciences Data and
+#' Information Services Center (GES DISC).
 #'
-#' @seealso [`sUV_read_OMUVBd_he5()`] supporting the same Surface UV data stored
-#' in the original HDF5 files with a global geographic scope.
+#' @seealso [`sUV_read_OMUVBd_he5()`] supporting the same Surface UV data as
+#'   stored in the original HDF5 files with a global geographic scope.
 #'
 #' @examples
 #' # find location of one example file
@@ -130,7 +112,6 @@ sUV_read_OMUVBd_nc4 <-
   function(files,
            vars.to.read = NULL,
            fill = NA_real_,
-           keep.QC = TRUE,
            verbose = interactive()) {
 
     files <- check_files(files, name.pattern = "^OMI-Aura_.*\\.nc4$")
@@ -211,12 +192,13 @@ sUV_read_OMUVBd_nc4 <-
         rep(data_date, times = length(Longitudes))
 
       for (var.name in vars.to.read) {
+        # a warning is triggered in rhdf5 related to the grid metadata
         suppressWarnings(
           var_data.ls[[var.name]][slice.selector] <-
-          rhdf5::h5read(files[i], name = var.name,
-                        read.attributes = TRUE,
-                        drop = TRUE, # read data matrix for variable as vector
-                        bit64conversion = "bit64")
+            rhdf5::h5read(files[i], name = var.name,
+                          read.attributes = TRUE,
+                          drop = TRUE, # read data matrix for variable as vector
+                          bit64conversion = "bit64")
         )
       }
 
@@ -226,6 +208,7 @@ sUV_read_OMUVBd_nc4 <-
 
     for (var.name in vars.to.read) {
       # read attributes from first file
+      # a warning is triggered in rhdf5 related to the grid metadata
       suppressWarnings(
         var_attrs <-
           rhdf5::h5readAttributes(files[[1]],
@@ -262,8 +245,7 @@ sUV_read_OMUVBd_nc4 <-
 #' @export
 #'
 sUV_vars_OMUVBd_nc4 <- function(files,
-                              keep.QC = TRUE,
-                              set.oper = "intersect") {
+                                set.oper = "intersect") {
 
   files <- check_files(files, name.pattern = "^OMI-Aura_.*\\.nc4$")
 
@@ -306,7 +288,7 @@ sUV_vars_OMUVBd_nc4 <- function(files,
 #' @export
 #'
 sUV_grid_OMUVBd_nc4 <- function(files,
-                              expand = FALSE) {
+                                expand = FALSE) {
 
   files <- check_files(files, name.pattern = "^OMI-Aura_.*\\.nc4$")
 
@@ -347,7 +329,7 @@ sUV_grid_OMUVBd_nc4 <- function(files,
 #' @export
 #'
 sUV_date_OMUVBd_nc4 <- function(files,
-                              use.names = length(files > 1)) {
+                                use.names = length(files > 1)) {
 
   files <- check_files(files, name.pattern = "^OMI-Aura_.*\\.nc4$")
 
