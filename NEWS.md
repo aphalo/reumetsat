@@ -1,3 +1,7 @@
+# surfaceuv 0.1.2
+
+* Avoid dependency on 'dplyr' and 'tidync', and consequently also on all the 'tidyverse' packages.
+
 # surfaceuv 0.1.1
 
 * Rename all functions (twice, only new names shown below). 

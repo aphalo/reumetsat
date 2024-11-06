@@ -19,10 +19,8 @@ Depends:
     R (>= 4.0.0)
 Imports:
     utils,
-    dplyr,
     bit64,
-    rhdf5 (>= 2.45.0),
-    tidync (>= 0.4.0)
+    rhdf5 (>= 2.45.0)
 Suggests:
     knitr (>= 1.43),
     rmarkdown (>= 2.23),

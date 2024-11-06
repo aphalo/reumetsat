@@ -4,10 +4,10 @@ test_that("reads one OMI grid data file", {
     system.file("extdata", "OMI-Aura_L3-OMUVBd_2023m1001_v003.nc4",
                 package = "surfaceuv", mustWork = TRUE)
 
-  all.variables <- c("CloudOpticalThickness", "ErythemalDailyDose",
+  all.variables <- c("Date", "Longitude", "Latitude",
+                     "CloudOpticalThickness", "ErythemalDailyDose",
                      "ErythemalDoseRate", "Irradiance305", "Irradiance310",
-                     "Irradiance324", "Irradiance380", "UVindex",
-                     "Longitude", "Latitude", "Date")
+                     "Irradiance324", "Irradiance380", "UVindex")
 
   grid.range <- data.frame(Longitude = c(24.5, 26.5),
                            Latitude = c(58.5, 60.5))
@@ -45,7 +45,7 @@ test_that("reads one OMI grid data file", {
   expect_s3_class(test2.df$Date, "Date", exact = TRUE)
   expect_equal(length(unique(test2.df$Date)), 1)
   expect_equal(colnames(test2.df),
-               c(vars.to.read, "Longitude", "Latitude", "Date"))
+               c("Date", "Longitude", "Latitude", vars.to.read))
   expect_equal(nrow(test2.df), 9)
   expect_equal(sum(is.na(test2.df)), 0)
 
@@ -59,10 +59,10 @@ test_that("reads multiple consistent NetCDF4 grid data files", {
 
   file.names <- list.files(path.to.files, pattern = "*.nc4$", full.names = TRUE)
 
-  all.variables <- c("CloudOpticalThickness", "ErythemalDailyDose",
+  all.variables <- c("Date", "Longitude", "Latitude",
+                     "CloudOpticalThickness", "ErythemalDailyDose",
                      "ErythemalDoseRate", "Irradiance305", "Irradiance310",
-                     "Irradiance324", "Irradiance380", "UVindex",
-                     "Longitude", "Latitude", "Date")
+                     "Irradiance324", "Irradiance380", "UVindex")
 
   grid.range <- data.frame(Longitude = c(24.5, 26.5),
                            Latitude = c(58.5, 60.5))
@@ -96,7 +96,7 @@ test_that("reads multiple consistent NetCDF4 grid data files", {
   expect_s3_class(test2.df$Date, "Date", exact = TRUE)
   expect_equal(length(unique(test2.df$Date)), 3)
   expect_equal(colnames(test2.df),
-               c(vars.to.read, "Longitude", "Latitude", "Date"))
+               c("Date", "Longitude", "Latitude", vars.to.read))
   expect_equal(nrow(test2.df), 27)
   expect_equal(sum(is.na(test2.df)), 0)
 
