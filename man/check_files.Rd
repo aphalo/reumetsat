@@ -28,4 +28,3 @@ be paths to files. If the files pointed at cannot be accessed, and error is
 triggered. If the files exist, but one or more do not match the expected
 \code{name.pattern} a warning is triggered.
 }
-\keyword{internal}

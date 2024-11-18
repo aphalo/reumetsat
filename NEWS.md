@@ -1,6 +1,7 @@
 # surfaceuv 0.1.2
 
 * Avoid dependency on 'dplyr' and 'tidync', and consequently also on all the 'tidyverse' packages.
+* Temporarily add utils for selection of nearest points and regions from a 2D grid.
 
 # surfaceuv 0.1.1
 
