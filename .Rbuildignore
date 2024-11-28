@@ -6,5 +6,6 @@
 ^README\.Rmd$
 ^data-raw$
 ^inst-not$
+^extdata-raw
 ^vignettes/articles$
 ^\.github$

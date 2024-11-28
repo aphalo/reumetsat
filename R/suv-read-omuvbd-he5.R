@@ -270,6 +270,9 @@ sUV_vars_OMUVBd_he5 <- function(files,
                     intersect = base::intersect,
                     {stop("'set.oper' argument '", set.oper, "' not recognized")})
 
+  # subsetting of variables on the server is not currently possible, but users
+  # can subset HDF5 files after download. So, we cannot assume all variables
+  # are present in all files!
   data.vars <- character()
   same.vars <- TRUE
   for (file in files) {
